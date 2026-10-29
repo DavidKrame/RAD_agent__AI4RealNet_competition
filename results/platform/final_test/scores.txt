@@ -1,0 +1,12 @@
+score: 64.391007
+score_retraining: 64.391007
+op_score_retraining: 56.318544
+nres_score_retraining: 96.680859
+score_no_retraining: 64.391007
+op_score_no_retraining: 56.318544
+nres_score_no_retraining: 96.680859
+duration: 13176.881700
+decision_time_max: 6.520681
+decision_time_99: 0.603035
+decision_time_95: 0.030330
+avg_sim_per_step: 9.219891
