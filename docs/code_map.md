@@ -1,10 +1,10 @@
-# Where the paper's mechanisms live in the code
+# Where each mechanism lives in the code
 
 All paths are relative to `agent/xdp_agent/`. Line numbers refer to the files as published. Every mechanism
 is on by default; the environment variable in the last column switches it off (`=0`) for an ablation run, for
 example `EXP_FLEXFLOOR=0 python evaluation/eval_full.py --submission xdp_agent ...`.
 
-| paper | mechanism | code | switch |
+| paper section | mechanism | code | switch |
 |---|---|---|---|
 | Section 4 | PTDF and LODF, computed by LightSim2Grid for the environment the agent is built on | `ac_dispatch.py`: `_ptdf` (l. 160); `my_agent.py`: `_lodf_for` (l. 1753) | |
 | Section 5.1, Fig. 1 | control cycle: early-exit rules, then candidate search and ranking | `my_agent.py`: `act` (l. 1214), `_relief` (l. 2004), `_relief_danger_pick` (l. 2339) | |

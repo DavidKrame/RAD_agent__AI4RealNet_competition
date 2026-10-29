@@ -1,18 +1,44 @@
-# A Rollout-Based Rule-and-Optimization Controller for Transmission Topology and Dispatch
+# RAD agent for grid topology and dispatch control
 
-Code and data accompanying the paper *A Rollout-Based Rule-and-Optimization Framework for Real-Time
-Topology and Dispatch Control Under Contingency Uncertainty, Developed and Tested in the L2RPN AI4RealNet
-2026 Challenge*.
+This is the agent our team, RAD, built during the L2RPN AI4RealNet 2026 competition. It operates a 118-bus
+transmission grid (Grid2Op's `l2rpn_idf_2023` environment) under adversarial line outages, using bus-bar
+splitting, line switching, redispatch, curtailment, and storage. It contains no neural network and no learned
+policy. Each decision comes from simulating a short list of candidate actions a few steps ahead and keeping
+the one that leaves the lines least overloaded.
 
-The controller manages a 118-bus transmission network with redispatch, curtailment, storage, bus-bar
-splitting, and line switching, under adversarial line outages. It trains no function approximator: at each
-step it builds a bounded set of candidate actions (offline topology templates, an LODF line-opening screen, an
-AC-anchored convex dispatch problem, and a DC optimal power flow), simulates each one a few steps ahead with
-the environment's forecast, and applies the one with the least constraint violation. A preventive rule keeps
-one line per region out of service, which removes almost all realized contingencies under the challenge's
-contingency process.
+We share it for people working on power-grid control or on L2RPN-style problems who want to reuse parts of
+it, or compare their own agents against it. The parts we found most useful:
 
-## How it decides, at every five-minute step
+- **Withholding one vulnerable line per region.** In this environment an outage attempt is canceled when a
+  line of its region is already out of service, so keeping one line out removes almost all outages that would
+  otherwise occur (2,360 down to 64 over our 764 local scenarios).
+- **An AC-anchored dispatch problem.** A convex quadratic program sets redispatch, curtailment, and storage
+  together. It starts from the observed AC flows, uses the PTDF only for the change it causes, and keeps a
+  reserve of downward ramping capacity.
+- **An LODF screen for line openings.** It predicts the loading after opening each line with one matrix
+  product per candidate, without a power-flow solve.
+- **A record of postures for scheduled outages.** Before a planned outage, the agent applies a configuration
+  that was observed offline to survive it.
+- **A cautious rule for re-fitting parameters.** A fitted value is replaced only if the new one wins clearly on
+  fresh data, which protected the agent once in the competition.
+
+## Why withholding one line works
+
+The environment's adversary attacks one region at a time, but an attempt only goes ahead if every line of
+that region is in service. Keeping one line of each region out of service, chosen offline so the grid stays
+safe without it, cancels the attempts, and a canceled attempt is used up rather than postponed:
+
+```mermaid
+flowchart LR
+    T([Outage attempt<br/>in a region]) --> Q{Every line of the<br/>region in service?}
+    Q -- yes --> X[A heavily loaded line<br/>is taken out]
+    Q -- no --> Y[Attempt canceled<br/>and used up]
+    K[[The agent keeps one line<br/>of each region out]] -.-> Q
+```
+
+## How a decision is made
+
+The environment advances in five-minute steps. At each step:
 
 ```mermaid
 flowchart LR
@@ -28,83 +54,91 @@ flowchart LR
     C --> A
 ```
 
+[`docs/code_map.md`](docs/code_map.md) points to the function behind each box and shows how to switch each
+mechanism off.
+
 ## Results
+
+In the competition the agent was scored on two sets of 208 scenarios it had never seen:
 
 | | completed | score | operations | low-carbon | total agent time |
 |---|---|---|---|---|---|
-| Challenge validation set (208 scenarios) | 184 / 208 | 72.93 | 66.97 | 96.76 | 17,384 s |
-| Challenge sequestered final test set (208 scenarios) | 189 / 208 | 64.39 | 56.32 | 96.68 | 13,177 s |
-| Local evaluation set (764 scenarios) | 706 / 764 | | | | |
+| Validation set | 184 / 208 | 72.93 | 66.97 | 96.76 | 17,384 s |
+| Final test set | 189 / 208 | 64.39 | 56.32 | 96.68 | 13,177 s |
 
-Among the five top-ranked entries of the challenge, the agent had the second-best ratio of score to
-computation time.
+Among the five top-ranked entries, it had the second-best ratio of score to computation time. On our local
+set of 764 scenarios it completes 706.
 
-Each mechanism's effect was measured by a paired comparison on the 764 local scenarios, switching only that
-mechanism (the paper's Table 1):
+We measured each mechanism by running two versions of the agent that differ only in that mechanism, on the
+same 764 scenarios:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/mechanisms_dark.png">
   <img alt="Scenarios completed out of 764 without and with each mechanism: preventive withholding 630 to 659, scheduled-outage look-ahead 672 to 693, margin preservation 669 to 680." src="docs/figures/mechanisms_light.png" width="760">
 </picture>
 
-Every number above, and every number in the paper's Table 1, can be recomputed from the
-stored records (`analysis/make_figures.py` redraws the figure):
+All of these numbers come from the records in [`results/`](results/), and
+`python analysis/reproduce_results.py` recomputes them.
 
-```sh
-python analysis/reproduce_paper_numbers.py
-```
+## Getting started
 
-## Repository map
-
-| folder | what it holds |
-|---|---|
-| [`agent/xdp_agent/`](agent/xdp_agent/) | the agent, as a self-contained package in the challenge's submission format |
-| [`evaluation/`](evaluation/) | the full-set evaluation harness used for every local number, laptop or SLURM |
-| [`analysis/`](analysis/) | `reproduce_paper_numbers.py` recomputes the reported numbers from `results/`; `make_figures.py` redraws the figure |
-| [`results/platform/`](results/platform/) | the files returned by the challenge platform for the two scored runs |
-| [`results/local_764/`](results/local_764/) | per-scenario records of the local runs behind Table 1 and of the published agent |
-| [`data/`](data/) | the scenario lists of the local evaluation, validation and test sets |
-| [`docs/code_map.md`](docs/code_map.md) | where each mechanism of the paper lives in the code, and how to switch it off |
-
-## Quick start
-
-Python 3.11 or later.
+You need Python 3.11 or later.
 
 ```sh
 pip install -r requirements.txt
-python agent/xdp_agent/prepare_data.py          # downloads l2rpn_idf_2023 and creates the 764/34/34 split
-python evaluation/eval_full.py --submission xdp_agent --eps "0,5" --mode fast --reference \
-       --out results/my_run/check.json        # two scenarios, a few minutes on a laptop
+python agent/xdp_agent/prepare_data.py
 ```
 
-The split is created with grid2op's `train_val_split_random` after `env.seed(1)`; the resulting scenario
-names are listed in [`data/`](data/) so the split can be checked independently.
+The second command downloads `l2rpn_idf_2023` and splits it into 764 training, 34 validation, and 34 test
+scenarios. The lists in [`data/`](data/) let you check that you got the same split.
 
-To evaluate all 764 scenarios, see [`evaluation/README.md`](evaluation/README.md); on one 128-core node it
-takes about half an hour.
-
-## Submitting the agent to the challenge platform
-
-The platform expects a zip whose top-level folder is `submission/` containing the package files and a
-`metadata` file:
+To watch the agent play two scenarios (a few minutes on a laptop):
 
 ```sh
-mkdir -p /tmp/pkg/submission && cp -r agent/xdp_agent/* /tmp/pkg/submission/
-(cd /tmp/pkg && echo "This is internal to codabench, do not modify" > metadata && zip -r xdp_agent.zip submission metadata)
+python evaluation/eval_full.py --submission xdp_agent --eps "0,5" --mode fast --reference \
+       --out results/my_run/check.json
 ```
 
-`train()` runs the revalidation step of Section 5.7 of the paper on the training data the platform provides,
-capped at 3,600 s; `save_state()` and `load_state()` persist its outcome.
+Running all 764 scenarios takes about half an hour on one 128-core node; see
+[`evaluation/README.md`](evaluation/README.md) for the laptop and SLURM versions.
 
-## Notes
+## Repository layout
 
-* **The package is the one scored on the challenge platform.** For this release only code comments and
-  docstrings were edited; the Python syntax trees of every file are identical to the submitted package.
-* **Sensitivity factors.** The agent computes PTDF and LODF with LightSim2Grid for the environment it is
-  built on. The challenge's scoring program builds the agent on a fresh environment and plays the episodes in
-  separate ones, so on the platform these were the nominal topology's factors. `evaluation/eval_full.py`
-  builds the agent on the environment it plays, so in local runs they follow the current topology
-  (Section 4 of the paper).
-* **Determinism.** Episodes are seeded by scenario index, so `evaluation/eval_full.py` reproduces a run
-  record by record on the same software stack.
-* **Third-party code.** See [`NOTICE.md`](NOTICE.md).
+```
+agent/xdp_agent/     the agent, a self-contained package with make_agent(env, path)
+evaluation/          the harness that produced every local result
+analysis/            reproduce_results.py and make_figures.py
+results/             competition result files and per-scenario local records
+data/                scenario lists of the 764 / 34 / 34 split
+docs/                code map and figures
+```
+
+## Good to know
+
+- The code is the version scored in the competition. For this release we only edited comments and docstrings;
+  the Python syntax tree of every file is unchanged.
+- The agent computes PTDF and LODF with LightSim2Grid for the environment it is built on. In the competition
+  that environment was never stepped, so the factors were those of the nominal topology. Our local harness
+  builds the agent on the environment it plays, so locally they follow the current topology.
+- Every mechanism can be switched off with an environment variable; [`docs/code_map.md`](docs/code_map.md)
+  lists them.
+
+## Citation
+
+If you use this code, please cite:
+
+```bibtex
+@inproceedings{rad2026rollout,
+  title     = {A Rollout-Based Rule-and-Optimization Framework for Real-Time Topology and Dispatch
+               Control Under Contingency Uncertainty, Developed and Tested in the {L2RPN AI4RealNet}
+               2026 Challenge},
+  author    = {AUTHOR_1 and AUTHOR_2},
+  booktitle = {VENUE},
+  year      = {2026}
+}
+```
+
+## License
+
+MIT, see [`LICENSE`](LICENSE). The vendored OptimCVXPY file keeps its MPL-2.0 license; see
+[`NOTICE.md`](NOTICE.md).

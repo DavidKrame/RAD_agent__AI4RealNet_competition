@@ -3,7 +3,7 @@
     python analysis/make_figures.py
 
 Writes `docs/figures/mechanisms_light.png` and `docs/figures/mechanisms_dark.png`. The numbers are the
-paired comparisons of the paper's Table 1, read from `results/local_764/table1_*.json`.
+three paired comparisons in `results/local_764/pair_*.json`.
 """
 import json
 import os
@@ -17,9 +17,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "docs", "figures")
 
 PAIRS = (  # label, run without the mechanism, run with it
-    ("Preventive withholding", "table1_withholding_off", "table1_withholding_on"),
-    ("Scheduled-outage look-ahead", "table1_lookahead_off", "table1_lookahead_on"),
-    ("Margin preservation", "table1_margin_off", "table1_margin_on"),
+    ("Preventive withholding", "pair_withholding_off", "pair_withholding_on"),
+    ("Scheduled-outage look-ahead", "pair_lookahead_off", "pair_lookahead_on"),
+    ("Margin preservation", "pair_margin_off", "pair_margin_on"),
 )
 
 THEMES = {

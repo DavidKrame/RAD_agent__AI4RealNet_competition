@@ -1,6 +1,6 @@
 # `xdp_agent`
 
-The controller described in the paper, packaged in the L2RPN challenge submission format: `__init__.py`
+The agent as a self-contained package in the L2RPN competition format: `__init__.py`
 exposes `make_agent(env, path)`, and the agent implements `act`, `reset`, `train`, `save_state` and
 `load_state`.
 
@@ -17,4 +17,4 @@ exposes `make_agent(env, path)`, and the agent implements `act`, `reset`, `train
 | `prepare_data.py` | downloads the dataset and creates the 764/34/34 split |
 | `gym_utils.py`, `train_ppo.py` | helpers of an early learned baseline, not used by this agent |
 
-`docs/code_map.md` at the repository root maps each mechanism of the paper to its function.
+`docs/code_map.md` at the repository root maps each mechanism to its function.

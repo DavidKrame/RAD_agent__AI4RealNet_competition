@@ -1,18 +1,18 @@
-"""Recompute every number the paper reports from the result files in `results/`.
+"""Recompute the reported results from the stored records in `results/`.
 
-    python analysis/reproduce_paper_numbers.py
+    python analysis/reproduce_results.py
 
 No simulation is run: the script only reads the stored per-scenario records, so anyone can check that the
 reported figures follow from the data. To regenerate the data themselves, see `evaluation/README.md`.
 
 Sources
 -------
-* `results/platform/{validation,final_test}/` are the files returned by the challenge platform
-  (scores.txt, score_episodes.csv, res_agent.json). A scenario is completed when the number of steps played
+* `results/competition/{validation,final_test}/` are the files the competition's evaluation returned for
+  the agent (scores.txt, score_episodes.csv, res_agent.json). A scenario is completed when the number of steps played
   equals the scenario length.
 * `results/local_764/*.json` are local full-set runs on the 764 scenarios listed in `data/chronics_764.txt`,
-  one record per scenario as written by `evaluation/eval_full.py`. The six `table1_*` runs are the paired
-  comparisons of Table 1; each pair differs in one mechanism only.
+  one record per scenario as written by `evaluation/eval_full.py`. The six `pair_*` runs form three paired
+  comparisons; each pair differs in one mechanism only.
 """
 import json
 import os
@@ -21,8 +21,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(ROOT, "results")
 
 
-def platform(split):
-    folder = os.path.join(RES, "platform", split)
+def competition(split):
+    folder = os.path.join(RES, "competition", split)
     scores = {}
     with open(os.path.join(folder, "scores.txt")) as fh:
         for line in fh:
@@ -40,7 +40,7 @@ def local(name):
     return {
         "completed": sum(r["completed"] for r in rows),
         # A non-convergent power flow, typically after an uncontrolled cascade, is reported by grid2op as a
-        # backend error; the paper calls it a network-divergence failure.
+        # backend error, called a network-divergence failure here.
         "divergence": sum(r["end_cause"] == "BackendError" for r in rows),
         "infeasible_redispatch": sum(r["end_cause"] == "ImpossibleRedispatching" for r in rows),
         "realized_contingencies": sum(r["n_attacks"] for r in rows),
@@ -49,18 +49,18 @@ def local(name):
 
 
 def main():
-    print("Challenge results (Section 6)")
+    print("Competition results")
     for split, label in (("validation", "validation set"), ("final_test", "sequestered final test set")):
-        s, done, n = platform(split)
+        s, done, n = competition(split)
         print(f"  {label:28s} score {s['score']:.2f}  (operations {s['op_score_retraining']:.2f}, "
               f"low-carbon {s['nres_score_retraining']:.2f})  completed {done}/{n}  "
               f"total agent time {s['duration']:.0f} s")
 
-    print("\nTable 1: paired comparisons on 764 scenarios")
+    print("\nPaired comparisons on 764 scenarios (one mechanism switched per pair)")
     pairs = (
-        ("preventive withholding", "table1_withholding_off", "table1_withholding_on", "added"),
-        ("scheduled-outage look-ahead", "table1_lookahead_on", "table1_lookahead_off", "removed"),
-        ("margin preservation", "table1_margin_off", "table1_margin_on", "added"),
+        ("preventive withholding", "pair_withholding_off", "pair_withholding_on", "added"),
+        ("scheduled-outage look-ahead", "pair_lookahead_on", "pair_lookahead_off", "removed"),
+        ("margin preservation", "pair_margin_off", "pair_margin_on", "added"),
     )
     for label, before, after, verb in pairs:
         a, b = local(before), local(after)
@@ -74,7 +74,7 @@ def main():
                   f"{b['realized_contingencies']}  ({drop:.1f}% fewer)")
 
     x = local("xdp_agent")
-    print("\nPublished agent, local 764-scenario run")
+    print("\nThe agent, local 764-scenario run")
     print(f"  completed {x['completed']}/{x['n']}, network-divergence {x['divergence']}, "
           f"infeasible redispatch {x['infeasible_redispatch']}")
 
