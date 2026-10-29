@@ -1,51 +1,54 @@
 # RAD agent for grid topology and dispatch control
 
-This is the agent our team, RAD, built during the L2RPN AI4RealNet 2026 competition. It operates a 118-bus
-transmission grid (Grid2Op's `l2rpn_idf_2023` environment) under adversarial line outages, using bus-bar
-splitting, line switching, redispatch, curtailment, and storage. It contains no neural network and no learned
-policy. Each decision comes from simulating a short list of candidate actions a few steps ahead and keeping
-the one that leaves the lines least overloaded.
+This repository contains the agent developed by team RAD for the L2RPN AI4RealNet 2026 competition. The agent
+controls the 118-bus transmission network of the Grid2Op environment `l2rpn_idf_2023` under adversarial line
+outages, acting through bus-bar splitting, line switching, redispatch, curtailment, and storage. It contains
+no neural network and no learned policy: at every decision step, a bounded set of candidate actions is
+simulated a few steps ahead, and the candidate with the smallest constraint violation is applied.
 
-We share it for people working on power-grid control or on L2RPN-style problems who want to reuse parts of
-it, or compare their own agents against it. The parts we found most useful:
+## Components
 
-- **Withholding one vulnerable line per region.** In this environment an outage attempt is canceled when a
-  line of its region is already out of service, so keeping one line out removes almost all outages that would
-  otherwise occur (2,360 down to 64 over our 764 local scenarios).
-- **An AC-anchored dispatch problem.** A convex quadratic program sets redispatch, curtailment, and storage
-  together. It starts from the observed AC flows, uses the PTDF only for the change it causes, and keeps a
-  reserve of downward ramping capacity.
-- **An LODF screen for line openings.** It predicts the loading after opening each line with one matrix
-  product per candidate, without a power-flow solve.
-- **A record of postures for scheduled outages.** Before a planned outage, the agent applies a configuration
-  that was observed offline to survive it.
-- **A cautious rule for re-fitting parameters.** A fitted value is replaced only if the new one wins clearly on
-  fresh data, which protected the agent once in the competition.
+The controller combines six components, each of which can be studied or reused on its own.
 
-## Why withholding one line works
+1. *Preventive withholding.* In this environment, an outage attempt in a region proceeds only if every line of
+   that region is in service. Keeping one line per region out of service therefore cancels these attempts,
+   which are consumed rather than postponed. Over the 764 local scenarios, realized outages fall from 2,360 to
+   64.
+2. *AC-anchored dispatch.* A convex quadratic program sets redispatch, curtailment, and storage jointly. It is
+   anchored on the observed AC flows, uses the power-transfer distribution factors (PTDF) only for the flow
+   change it induces, and preserves a reserve of downward ramping capacity.
+3. *Line-opening screen.* The loading of every line after a candidate opening is estimated with line-outage
+   distribution factors (LODF), at the cost of one matrix-vector product per candidate.
+4. *Scheduled-outage look-ahead.* Before an announced outage, the agent applies a configuration recorded
+   offline as surviving that outage.
+5. *Margin preservation.* Before redispatch is returned toward its economic set point, part of it is shifted,
+   at zero net change, toward generators close to their minimum output, so that downward ramping capacity
+   remains available for later corrections.
+6. *Revalidation of fitted parameters.* A parameter fitted offline is replaced only when an alternative
+   performs significantly better on new data.
 
-The environment's adversary attacks one region at a time, but an attempt only goes ahead if every line of
-that region is in service. Keeping one line of each region out of service, chosen offline so the grid stays
-safe without it, cancels the attempts, and a canceled attempt is used up rather than postponed:
+### Withholding mechanism
 
 ```mermaid
 flowchart LR
     T([Outage attempt<br/>in a region]) --> Q{Every line of the<br/>region in service?}
     Q -- yes --> X[A heavily loaded line<br/>is taken out]
-    Q -- no --> Y[Attempt canceled<br/>and used up]
-    K[[The agent keeps one line<br/>of each region out]] -.-> Q
+    Q -- no --> Y[Attempt canceled<br/>and consumed]
+    K[[One line per region<br/>held out of service]] -.-> Q
 ```
 
-## How a decision is made
+The withheld line of each region is selected offline so that the network remains secure without it.
 
-The environment advances in five-minute steps. At each step:
+### Decision cycle
+
+The environment advances in five-minute steps. At each step, the agent proceeds as follows:
 
 ```mermaid
 flowchart LR
-    O([Observe the grid]) --> M{Scheduled outage<br/>coming soon?}
-    M -- "yes, and it would be severe" --> P[Apply a posture known<br/>to survive that outage]
+    O([Observe the grid]) --> M{Scheduled outage<br/>imminent?}
+    M -- "yes, and severe" --> P[Apply a posture recorded<br/>to survive that outage]
     M -- no --> W{Withholding needed<br/>and safe?}
-    W -- yes --> H[Keep one line per region<br/>out of service]
+    W -- yes --> H[Hold one line per region<br/>out of service]
     W -- no --> G["Generate candidates:<br/>topology templates, local pool,<br/>LODF line openings,<br/>dispatch QP, DC optimal power flow"]
     G --> R[Simulate each a few steps ahead,<br/>rank by constraint violation]
     R --> C[Combine the best topology<br/>and dispatch candidates]
@@ -54,22 +57,22 @@ flowchart LR
     C --> A
 ```
 
-[`docs/code_map.md`](docs/code_map.md) points to the function behind each box and shows how to switch each
-mechanism off.
+The function implementing each step, and the environment variable that disables it, are listed in
+[`docs/code_map.md`](docs/code_map.md).
 
 ## Results
 
-In the competition the agent was scored on two sets of 208 scenarios it had never seen:
+In the competition, the agent was evaluated on two sets of 208 scenarios not available during development:
 
 | | completed | score | operations | low-carbon | total agent time |
 |---|---|---|---|---|---|
 | Validation set | 184 / 208 | 72.93 | 66.97 | 96.76 | 17,384 s |
 | Final test set | 189 / 208 | 64.39 | 56.32 | 96.68 | 13,177 s |
 
-Among the five top-ranked entries, it had the second-best ratio of score to computation time. On our local
-set of 764 scenarios it completes 706.
+Among the five highest-ranked entries, it achieved the second-best ratio of score to computation time. On the
+local evaluation set of 764 scenarios, it completes 706.
 
-We measured each mechanism by running two versions of the agent that differ only in that mechanism, on the
+The contribution of each mechanism was measured by paired runs that differ only in that mechanism, on the
 same 764 scenarios:
 
 <picture>
@@ -77,12 +80,12 @@ same 764 scenarios:
   <img alt="Scenarios completed out of 764 without and with each mechanism: preventive withholding 630 to 659, scheduled-outage look-ahead 672 to 693, margin preservation 669 to 680." src="docs/figures/mechanisms_light.png" width="760">
 </picture>
 
-All of these numbers come from the records in [`results/`](results/), and
-`python analysis/reproduce_results.py` recomputes them.
+All reported values are recomputed from the records in [`results/`](results/) by
+`python analysis/reproduce_results.py`.
 
-## Getting started
+## Installation and usage
 
-You need Python 3.11 or later.
+The code requires Python 3.11 or later.
 
 ```sh
 pip install -r requirements.txt
@@ -90,42 +93,40 @@ python agent/xdp_agent/prepare_data.py
 ```
 
 The second command downloads `l2rpn_idf_2023` and splits it into 764 training, 34 validation, and 34 test
-scenarios. The lists in [`data/`](data/) let you check that you got the same split.
+scenarios; the scenario lists in [`data/`](data/) allow the split to be verified.
 
-To watch the agent play two scenarios (a few minutes on a laptop):
+A run on two scenarios takes a few minutes on a laptop:
 
 ```sh
 python evaluation/eval_full.py --submission xdp_agent --eps "0,5" --mode fast --reference \
        --out results/my_run/check.json
 ```
 
-Running all 764 scenarios takes about half an hour on one 128-core node; see
-[`evaluation/README.md`](evaluation/README.md) for the laptop and SLURM versions.
+A complete evaluation of the 764 scenarios takes about half an hour on a 128-core node; laptop and SLURM
+instructions are given in [`evaluation/README.md`](evaluation/README.md).
 
-## Repository layout
+## Repository structure
 
 ```
-agent/xdp_agent/     the agent, a self-contained package with make_agent(env, path)
-evaluation/          the harness that produced every local result
+agent/xdp_agent/     the agent, a self-contained package exposing make_agent(env, path)
+evaluation/          evaluation harness used for all local results
 analysis/            reproduce_results.py and make_figures.py
 results/             competition result files and per-scenario local records
 data/                scenario lists of the 764 / 34 / 34 split
 docs/                code map and figures
 ```
 
-## Good to know
+## Implementation notes
 
-- The code is the version scored in the competition. For this release we only edited comments and docstrings;
-  the Python syntax tree of every file is unchanged.
-- The agent computes PTDF and LODF with LightSim2Grid for the environment it is built on. In the competition
-  that environment was never stepped, so the factors were those of the nominal topology. Our local harness
-  builds the agent on the environment it plays, so locally they follow the current topology.
-- Every mechanism can be switched off with an environment variable; [`docs/code_map.md`](docs/code_map.md)
-  lists them.
+The code is the version evaluated in the competition. Only comments and docstrings were edited for this
+release; the Python syntax tree of every file is unchanged.
+
+PTDF and LODF are computed with LightSim2Grid for the environment on which the agent is constructed. In the
+competition, that environment was never stepped, so the factors corresponded to the nominal topology. In the
+local evaluation harness, the agent is constructed on the environment it plays, so the factors follow the
+current topology.
 
 ## Citation
-
-If you use this code, please cite:
 
 ```bibtex
 @inproceedings{rad2026rollout,
@@ -140,5 +141,5 @@ If you use this code, please cite:
 
 ## License
 
-MIT, see [`LICENSE`](LICENSE). The vendored OptimCVXPY file keeps its MPL-2.0 license; see
-[`NOTICE.md`](NOTICE.md).
+The code is released under the MIT license ([`LICENSE`](LICENSE)). The vendored OptimCVXPY file retains its
+MPL-2.0 license ([`NOTICE.md`](NOTICE.md)).
