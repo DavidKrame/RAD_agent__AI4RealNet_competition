@@ -130,10 +130,9 @@ current topology.
 
 ```bibtex
 @inproceedings{rad2026rollout,
-  title     = {A Rollout-Based Rule-and-Optimization Framework for Real-Time Topology and Dispatch
-               Control Under Contingency Uncertainty, Developed and Tested in the {L2RPN AI4RealNet}
-               2026 Challenge},
-  author    = {AUTHOR_1 and AUTHOR_2},
+  title     = {Real-Time Topology and Dispatch Control Under Uncertain Adversarial Attacks
+               ({A} Rollout-Based Approach)},
+  author    = {AUTHOR_1 and AUTHOR_2 and AUTHOR_3 and AUTHOR_4},
   booktitle = {VENUE},
   year      = {2026}
 }
