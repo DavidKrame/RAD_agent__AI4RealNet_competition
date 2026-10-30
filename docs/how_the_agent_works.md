@@ -97,8 +97,8 @@ the network needs it:
 
 The thresholds form a hysteresis: the lines are opened only in a clearly comfortable state, kept out
 while loading stays at or below the thermal limits, and released once any line is overloaded, because an
-open line also weakens the network. Over the 764 local scenarios, realized attacks fall from 2,360 to 64
-with withholding enabled.
+open line also weakens the network. Over the 764 local scenarios, switching withholding off raises the
+number of realized attacks from 62 to 2,468 and lowers the number of completed scenarios from 706 to 679.
 
 ## 4. Operating regimes
 
@@ -227,6 +227,9 @@ one-step forecast discarded most of the configurations that actually survived, b
 on the steps after the outage, which a one-step forecast does not see. Lines without a record fall back
 on generated candidates ranked by the forecast.
 
+Over the 764 local scenarios, the look-ahead acts in 68. Switching it off lowers the number of completed
+scenarios from 706 to 689, and every scenario whose outcome changes is one in which it acted.
+
 ## 9. Margin preservation
 
 An overload is relieved mostly by moving generation down, and a generator can move down only by the
@@ -240,9 +243,10 @@ Returning redispatch toward the economic set point tends to park units at their 
 $r_g=0$. In comfortable states, before that return, the agent shifts output at zero net change from units
 that already hold a full ramp step ($r_g=R_g^{\downarrow}$, so giving output costs them no room) to units
 near their minimum. The shift is played when it restores at least 5 MW of total downward room and the
-forecast stays within the comfortable band. Over the 764 local scenarios, enabling this step raises
-completed scenarios from 669 to 680 and lowers the number ending on an infeasible redispatch from 29 to
-16.
+forecast stays within the comfortable band. Over the 764 local scenarios, switching this step off raises
+the number of scenarios ending on an infeasible redispatch from 7 to 13. Completions fall from 706 to 697,
+but that difference is within the noise of the comparison: 34 scenarios complete only with the step and
+25 only without it (exact McNemar p = 0.30).
 
 ## 10. Revalidation of fitted parameters in `train()`
 

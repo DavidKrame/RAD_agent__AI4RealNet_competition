@@ -2,8 +2,9 @@
 
     python analysis/make_figures.py
 
-Writes `docs/figures/mechanisms_light.png` and `docs/figures/mechanisms_dark.png`. The numbers are the
-three paired comparisons in `results/local_764/pair_*.json`.
+Writes `docs/figures/mechanisms_light.png` and `docs/figures/mechanisms_dark.png`. Each row compares the agent
+(`results/local_764/xdp_agent.json`) with the same agent with one mechanism switched off
+(`results/local_764/without_*.json`).
 """
 import json
 import os
@@ -17,9 +18,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "docs", "figures")
 
 PAIRS = (  # label, run without the mechanism, run with it
-    ("Preventive withholding", "pair_withholding_off", "pair_withholding_on"),
-    ("Scheduled-outage look-ahead", "pair_lookahead_off", "pair_lookahead_on"),
-    ("Margin preservation", "pair_margin_off", "pair_margin_on"),
+    ("Preventive withholding", "without_withholding", "xdp_agent"),
+    ("Scheduled-outage look-ahead", "without_lookahead", "xdp_agent"),
+    ("Margin preservation", "without_margin_preservation", "xdp_agent"),
 )
 
 THEMES = {
@@ -50,7 +51,9 @@ def draw(theme, data):
         ax.text(hi + 2.2, y, f"{hi}   (+{on - off})", ha="left", va="center", fontsize=9, color=t["ink"])
     ax.set_yticks(ys)
     ax.set_yticklabels([d[0] for d in data], fontsize=10, color=t["ink"])
-    ax.set_xlim(615, 712)
+    lo = min(min(off, on) for _, off, on in data)
+    hi = max(max(off, on) for _, off, on in data)
+    ax.set_xlim(lo - 12, hi + 12)
     ax.set_ylim(-0.7, len(data) - 0.3)
     ax.set_xlabel("Scenarios completed, out of 764 (local evaluation set)", fontsize=9, color=t["ink2"])
     ax.tick_params(axis="x", colors=t["muted"], labelsize=8, length=0)

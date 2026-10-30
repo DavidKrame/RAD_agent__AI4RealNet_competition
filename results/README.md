@@ -7,7 +7,7 @@
 * `local_764/`: our runs on the 764 scenarios listed in `data/chronics_764.txt`, one JSON per run with one
   record per scenario, as written by `evaluation/eval_full.py`.
   * `xdp_agent.json`: the agent in this repository.
-  * `pair_*.json`: three pairs of runs, each pair differing in one mechanism (withholding, scheduled-outage
-    look-ahead, margin preservation).
+  * `without_*.json`: the same agent with one mechanism switched off (withholding, scheduled-outage
+    look-ahead, margin preservation); the `flags` field records the switch.
 
 `python analysis/reproduce_results.py` recomputes the reported results from these files.

@@ -16,8 +16,8 @@ The controller combines six components, each of which can be studied or reused o
 
 1. *Preventive withholding.* In this environment, an outage attempt in a region proceeds only if every line of
    that region is in service. Keeping one line per region out of service therefore cancels these attempts,
-   which are consumed rather than postponed. Over the 764 local scenarios, realized outages fall from 2,360 to
-   64.
+   which are consumed rather than postponed. Over the 764 local scenarios, realized outages fall from 2,468 to
+   62.
 2. *AC-anchored dispatch.* A convex quadratic program sets redispatch, curtailment, and storage jointly. It is
    anchored on the observed AC flows, uses the power-transfer distribution factors (PTDF) only for the flow
    change it induces, and keeps the total downward redispatch within the ramping capacity of the fleet.
@@ -70,17 +70,20 @@ competition also scores each agent without its training step. On the validation 
 replaced the withheld lines and raised the score from 72.15 to 72.93; on the final test set, it kept the
 default and the two scores coincide. On the local evaluation set of 764 scenarios, the agent completes 706.
 
-The contribution of each mechanism was measured by paired runs that differ only in that mechanism, on the
-same 764 scenarios:
+The contribution of each mechanism was measured by switching it off, one at a time, and running the agent
+again on the same 764 scenarios with the same seeds:
 
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/mechanisms_dark.png">
-  <img alt="Scenarios completed out of 764 without and with each mechanism: preventive withholding 630 to 659, scheduled-outage look-ahead 672 to 693, margin preservation 669 to 680." src="docs/figures/mechanisms_light.png" width="760">
+  <img alt="Scenarios completed out of 764 without and with each mechanism: preventive withholding 679 to 706, scheduled-outage look-ahead 689 to 706, margin preservation 697 to 706." src="docs/figures/mechanisms_light.png" width="760">
 </picture>
 </p>
 
-All reported values are recomputed from the records in [`results/`](results/) by
+Withholding and the look-ahead change completions significantly (exact McNemar test on the scenarios whose
+outcome differs, p = 0.007 and p = 0.002). The effect of margin preservation on completions is within the
+noise of this comparison (p = 0.30); its measurable effect is on infeasible-redispatch failures, which fall
+from 13 to 7. All reported values are recomputed from the records in [`results/`](results/) by
 `python analysis/reproduce_results.py`.
 
 ## Installation and usage
