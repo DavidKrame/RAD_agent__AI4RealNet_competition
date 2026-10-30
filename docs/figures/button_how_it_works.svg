@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="372" height="48" viewBox="0 0 372 48" role="img" aria-label="How the agent works, step by step">
+  <rect x="0.5" y="0.5" width="371" height="47" rx="10" fill="#2a78d6" stroke="#1f5fae"/>
+  <g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="20" y="15" width="7" height="7" rx="1.5"/>
+    <rect x="20" y="27" width="7" height="7" rx="1.5"/>
+    <rect x="35" y="21" width="7" height="7" rx="1.5"/>
+    <path d="M27 18.5h4v6h4M27 30.5h4v-6"/>
+  </g>
+  <text x="192" y="30" text-anchor="middle" fill="#ffffff"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="16" font-weight="600">How the agent works, step by step</text>
+  <path d="M339 24h13M346.5 18.5l5.5 5.5-5.5 5.5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

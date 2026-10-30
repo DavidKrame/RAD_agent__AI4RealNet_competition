@@ -6,6 +6,10 @@ outages, acting through bus-bar splitting, line switching, redispatch, curtailme
 no neural network and no learned policy: at every decision step, a bounded set of candidate actions is
 simulated a few steps ahead, and the candidate with the smallest constraint violation is applied.
 
+<p align="center">
+  <a href="docs/how_the_agent_works.md"><img src="docs/figures/button_how_it_works.svg" alt="How the agent works, step by step" height="48"></a>
+</p>
+
 ## Components
 
 The controller combines six components, each of which can be studied or reused on its own.
@@ -27,15 +31,14 @@ The controller combines six components, each of which can be studied or reused o
 6. *Revalidation of fitted parameters.* A parameter fitted offline is replaced only when an alternative
    performs significantly better on new data.
 
-A step-by-step account of the decision, with the thresholds, objective, and optimization problems used,
-is given in [`docs/how_the_agent_works.md`](docs/how_the_agent_works.md).
-
 ### Withholding mechanism
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/withholding_rule_dark.png">
   <img alt="Withholding: an attack proceeds only if every attackable line of its region is in service; the agent keeps one line per region out of service, so the attempt is canceled." src="docs/figures/withholding_rule_light.png" width="476">
 </picture>
+</p>
 
 The withheld line of each region is selected offline so that the network remains secure without it.
 
@@ -43,10 +46,12 @@ The withheld line of each region is selected offline so that the network remains
 
 The environment advances in five-minute steps. At each step, the agent proceeds as follows:
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/decision_cycle_dark.png">
   <img alt="Decision cycle: scheduled-outage check, withholding, reactive controller, and extended-horizon check, each able to return an action." src="docs/figures/decision_cycle_light.png" width="806">
 </picture>
+</p>
 
 The function implementing each step, and the environment variable that disables it, are listed in
 [`docs/code_map.md`](docs/code_map.md).
@@ -68,10 +73,12 @@ default and the two scores coincide. On the local evaluation set of 764 scenario
 The contribution of each mechanism was measured by paired runs that differ only in that mechanism, on the
 same 764 scenarios:
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/mechanisms_dark.png">
   <img alt="Scenarios completed out of 764 without and with each mechanism: preventive withholding 630 to 659, scheduled-outage look-ahead 672 to 693, margin preservation 669 to 680." src="docs/figures/mechanisms_light.png" width="760">
 </picture>
+</p>
 
 All reported values are recomputed from the records in [`results/`](results/) by
 `python analysis/reproduce_results.py`.

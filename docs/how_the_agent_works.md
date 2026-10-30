@@ -26,10 +26,12 @@ TikZ sources are in [`figures/src`](figures/src) and are rebuilt by `figures/src
 
 Three layers are consulted in a fixed order, and the first that produces an action ends the step:
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/decision_cycle_dark.png">
   <img alt="Order of precedence: scheduled-outage check, withholding, reactive controller, extended-horizon check." src="figures/decision_cycle_light.png" width="806">
 </picture>
+</p>
 
 The scheduled-outage check comes first because its deadline is published and cannot be deferred.
 Withholding comes second because it can be taken on any comfortable step. The extended-horizon check at
@@ -63,10 +65,12 @@ tripping. $c$ is the fraction of renewable potential curtailed, and $d$ is the c
 redispatch, counted only when the current state is comfortable ($\rho_{\max}\le 0.90$) so that it never
 competes with survival. Lower $J_H$ is better.
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/evaluation_dark.png">
   <img alt="Evaluation of a candidate by a one-step simulation followed by do-nothing, giving F_H and J_H." src="figures/evaluation_light.png" width="641">
 </picture>
+</p>
 
 $F_H$ answers whether a line remains overloaded and is used for clearance tests; $J_H$ ranks candidates
 and decides whether an addition to an action is accepted. Forecasts are cached within a single decision,
@@ -84,10 +88,12 @@ The mechanism has no internal state of its own: the status of the withheld lines
 reopens a withheld line whenever conditions allow, keeps it out under mild stress, and gives it back when
 the network needs it:
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/withholding_cycle_dark.png">
   <img alt="Withholding: open the withheld lines when comfortable, add relief if no worse, and withhold reconnections while loading is within limits." src="figures/withholding_cycle_light.png" width="750">
 </picture>
+</p>
 
 The thresholds form a hysteresis: the lines are opened only in a clearly comfortable state, kept out
 while loading stays at or below the thermal limits, and released once any line is overloaded, because an
@@ -120,10 +126,12 @@ $J_H$.
 
 ## 5. Candidate search in the danger regime
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/danger_search_dark.png">
   <img alt="Danger-regime search: topology and continuous pools, scoring on J_H, greedy stacking, and addition of the continuous candidate." src="figures/danger_search_light.png" width="920">
 </picture>
+</p>
 
 The rules of the environment allow one substation change per region per step, so the greedy stack can
 contain up to three bus-bar changes. The final step addresses a structural gap: the continuous candidate
@@ -150,10 +158,12 @@ q_k = \max_{m\neq k} \frac{|\hat f_m^{(k)}|}{P_m^{\max}} ,
 where $f$ are the observed flows and $P_m^{\max}$ is the thermal limit converted to active power at the
 observed voltage. All $q_k$ are obtained in one matrix product.
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/line_screen_dark.png">
   <img alt="Line-opening screen: exclusions, LODF estimate, at most three openings below the limit, then simulation." src="figures/line_screen_light.png" width="758">
 </picture>
+</p>
 
 The screen only proposes. Each opening is still simulated and must beat the other candidates on $J_H$, so
 an error of the linear estimate costs one forecast rather than an unsafe action.
@@ -191,20 +201,24 @@ $\hat f_m + \mathrm{LODF}_{m,k}\hat f_k$ are added, with a linear penalty that i
 curtailment. The solution is translated into one action, and the action is kept only if an exact
 forecast confirms a lower peak loading.
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/ac_dispatch_dark.png">
   <img alt="AC-anchored dispatch: solve the QP, translate into one action, and keep it only if the exact forecast lowers peak loading." src="figures/ac_dispatch_light.png" width="881">
 </picture>
+</p>
 
 ## 8. Scheduled-outage look-ahead
 
 Maintenance outages are published in advance through `obs.time_next_maintenance`, which, unlike every
 other look-ahead in the agent, is exact.
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/outage_lookahead_dark.png">
   <img alt="Scheduled-outage look-ahead: simulate the outage, then use a recorded or generated posture if it is severe." src="figures/outage_lookahead_light.png" width="882">
 </picture>
+</p>
 
 Each line is probed once per scenario. The posture record in `fatal_lines.json` holds 246 configurations
 of substation 79 for line 175, ranked by the fraction of offline runs in which each survived the outage.
@@ -236,10 +250,12 @@ The withheld triple was chosen offline, on local data. The competition calls `tr
 before scoring, and the agent uses that call to test whether a predeclared alternative is significantly
 better. No model is trained.
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/revalidation_dark.png">
   <img alt="Revalidation in train(): score default and challenger on the same scenarios and accept only above a Bonferroni margin." src="figures/revalidation_light.png" width="787">
 </picture>
+</p>
 
 The candidates are fixed in the package: the default $(106,131,33)$ and the challenger $(162,110,61)$.
 Every candidate is checked to contain exactly one attackable line per region, the default is restored
