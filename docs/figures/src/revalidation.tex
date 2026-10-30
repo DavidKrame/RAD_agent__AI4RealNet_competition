@@ -1,0 +1,14 @@
+\input{style}
+\begin{document}
+\begin{tikzpicture}[node distance=4mm and 7mm]
+\node[out=2.9cm] (g) {Training scenarios and time grant\\\scriptsize capped at 3,600 s; 15\% kept in reserve};
+\node[proc, right=of g] (n) {Choose $n$ scenarios both candidates can be scored on};
+\node[sim=3.4cm, right=of n] (s) {Score default and challenger on the same $n$ scenarios\\\scriptsize $0.8\cdot$operations $+\,0.2\cdot$low-carbon};
+\node[ask=3.2cm, right=of s] (d) {Mean paired difference $>z\cdot$SE?\\\scriptsize Bonferroni, $\alpha=0.05$};
+\node[out=2.8cm, right=12mm of d, yshift=8mm] (w) {Persist the challenger};
+\node[rule=2.8cm, right=12mm of d, yshift=-8mm] (k) {Keep the default\\\scriptsize also on timeout or error};
+\draw[arr] (g)--(n); \draw[arr] (n)--(s); \draw[arr] (s)--(d);
+\draw[arr] (d.east) -- ++(4mm,0) |- node[ylab,above,pos=0.75]{yes} (w.west);
+\draw[arr] (d.east) -- ++(4mm,0) |- node[nlab,below,pos=0.75]{no} (k.west);
+\end{tikzpicture}
+\end{document}

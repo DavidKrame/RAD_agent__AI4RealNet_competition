@@ -32,13 +32,10 @@ is given in [`docs/how_the_agent_works.md`](docs/how_the_agent_works.md).
 
 ### Withholding mechanism
 
-```mermaid
-flowchart LR
-    T([Outage attempt<br/>in a region]) --> Q{Every line of the<br/>region in service?}
-    Q -- yes --> X[A heavily loaded line<br/>is taken out]
-    Q -- no --> Y[Attempt canceled<br/>and consumed]
-    K[[One line per region<br/>held out of service]] -.-> Q
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/withholding_rule_dark.png">
+  <img alt="Withholding: an attack proceeds only if every attackable line of its region is in service; the agent keeps one line per region out of service, so the attempt is canceled." src="docs/figures/withholding_rule_light.png" width="476">
+</picture>
 
 The withheld line of each region is selected offline so that the network remains secure without it.
 
@@ -46,19 +43,10 @@ The withheld line of each region is selected offline so that the network remains
 
 The environment advances in five-minute steps. At each step, the agent proceeds as follows:
 
-```mermaid
-flowchart LR
-    O([Observe the grid]) --> M{Scheduled outage<br/>imminent?}
-    M -- "yes, and severe" --> P[Apply a posture recorded<br/>to survive that outage]
-    M -- no --> W{Withholding needed<br/>and safe?}
-    W -- yes --> H[Hold one line per region<br/>out of service]
-    W -- no --> G["Generate candidates:<br/>topology templates, local pool,<br/>LODF line openings,<br/>dispatch QP, DC optimal power flow"]
-    G --> R[Simulate each a few steps ahead,<br/>rank by constraint violation]
-    R --> C[Combine the best topology<br/>and dispatch candidates]
-    P --> A([Apply the action])
-    H --> A
-    C --> A
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/decision_cycle_dark.png">
+  <img alt="Decision cycle: scheduled-outage check, withholding, reactive controller, and extended-horizon check, each able to return an action." src="docs/figures/decision_cycle_light.png" width="806">
+</picture>
 
 The function implementing each step, and the environment variable that disables it, are listed in
 [`docs/code_map.md`](docs/code_map.md).

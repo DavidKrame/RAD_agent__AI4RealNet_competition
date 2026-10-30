@@ -1,0 +1,23 @@
+\input{style}
+\begin{document}
+\begin{tikzpicture}[node distance=4mm and 6mm]
+\node[out=2.0cm] (o) {Observation};
+\node[ask, right=of o] (m) {Scheduled outage within 12 steps, and severe?};
+\node[ask, right=of m] (w) {$\rho_{\max}\le0.95$ and a withheld line back in service?};
+\node[proc=3.1cm, right=of w] (c) {Reactive controller\\[1pt]\scriptsize comfortable / preventive / danger regime};
+\node[ask, right=of c] (v) {Overload running and action fatal within 8 steps?};
+\node[out=2.0cm, right=of v] (a) {Apply the action};
+\node[out, below=9mm of m] (ma) {Pre-position against the outage};
+\node[out, below=9mm of w] (wa) {Reopen withheld lines, with relief if no worse};
+\node[sim, below=9mm of v] (va) {Longest-surviving alternative, if any};
+\draw[arr] (o)--(m);
+\draw[arr] (m)--node[nlab,above]{no}(w);
+\draw[arr] (w)--node[nlab,above]{no}(c);
+\draw[arr] (c)--(v);
+\draw[arr] (v)--node[nlab,above]{no}(a);
+\draw[arr] (m)--node[ylab,right]{yes}(ma);
+\draw[arr] (w)--node[ylab,right]{yes}(wa);
+\draw[arr] (v)--node[ylab,right]{yes}(va);
+\draw[arr] (va) -| (a);
+\end{tikzpicture}
+\end{document}

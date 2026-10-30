@@ -1,0 +1,20 @@
+\input{style}
+\begin{document}
+\begin{tikzpicture}[node distance=4mm and 7mm]
+\node[out=2.7cm] (d) {Nearest line with a scheduled outage within 12 steps};
+\node[sim, right=of d] (s) {Simulate the outage from the current state};
+\node[ask=2.8cm, right=of s] (q) {Survives with $\rho_{\max}<1.30$?};
+\node[out=2.7cm, above=6mm of q] (h) {Mark the line as handled; no action};
+\node[ask=2.4cm, right=of q] (r) {Recorded postures for this line?};
+\node[rule=3.2cm, right=12mm of r, yshift=8.5mm] (t) {Best-recorded posture not forecast as fatal};
+\node[opt=3.2cm, right=12mm of r, yshift=-8.5mm] (g) {Generated bus-bar and dispatch candidates; best on $J_H$};
+\node[out=2.0cm, right=12mm of t, yshift=-8.5mm] (a) {Apply};
+\draw[arr] (d)--(s); \draw[arr] (s)--(q);
+\draw[arr] (q)--node[ylab,right]{yes}(h);
+\draw[arr] (q)--node[nlab,above]{no}(r);
+\draw[arr] (r.east) -- ++(4mm,0) |- node[ylab,above,pos=0.75]{yes} (t.west);
+\draw[arr] (r.east) -- ++(4mm,0) |- node[nlab,below,pos=0.75]{no} (g.west);
+\draw[arr] (t.east) -- ++(4mm,0) |- (a.west);
+\draw[arr] (g.east) -- ++(4mm,0) |- (a.west);
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,17 @@
+\input{style}
+\begin{document}
+\begin{tikzpicture}[node distance=4mm and 7mm]
+\node[proc=2.2cm] (a) {Candidate action $a$};
+\node[sim, right=of a] (s1) {Simulate $a$ for one step};
+\node[sim, right=of s1] (s2) {Simulate do-nothing for $H-1$ steps ($H=2$)};
+\node[rule=4.6cm, right=14mm of s2, yshift=8mm] (f) {$F_H$: worst $\rho_{\max}$ over the horizon\\\scriptsize clearance tests};
+\node[opt=4.6cm, right=14mm of s2, yshift=-8mm] (j) {$J_H$: worst $\Psi$ + curtailment + redispatch cost\\\scriptsize ranking and acceptance of candidates};
+\node[bad=2.4cm, below=5mm of s1] (d) {Predicted end of episode: $F_H=J_H=+\infty$};
+\draw[arr] (a)--(s1);
+\draw[arr] (s1)--(s2);
+\draw[arr] (s2.east) -- ++(5mm,0) |- (f.west);
+\draw[arr] (s2.east) -- ++(5mm,0) |- (j.west);
+\draw[darr] (s1)--(d);
+\draw[darr] (s2.south) |- (d.east);
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,11 @@
+\input{style}
+\begin{document}
+\begin{tikzpicture}[node distance=4mm and 7mm]
+\node[out] (a) {Lines in service};
+\node[rule=3.3cm, right=of a] (b) {Exclude lines on cooldown, withheld lines, and bridges};
+\node[opt=3.1cm, right=of b] (c) {$q_k$ for every remaining line in one matrix product};
+\node[rule, right=of c] (d) {Keep up to three with $q_k<1$};
+\node[sim=3.1cm, right=of d] (e) {Simulate and score on $J_H$ with all other candidates};
+\draw[arr] (a)--(b); \draw[arr] (b)--(c); \draw[arr] (c)--(d); \draw[arr] (d)--(e);
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,25 @@
+\input{style}
+\begin{document}
+\begin{tikzpicture}[node distance=4mm and 7mm]
+\node[proc=2.4cm] (l) {Congested lines\\\scriptsize $\rho>0.99$, else the three most loaded};
+\node[opt=3.3cm, right=10mm of l, yshift=12mm] (t) {Topology pool, per region\\\scriptsize bus-bar changes near congestion and at hubs; screened line openings};
+\node[opt=3.3cm, right=10mm of l, yshift=-12mm] (c) {Continuous pool\\\scriptsize storage, redispatch, curtailment, DC OPF, AC-anchored dispatch};
+\node[sim=2.7cm, right=10mm of t, yshift=-12mm] (p) {Score all on $J_H$; keep best per region and best continuous};
+\node[ask=2.6cm, right=of p] (d) {Any candidate better than do-nothing?};
+\node[rule=2.9cm, right=of d] (g) {Greedy stack: add each unused region's best topology while $J_H$ strictly improves};
+\node[ask=3.0cm, right=of g] (x) {Best continuous touches no line or substation, and lowers $J_H$ when added?};
+\node[out=2.3cm, right=12mm of x, yshift=8mm] (y) {Stack + continuous};
+\node[out=2.3cm, right=12mm of x, yshift=-8mm] (z) {Stack alone};
+\node[bad=2.6cm, below=6mm of d] (lr) {Last resort if $F\ge1.20$, else do-nothing};
+\draw[arr] (l.east) -- ++(4mm,0) |- (t.west);
+\draw[arr] (l.east) -- ++(4mm,0) |- (c.west);
+\draw[arr] (t.east) -- ++(4mm,0) |- (p.west);
+\draw[arr] (c.east) -- ++(4mm,0) |- (p.west);
+\draw[arr] (p)--(d);
+\draw[arr] (d)--node[ylab,above]{yes}(g);
+\draw[arr] (d)--node[nlab,right]{no}(lr);
+\draw[arr] (g)--(x);
+\draw[arr] (x.east) -- ++(4mm,0) |- node[ylab,above,pos=0.75]{yes} (y.west);
+\draw[arr] (x.east) -- ++(4mm,0) |- node[nlab,below,pos=0.75]{no} (z.west);
+\end{tikzpicture}
+\end{document}

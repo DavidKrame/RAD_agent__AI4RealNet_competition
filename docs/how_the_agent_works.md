@@ -18,21 +18,18 @@ steps line $\ell$ has been overloaded.
 10. [Revalidation of fitted parameters in `train()`](#10-revalidation-of-fitted-parameters-in-train)
 11. [Properties that hold by construction](#11-properties-that-hold-by-construction)
 
+In the diagrams, amber marks a test or rule, teal a forward simulation, purple optimization or candidate
+generation, green a state or returned action, red an adverse outcome, and blue other processing. Their
+TikZ sources are in [`figures/src`](figures/src) and are rebuilt by `figures/src/build.sh`.
+
 ## 1. Order of precedence
 
 Three layers are consulted in a fixed order, and the first that produces an action ends the step:
 
-```mermaid
-flowchart LR
-    O(["Observation"]) --> M{"Scheduled outage<br/>within 12 steps<br/>and severe?"}
-    M -- yes --> MA(["Pre-positioning action"])
-    M -- no --> W{"ρmax ≤ 0.95 and a withheld<br/>line is back in service?"}
-    W -- yes --> WA(["Opening, optionally<br/>with relief"])
-    W -- no --> C["Reactive controller<br/>(regimes, Section 4)"]
-    C --> V{"Overload counter running<br/>and the chosen action ends<br/>the episode within 8 steps?"}
-    V -- yes --> VA(["Longest-surviving<br/>alternative, if any"])
-    V -- no --> CA(["Controller's action"])
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/decision_cycle_dark.png">
+  <img alt="Order of precedence: scheduled-outage check, withholding, reactive controller, extended-horizon check." src="figures/decision_cycle_light.png" width="806">
+</picture>
 
 The scheduled-outage check comes first because its deadline is published and cannot be deferred.
 Withholding comes second because it can be taken on any comfortable step. The extended-horizon check at
@@ -66,13 +63,10 @@ tripping. $c$ is the fraction of renewable potential curtailed, and $d$ is the c
 redispatch, counted only when the current state is comfortable ($\rho_{\max}\le 0.90$) so that it never
 competes with survival. Lower $J_H$ is better.
 
-```mermaid
-flowchart LR
-    A["Candidate a"] --> S1["Simulate a<br/>for one step"]
-    S1 --> S2["Simulate do-nothing<br/>for H − 1 steps"]
-    S2 --> F["F_H: worst ρmax<br/>(clearance tests)"]
-    S2 --> J["J_H: worst Ψ + costs<br/>(ranking and acceptance)"]
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/evaluation_dark.png">
+  <img alt="Evaluation of a candidate by a one-step simulation followed by do-nothing, giving F_H and J_H." src="figures/evaluation_light.png" width="641">
+</picture>
 
 $F_H$ answers whether a line remains overloaded and is used for clearance tests; $J_H$ ranks candidates
 and decides whether an addition to an action is accepted. Forecasts are cached within a single decision,
@@ -90,18 +84,10 @@ The mechanism has no internal state of its own: the status of the withheld lines
 reopens a withheld line whenever conditions allow, keeps it out under mild stress, and gives it back when
 the network needs it:
 
-```mermaid
-flowchart TD
-    S(["Each step"]) --> A{"ρmax ≤ 0.95, and a withheld line<br/>is in service and off cooldown?"}
-    A -- yes --> O["Open every such line in one action"]
-    O --> R{"Relief action without line-status<br/>changes, and opening + relief<br/>no worse on J_H?"}
-    R -- yes --> P(["Return opening + relief"])
-    R -- no --> B(["Return opening alone"])
-    A -- no --> N["Reactive controller"]
-    N --> Q{"A reconnection would bring<br/>a region back to fully in service?"}
-    Q -- "yes, and ρmax ≤ 1.0" --> K(["Reconnection withheld"])
-    Q -- "no, or ρmax > 1.0" --> F(["Reconnection allowed if the<br/>forecast rates it no worse"])
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/withholding_cycle_dark.png">
+  <img alt="Withholding: open the withheld lines when comfortable, add relief if no worse, and withhold reconnections while loading is within limits." src="figures/withholding_cycle_light.png" width="750">
+</picture>
 
 The thresholds form a hysteresis: the lines are opened only in a clearly comfortable state, kept out
 while loading stays at or below the thermal limits, and released once any line is overloaded, because an
@@ -134,19 +120,10 @@ $J_H$.
 
 ## 5. Candidate search in the danger regime
 
-```mermaid
-flowchart TD
-    L["Congested lines: ρ > 0.99<br/>(or the three most loaded)"] --> T["Topology pool, per region:<br/>bus-bar changes at the ends of<br/>congested lines and at hub substations,<br/>plus LODF-screened line openings"]
-    L --> C["Continuous pool:<br/>storage, redispatch templates,<br/>local curtailment, DC optimal power flow,<br/>AC-anchored dispatch"]
-    T --> P["Score every candidate on J_H.<br/>Keep the best per region and<br/>the best continuous candidate"]
-    C --> P
-    P --> D{"Any candidate better<br/>than do-nothing?"}
-    D -- no --> LRS(["Last-resort action if F ≥ 1.20,<br/>otherwise do-nothing"])
-    D -- yes --> G["Start from the best single candidate;<br/>add the best topology of each unused<br/>region while J_H strictly improves"]
-    G --> X{"Best continuous candidate<br/>touches no line or substation, and<br/>stack + continuous lowers J_H?"}
-    X -- yes --> Y(["Return stack + continuous"])
-    X -- no --> Z(["Return stack"])
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/danger_search_dark.png">
+  <img alt="Danger-regime search: topology and continuous pools, scoring on J_H, greedy stacking, and addition of the continuous candidate." src="figures/danger_search_light.png" width="920">
+</picture>
 
 The rules of the environment allow one substation change per region per step, so the greedy stack can
 contain up to three bus-bar changes. The final step addresses a structural gap: the continuous candidate
@@ -173,13 +150,10 @@ q_k = \max_{m\neq k} \frac{|\hat f_m^{(k)}|}{P_m^{\max}} ,
 where $f$ are the observed flows and $P_m^{\max}$ is the thermal limit converted to active power at the
 observed voltage. All $q_k$ are obtained in one matrix product.
 
-```mermaid
-flowchart LR
-    A["Lines in service"] --> B["Exclude lines on cooldown,<br/>withheld lines, and bridges<br/>(non-finite LODF column)"]
-    B --> C["q_k for all remaining<br/>lines at once"]
-    C --> D["Keep up to three<br/>with q_k < 1"]
-    D --> E["Score them on J_H with<br/>all other candidates"]
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/line_screen_dark.png">
+  <img alt="Line-opening screen: exclusions, LODF estimate, at most three openings below the limit, then simulation." src="figures/line_screen_light.png" width="758">
+</picture>
 
 The screen only proposes. Each opening is still simulated and must beat the other candidates on $J_H$, so
 an error of the linear estimate costs one forecast rather than an unsafe action.
@@ -217,22 +191,20 @@ $\hat f_m + \mathrm{LODF}_{m,k}\hat f_k$ are added, with a linear penalty that i
 curtailment. The solution is translated into one action, and the action is kept only if an exact
 forecast confirms a lower peak loading.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/ac_dispatch_dark.png">
+  <img alt="AC-anchored dispatch: solve the QP, translate into one action, and keep it only if the exact forecast lowers peak loading." src="figures/ac_dispatch_light.png" width="881">
+</picture>
+
 ## 8. Scheduled-outage look-ahead
 
 Maintenance outages are published in advance through `obs.time_next_maintenance`, which, unlike every
 other look-ahead in the agent, is exact.
 
-```mermaid
-flowchart TD
-    D["Nearest line with a scheduled<br/>outage within 12 steps"] --> S["Simulate the outage<br/>from the current state"]
-    S --> Q{"Episode survives with<br/>ρmax < 1.30?"}
-    Q -- yes --> L1(["Mark the line as handled;<br/>no action"])
-    Q -- no --> R{"Recorded postures<br/>for this line?"}
-    R -- yes --> T["Take the best-recorded posture<br/>not forecast as immediately fatal"]
-    R -- no --> G["Generate bus-bar candidates at the<br/>outage's end substations and dispatch<br/>candidates; keep the best on J_H"]
-    T --> A(["Apply the posture"])
-    G --> A
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/outage_lookahead_dark.png">
+  <img alt="Scheduled-outage look-ahead: simulate the outage, then use a recorded or generated posture if it is severe." src="figures/outage_lookahead_light.png" width="882">
+</picture>
 
 Each line is probed once per scenario. The posture record in `fatal_lines.json` holds 246 configurations
 of substation 79 for line 175, ranked by the fraction of offline runs in which each survived the outage.
@@ -264,14 +236,10 @@ The withheld triple was chosen offline, on local data. The competition calls `tr
 before scoring, and the agent uses that call to test whether a predeclared alternative is significantly
 better. No model is trained.
 
-```mermaid
-flowchart TD
-    G["Training scenarios and time grant<br/>(capped at 3,600 s, 15% kept in reserve)"] --> N["Choose a number of scenarios n<br/>that both candidates can be scored on"]
-    N --> S["Score the default and the challenger<br/>on the same n scenarios with the<br/>competition scorer (0.8 · operations + 0.2 · low-carbon)"]
-    S --> D{"Mean paired difference above<br/>z · standard error?<br/>(Bonferroni-corrected, α = 0.05)"}
-    D -- yes --> W(["Persist the challenger to<br/>trained_overrides.json"])
-    D -- "no, timeout or error" --> K(["Keep the default"])
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/revalidation_dark.png">
+  <img alt="Revalidation in train(): score default and challenger on the same scenarios and accept only above a Bonferroni margin." src="figures/revalidation_light.png" width="787">
+</picture>
 
 The candidates are fixed in the package: the default $(106,131,33)$ and the challenger $(162,110,61)$.
 Every candidate is checked to contain exactly one attackable line per region, the default is restored
