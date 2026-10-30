@@ -126,6 +126,12 @@ competition, that environment was never stepped, so the factors corresponded to 
 local evaluation harness, the agent is constructed on the environment it plays, so the factors follow the
 current topology.
 
+## Funding
+
+This work was carried out within the project *Power Network Optimization in the Age of Climate Extremes*
+([VI.Vidi.233.247](https://doi.org/10.61686/GOOEL09973)), funded by the Dutch Research Council (NWO)
+through a Vidi grant awarded to Alessandro Zocca.
+
 ## Citation
 
 ```bibtex
