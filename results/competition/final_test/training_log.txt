@@ -1,0 +1,8 @@
+[ratchet] start granted=86400s budget=3600s workers=32 default=(106, 131, 33)
+[ratchet] training scenarios available: 208
+[ratchet] scoring 10 of 208 scenarios per candidate (2 candidates planned)
+[ratchet] (106, 131, 33) mean=83.2555 n=10 elapsed=1088s
+[ratchet] (162, 110, 61) mean=79.0618 n=10 elapsed=1740s
+[ratchet] (162, 110, 61) paired d=-4.1936 se=4.6275 need>+9.0700 no
+[ratchet] no candidate cleared the margin; KEEPING the shipped triple (106, 131, 33) — this is the intended outcome when the default is already right
+[ratchet] no override written; evaluation will use the shipped configuration

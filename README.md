@@ -16,7 +16,7 @@ The controller combines six components, each of which can be studied or reused o
    64.
 2. *AC-anchored dispatch.* A convex quadratic program sets redispatch, curtailment, and storage jointly. It is
    anchored on the observed AC flows, uses the power-transfer distribution factors (PTDF) only for the flow
-   change it induces, and preserves a reserve of downward ramping capacity.
+   change it induces, and keeps the total downward redispatch within the ramping capacity of the fleet.
 3. *Line-opening screen.* The loading of every line after a candidate opening is estimated with line-outage
    distribution factors (LODF), at the cost of one matrix-vector product per candidate.
 4. *Scheduled-outage look-ahead.* Before an announced outage, the agent applies a configuration recorded
@@ -26,6 +26,9 @@ The controller combines six components, each of which can be studied or reused o
    remains available for later corrections.
 6. *Revalidation of fitted parameters.* A parameter fitted offline is replaced only when an alternative
    performs significantly better on new data.
+
+A step-by-step account of the decision, with the thresholds, objective, and optimization problems used,
+is given in [`docs/how_the_agent_works.md`](docs/how_the_agent_works.md).
 
 ### Withholding mechanism
 
@@ -69,8 +72,10 @@ In the competition, the agent was evaluated on two sets of 208 scenarios not ava
 | Validation set | 184 / 208 | 72.93 | 66.97 | 96.76 | 17,384 s |
 | Final test set | 189 / 208 | 64.39 | 56.32 | 96.68 | 13,177 s |
 
-Among the five highest-ranked entries, it achieved the second-best ratio of score to computation time. On the
-local evaluation set of 764 scenarios, it completes 706.
+Among the five highest-ranked entries, it achieved the second-best ratio of score to computation time. The
+competition also scores each agent without its training step. On the validation set, the training step
+replaced the withheld lines and raised the score from 72.15 to 72.93; on the final test set, it kept the
+default and the two scores coincide. On the local evaluation set of 764 scenarios, the agent completes 706.
 
 The contribution of each mechanism was measured by paired runs that differ only in that mechanism, on the
 same 764 scenarios:
@@ -113,7 +118,7 @@ evaluation/          evaluation harness used for all local results
 analysis/            reproduce_results.py and make_figures.py
 results/             competition result files and per-scenario local records
 data/                scenario lists of the 764 / 34 / 34 split
-docs/                code map and figures
+docs/                step-by-step description, code map, and figures
 ```
 
 ## Implementation notes

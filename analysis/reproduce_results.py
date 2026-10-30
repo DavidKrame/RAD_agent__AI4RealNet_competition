@@ -55,6 +55,7 @@ def main():
         print(f"  {label:28s} score {s['score']:.2f}  (operations {s['op_score_retraining']:.2f}, "
               f"low-carbon {s['nres_score_retraining']:.2f})  completed {done}/{n}  "
               f"total agent time {s['duration']:.0f} s")
+        print(f"  {'':28s} without the training step {s['score_no_retraining']:.2f}")
 
     print("\nPaired comparisons on 764 scenarios (one mechanism switched per pair)")
     pairs = (

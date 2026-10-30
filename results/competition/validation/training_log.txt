@@ -1,0 +1,9 @@
+[ratchet] start granted=86400s budget=3600s workers=32 default=(106, 131, 33)
+[ratchet] training scenarios available: 208
+[ratchet] scoring 10 of 208 scenarios per candidate (2 candidates planned)
+[ratchet] (106, 131, 33) mean=54.1230 n=10 elapsed=513s
+[ratchet] (162, 110, 61) mean=70.6034 n=10 elapsed=1123s
+[ratchet] (162, 110, 61) paired d=+16.4804 se=7.7858 need>+15.2602 CLEARS
+[ratchet] ACCEPTED (162, 110, 61): paired +16.4804 (se 7.7858, margin 15.2602, n=10, 1 candidates compared)
+[ratchet] wrote trained_overrides.json: {'fs_lines': [162, 110, 61]}
+[ratchet] applied trained triple (162, 110, 61)
