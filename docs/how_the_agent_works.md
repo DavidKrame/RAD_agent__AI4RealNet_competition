@@ -29,7 +29,7 @@ Three layers are consulted in a fixed order, and the first that produces an acti
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/decision_cycle_dark.png">
-  <img alt="Order of precedence: scheduled-outage check, withholding, reactive controller, extended-horizon check." src="figures/decision_cycle_light.png" width="806">
+  <img alt="Order of precedence: scheduled-outage check, withholding, reactive controller, extended-horizon check." src="figures/decision_cycle_light.png" width="920">
 </picture>
 </p>
 
@@ -68,7 +68,7 @@ competes with survival. Lower $J_H$ is better.
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/evaluation_dark.png">
-  <img alt="Evaluation of a candidate by a one-step simulation followed by do-nothing, giving F_H and J_H." src="figures/evaluation_light.png" width="641">
+  <img alt="Evaluation of a candidate by a one-step simulation followed by do-nothing, giving F_H and J_H." src="figures/evaluation_light.png" width="710">
 </picture>
 </p>
 
@@ -91,7 +91,7 @@ the network needs it:
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/withholding_cycle_dark.png">
-  <img alt="Withholding: open the withheld lines when comfortable, add relief if no worse, and withhold reconnections while loading is within limits." src="figures/withholding_cycle_light.png" width="750">
+  <img alt="Withholding: open the withheld lines when comfortable, add relief if no worse, and withhold reconnections while loading is within limits." src="figures/withholding_cycle_light.png" width="840">
 </picture>
 </p>
 
@@ -161,7 +161,7 @@ observed voltage. All $q_k$ are obtained in one matrix product.
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/line_screen_dark.png">
-  <img alt="Line-opening screen: exclusions, LODF estimate, at most three openings below the limit, then simulation." src="figures/line_screen_light.png" width="758">
+  <img alt="Line-opening screen: exclusions, LODF estimate, at most three openings below the limit, then simulation." src="figures/line_screen_light.png" width="848">
 </picture>
 </p>
 
@@ -204,7 +204,7 @@ forecast confirms a lower peak loading.
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/ac_dispatch_dark.png">
-  <img alt="AC-anchored dispatch: solve the QP, translate into one action, and keep it only if the exact forecast lowers peak loading." src="figures/ac_dispatch_light.png" width="881">
+  <img alt="AC-anchored dispatch: solve the QP, translate into one action, and keep it only if the exact forecast lowers peak loading." src="figures/ac_dispatch_light.png" width="920">
 </picture>
 </p>
 
@@ -216,7 +216,7 @@ other look-ahead in the agent, is exact.
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/outage_lookahead_dark.png">
-  <img alt="Scheduled-outage look-ahead: simulate the outage, then use a recorded or generated posture if it is severe." src="figures/outage_lookahead_light.png" width="882">
+  <img alt="Scheduled-outage look-ahead: simulate the outage, then use a recorded or generated posture if it is severe." src="figures/outage_lookahead_light.png" width="920">
 </picture>
 </p>
 
@@ -253,7 +253,7 @@ better. No model is trained.
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/revalidation_dark.png">
-  <img alt="Revalidation in train(): score default and challenger on the same scenarios and accept only above a Bonferroni margin." src="figures/revalidation_light.png" width="787">
+  <img alt="Revalidation in train(): score default and challenger on the same scenarios and accept only above a Bonferroni margin." src="figures/revalidation_light.png" width="877">
 </picture>
 </p>
 

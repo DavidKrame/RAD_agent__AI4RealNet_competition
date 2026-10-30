@@ -1,15 +1,15 @@
 \input{style}
 \begin{document}
-\begin{tikzpicture}[node distance=4mm and 7mm]
+\begin{tikzpicture}[node distance=7mm and 11mm]
 \node[out=3.0cm] (r) {Observed AC flows, ramp margins, renewable output, storage limits};
 \node[opt=3.1cm, right=of r] (q) {Solve the QP: AC base point, PTDF for the change};
 \node[proc, right=of q] (t) {Translate into one action; clamp set points};
 \node[sim, right=of t] (s) {Exact one-step-ahead forecast};
 \node[ask=2.5cm, right=of s] (k) {Peak loading lower than do-nothing?};
-\node[out=2.4cm, right=12mm of k, yshift=8mm] (y) {Offer as a candidate};
-\node[bad=2.4cm, right=12mm of k, yshift=-8mm] (n) {Discard};
+\node[out=2.4cm, right=16mm of k, yshift=11mm] (y) {Offer as a candidate};
+\node[bad=2.4cm, right=16mm of k, yshift=-11mm] (n) {Discard};
 \draw[arr] (r)--(q); \draw[arr] (q)--(t); \draw[arr] (t)--(s); \draw[arr] (s)--(k);
-\draw[arr] (k.east) -- ++(4mm,0) |- node[ylab,above,pos=0.75]{yes} (y.west);
-\draw[arr] (k.east) -- ++(4mm,0) |- node[nlab,below,pos=0.75]{no} (n.west);
+\draw[arr] (k.east) -- ++(6mm,0) |- node[ylab,above,pos=0.75]{yes} (y.west);
+\draw[arr] (k.east) -- ++(6mm,0) |- node[nlab,below,pos=0.75]{no} (n.west);
 \end{tikzpicture}
 \end{document}

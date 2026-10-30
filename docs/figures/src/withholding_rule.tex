@@ -1,14 +1,14 @@
 \input{style}
 \begin{document}
-\begin{tikzpicture}[node distance=4mm and 7mm]
+\begin{tikzpicture}[node distance=7mm and 11mm]
 \node[proc] (t) {An attack falls due in region $j$};
 \node[ask=3.0cm, right=of t] (q) {Every attackable line of region $j$ in service?};
-\node[bad=3.3cm, right=12mm of q, yshift=8.5mm] (x) {Attack proceeds: a loaded line of the region is disconnected};
-\node[out=3.3cm, right=12mm of q, yshift=-8.5mm] (y) {Attempt canceled and consumed, not rescheduled};
-\node[rule=3.0cm, below=7mm of q] (k) {Agent keeps one line per region out of service};
+\node[bad=3.3cm, right=16mm of q, yshift=11.5mm] (x) {Attack proceeds: a loaded line of the region is disconnected};
+\node[out=3.3cm, right=16mm of q, yshift=-11.5mm] (y) {Attempt canceled and consumed, not rescheduled};
+\node[rule=3.0cm, below=10mm of q] (k) {Agent keeps one line per region out of service};
 \draw[arr] (t)--(q);
-\draw[arr] (q.east) -- ++(4mm,0) |- node[ylab,above,pos=0.75]{yes} (x.west);
-\draw[arr] (q.east) -- ++(4mm,0) |- node[nlab,below,pos=0.75]{no} (y.west);
+\draw[arr] (q.east) -- ++(6mm,0) |- node[ylab,above,pos=0.75]{yes} (x.west);
+\draw[arr] (q.east) -- ++(6mm,0) |- node[nlab,below,pos=0.75]{no} (y.west);
 \draw[darr] (k)--(q);
 \end{tikzpicture}
 \end{document}

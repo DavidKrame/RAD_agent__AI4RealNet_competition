@@ -36,7 +36,7 @@ The controller combines six components, each of which can be studied or reused o
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/withholding_rule_dark.png">
-  <img alt="Withholding: an attack proceeds only if every attackable line of its region is in service; the agent keeps one line per region out of service, so the attempt is canceled." src="docs/figures/withholding_rule_light.png" width="476">
+  <img alt="Withholding: an attack proceeds only if every attackable line of its region is in service; the agent keeps one line per region out of service, so the attempt is canceled." src="docs/figures/withholding_rule_light.png" width="523">
 </picture>
 </p>
 
@@ -49,7 +49,7 @@ The environment advances in five-minute steps. At each step, the agent proceeds 
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/decision_cycle_dark.png">
-  <img alt="Decision cycle: scheduled-outage check, withholding, reactive controller, and extended-horizon check, each able to return an action." src="docs/figures/decision_cycle_light.png" width="806">
+  <img alt="Decision cycle: scheduled-outage check, withholding, reactive controller, and extended-horizon check, each able to return an action." src="docs/figures/decision_cycle_light.png" width="920">
 </picture>
 </p>
 

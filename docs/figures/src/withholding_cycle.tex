@@ -1,24 +1,24 @@
 \input{style}
 \begin{document}
-\begin{tikzpicture}[node distance=4mm and 7mm]
+\begin{tikzpicture}[node distance=7mm and 11mm]
 \node[out=1.8cm] (s) {Each step};
 \node[ask=3.3cm, right=of s] (a) {$\rho_{\max}\le0.95$, and a withheld line in service and off cooldown?};
 \node[rule, right=of a] (o) {Open every such line in one action};
 \node[ask=3.5cm, right=of o] (r) {Relief without line-status change, and opening + relief no worse on $J_H$?};
-\node[out=2.6cm, right=12mm of r, yshift=8mm] (p) {Return opening + relief};
-\node[out=2.6cm, right=12mm of r, yshift=-8mm] (b) {Return opening alone};
-\node[proc, below=9mm of a] (n) {Reactive controller};
+\node[out=2.6cm, right=16mm of r, yshift=11mm] (p) {Return opening + relief};
+\node[out=2.6cm, right=16mm of r, yshift=-11mm] (b) {Return opening alone};
+\node[proc, below=19mm of a] (n) {Reactive controller};
 \node[ask=3.5cm, right=of n] (q) {Would a reconnection bring a region fully back in service?};
-\node[out=3.0cm, right=12mm of q, yshift=8mm] (k) {Yes, and $\rho_{\max}\le1.0$: reconnection withheld};
-\node[sim=3.0cm, right=12mm of q, yshift=-8mm] (f) {Otherwise: reconnect if the forecast rates it no worse};
+\node[out=3.0cm, right=16mm of q, yshift=11mm] (k) {Yes, and $\rho_{\max}\le1.0$: reconnection withheld};
+\node[sim=3.0cm, right=16mm of q, yshift=-11mm] (f) {Otherwise: reconnect if the forecast rates it no worse};
 \draw[arr] (s)--(a);
 \draw[arr] (a)--node[ylab,above]{yes}(o);
 \draw[arr] (o)--(r);
-\draw[arr] (r.east) -- ++(4mm,0) |- node[ylab,above,pos=0.75]{yes} (p.west);
-\draw[arr] (r.east) -- ++(4mm,0) |- node[nlab,below,pos=0.75]{no} (b.west);
+\draw[arr] (r.east) -- ++(6mm,0) |- node[ylab,above,pos=0.75]{yes} (p.west);
+\draw[arr] (r.east) -- ++(6mm,0) |- node[nlab,below,pos=0.75]{no} (b.west);
 \draw[arr] (a)--node[nlab,right]{no}(n);
 \draw[arr] (n)--(q);
-\draw[arr] (q.east) -- ++(4mm,0) |- (k.west);
-\draw[arr] (q.east) -- ++(4mm,0) |- (f.west);
+\draw[arr] (q.east) -- ++(6mm,0) |- (k.west);
+\draw[arr] (q.east) -- ++(6mm,0) |- (f.west);
 \end{tikzpicture}
 \end{document}
