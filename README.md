@@ -134,10 +134,10 @@ current topology.
 
 ## Funding
 
-This work is part of the project *Power Network Optimization in the Age of Climate Extremes* with file number
-VI.Vidi.233.247 of the research programme Vidi ENW, which is (partly) financed by the Dutch Research Council
-(NWO) under the grant [https://doi.org/10.61686/GOOEL09973](https://doi.org/10.61686/GOOEL09973). The
-project is led by Alessandro Zocca.
+David Krame Kadurha, Robbert van der Burg and Alessandro Zocca are part of the project *Power Network
+Optimization in the Age of Climate Extremes* (file number VI.Vidi.233.247, research programme Vidi ENW), led by
+Alessandro Zocca and financed by the Dutch Research Council (NWO) under the grant
+[https://doi.org/10.61686/GOOEL09973](https://doi.org/10.61686/GOOEL09973).
 
 ## Citation
 
