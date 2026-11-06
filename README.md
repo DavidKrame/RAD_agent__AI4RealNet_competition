@@ -43,7 +43,7 @@ The controller combines six components, each of which can be studied or reused o
 
 ## Results
 
-In the competition, the agent was evaluated on two sets of 208 scenarios not available during development:
+In the competition, the agent was evaluated on two sets of 208 unseen scenarios:
 
 | | completed | score | operations | low-carbon | total agent time |
 |---|---|---|---|---|---|

@@ -1,75 +1,93 @@
 \input{style}
+% Fira Sans has heavier strokes than Latin Modern Sans and stays legible at README width; lining figures
+% keep digits on the baseline.
+\usepackage[sfdefault, lining]{FiraSans}
+\usepackage{FiraMono}
+\usetikzlibrary{backgrounds}
 \begin{document}
-% Overview of the agent on its three time scales: inputs prepared offline, the revalidation done once
-% by train(), and the four stages that act() consults at every step. The environment sits below the
-% agent so that the observation and the action close one loop around act().
-% Each time scale has its own light tint; boxes are left white so that the text stays legible.
+% Overview of the agent in three lanes: the inputs prepared offline, the revalidation done by train(),
+% and the four stages that act() runs at every step. Each input sits in the column of the stage that
+% uses it, so every connector between lanes is a straight vertical line. The environment sits below
+% the agent, so that the observation and the action close one loop around act().
 \ifdefined\darktheme
   \definecolor{offband}{HTML}{151B23}\definecolor{offedge}{HTML}{8696AD}
   \definecolor{trband}{HTML}{211B0F}\definecolor{tredge}{HTML}{D4A72C}
   \definecolor{actband}{HTML}{0F1B2B}\definecolor{actedge}{HTML}{4C8EDA}
   \definecolor{simfill}{HTML}{0F2420}\definecolor{simedge}{HTML}{4FB3A0}
   \definecolor{envfill}{HTML}{151B23}\definecolor{envedge}{HTML}{8B949E}
-  % On a dark page the tinted bands stand out by themselves, so they carry no outline.
+  % On a dark page the tinted bands stand out by themselves, so they carry no outline, and light text
+  % already reads heavy, so the regular weight is kept.
   \newcommand{\bandframe}[3]{\fill[#1, rounded corners=5pt] #3;}
-  \newcommand{\lanetag}[2]{\textcolor{#1}{\textbf{#2}},}
+  \newcommand{\lanetag}[2]{\textcolor{#1}{\textbf{#2}}}
+  \newcommand{\bodyweight}{}
+  \def\lwconn{1.0pt}
 \else
-  \definecolor{offband}{HTML}{EBEFF4}\definecolor{offedge}{HTML}{50627A}
-  \definecolor{trband}{HTML}{FCF1D6}\definecolor{tredge}{HTML}{8F6505}
-  \definecolor{actband}{HTML}{E2ECF8}\definecolor{actedge}{HTML}{1F5596}
-  \definecolor{simfill}{HTML}{D3EDE5}\definecolor{simedge}{HTML}{2A7364}
-  \definecolor{envfill}{HTML}{E6EBF1}\definecolor{envedge}{HTML}{3F4A56}
+  \definecolor{offband}{HTML}{E8E2F5}\definecolor{offedge}{HTML}{4B3C86}
+  \definecolor{trband}{HTML}{FBEBC4}\definecolor{tredge}{HTML}{805A04}
+  \definecolor{actband}{HTML}{DFEAF8}\definecolor{actedge}{HTML}{1B4F8F}
+  \definecolor{simfill}{HTML}{D3EDE5}\definecolor{simedge}{HTML}{23695B}
+  \definecolor{envfill}{HTML}{E4E8ED}\definecolor{envedge}{HTML}{38424D}
   % On a white page a pale tint alone does not delimit a band: each band gets an outline in its lane
-  % color, and each lane name is set as a solid tag in that color.
-  \newcommand{\bandframe}[3]{\filldraw[fill=#1, draw=#2, line width=1.1pt, rounded corners=5pt] #3;}
+  % color, each lane name is set as a solid tag in that color, and text uses the medium weight so that
+  % it reads as dark as the light text of the dark theme.
+  \newcommand{\bandframe}[3]{\filldraw[fill=#1, draw=#2, line width=1.3pt, rounded corners=5pt] #3;}
   \newcommand{\lanetag}[2]{\tikz[baseline=(t.base)]\node[fill=#1, text=white, rounded corners=2pt,
-    inner sep=2.5pt, font=\footnotesize\bfseries] (t) {#2};}
+    inner sep=3pt, font=\small\bfseries] (t) {#2};}
+  \newcommand{\bodyweight}{\fontseries{medium}\selectfont}
+  \def\lwconn{1.35pt}
 \fi
 \tikzset{
   abox/.style={draw=#1, fill=paper, rounded corners=3pt, line width=\lwstage, align=center,
-               inner sep=6pt, text width=3.7cm, text=ink},
-  bandlab/.style={font=\footnotesize, anchor=north east, inner sep=4pt, text=ink},
-  alab/.style={font=\scriptsize, text=ink, inner sep=2pt},
+               inner sep=6pt, text width=3.3cm, text=ink, font=\small},
+  bandlab/.style={font=\small, anchor=north east, inner sep=5pt, text=ink},
+  alab/.style={font=\footnotesize, text=ink, inner sep=2pt},
+  conn/.style={-{Latex[length=2.8mm, width=2mm]}, line width=\lwconn, draw=edge},
 }
 \newcommand{\astg}[1]{\tikz[baseline=(b.base)]\node[circle, fill=actedge, text=paper, inner sep=0pt,
-  minimum size=4.2mm, font=\footnotesize\bfseries] (b) {#1};}
-\begin{tikzpicture}
-% bands
-\bandframe{offband}{offedge}{(-2.45,6.15) rectangle (18.35,9.45)}
-\bandframe{trband}{tredge}{(-2.45,2.95) rectangle (18.35,5.65)}
-\bandframe{actband}{actedge}{(-2.45,-4.75) rectangle (18.35,2.45)}
-\node[bandlab] at (18.35,9.45) {\lanetag{offedge}{Prepared offline}\ before the competition};
-\node[bandlab] at (18.35,5.65) {\lanetag{tredge}{\texttt{train()}}\ once, before the scenarios are scored};
-\node[bandlab] at (18.35,2.45) {\lanetag{actedge}{\texttt{act()}}\ at every five-minute step};
-% offline inputs
-\node[abox=offedge, minimum height=24mm] (rec) at (2.65,7.45) {\textbf{Posture record}\\[2pt]\footnotesize configurations of substation 79 that survived the outage of line 175};
-\node[abox=offedge, minimum height=24mm] (wset) at (7.95,7.45) {\textbf{Withheld lines}\\[2pt]\footnotesize default\\$W=(106,131,33)$\\[1pt]alternative\\$W'=(162,110,61)$};
-\node[abox=offedge, minimum height=24mm] (lib) at (13.25,7.45) {\textbf{Topology library}\\[2pt]\footnotesize 907 single-substation busbar assignments that relieved stressed states};
-% train()
-\node[abox=tredge, minimum height=15mm] (rev) at (7.95,4.15) {\textbf{Revalidation}\\[2pt]\footnotesize $W'$ replaces $W$ only if it scores significantly better on training scenarios};
+  minimum size=4.4mm, font=\footnotesize\bfseries] (b) {#1};}
+\begin{tikzpicture}[execute at begin picture=\bodyweight]
+% One column per stage of act(), 5.6 cm apart; L and R are the band edges, LL and RR carry the loop.
+\coordinate (L) at (-2.4,0);  \coordinate (R) at (19.2,0);
+\coordinate (LL) at (-3.0,0); \coordinate (RR) at (19.8,0);
 % act() stages
-\node[abox=actedge, minimum height=35mm] (s1) at (0,0.0) {\astg{1}\ \textbf{Scheduled-outage look-ahead}\\[3pt]\footnotesize if an announced outage would be severe, prepares the network before it starts};
-\node[abox=actedge, minimum height=35mm] (s2) at (5.3,0.0) {\astg{2}\ \textbf{Preventive withholding}\\[3pt]\footnotesize keeps one attackable line per region out of service, so attacks there are canceled};
-\node[abox=actedge, minimum height=35mm] (s3) at (10.6,0.0) {\astg{3}\ \textbf{Reactive control}\\[3pt]\footnotesize relieves loading by regime; when in danger, searches topology and dispatch actions};
-\node[abox=actedge, minimum height=35mm] (s4) at (15.9,0.0) {\astg{4}\ \textbf{Extended-horizon safeguard}\\[3pt]\footnotesize checks the action of 3 over 8 steps; if it would end the episode, replaces it by an alternative that survives longer};
+\node[abox=actedge, minimum height=40mm] (s1) at (0,0) {\astg{1}\ \textbf{Scheduled-outage look-ahead}\\[4pt]if an announced outage would be severe, prepares the network before it starts};
+\node[abox=actedge, minimum height=40mm] (s2) at (5.6,0) {\astg{2}\ \textbf{Preventive withholding}\\[4pt]keeps one attackable line per region out of service, so attacks there are canceled};
+\node[abox=actedge, minimum height=40mm] (s3) at (11.2,0) {\astg{3}\ \textbf{Reactive control}\\[4pt]relieves loading by regime; when in danger, searches topology and dispatch actions};
+\node[abox=actedge, minimum height=40mm] (s4) at (16.8,0) {\astg{4}\ \textbf{Extended-horizon safeguard}\\[4pt]checks the action of 3 over 8 steps; if it would end the episode, replaces it by an alternative that survives longer};
 \node[draw=simedge, fill=simfill, rounded corners=3pt, line width=\lwstage, align=center, inner sep=6pt,
-      text width=19.2cm, text=ink, minimum height=11mm] (ev) at (7.95,-2.95) {\textbf{Forward simulation} with \texttt{obs.simulate}: a candidate action is played for one step, then do-nothing,\\giving its peak loading $F_H$ and its cost $J_H$};
-\node[font=\footnotesize\itshape, text=ink, anchor=south, inner sep=5pt, align=center] at (7.95,-4.75) {Stages 1 and 2 end the step when they act. Otherwise stage 3 chooses an action, and stage 4 checks it before it is sent.\\Dotted lines: the stage scores candidate actions by forward simulation.};
+      text width=20.1cm, text=ink, font=\small, anchor=north] (ev) at (8.4,-2.55) {\textbf{Forward simulation} with \texttt{obs.simulate}: a candidate action is played for one step, then do-nothing,\\giving its peak loading $F_H$ and its cost $J_H$};
+\node[font=\footnotesize\itshape, text=ink, anchor=north, inner sep=2pt, align=center] (note) at ($(ev.south)+(0,-0.25)$) {Stages 1 and 2 end the step when they act. Otherwise stage 3 chooses an action, and stage 4 checks it before it is sent.\\Dotted lines: the stage scores candidate actions by forward simulation.};
+% train(), in the column of stage 2
+\node[abox=tredge, minimum height=24mm] (rev) at (5.6,5.4) {\textbf{Revalidation}\\[4pt]$W'$ replaces $W$ only if it scores significantly better on training scenarios};
+% offline inputs, each in the column of the stage that uses it
+\node[abox=offedge, minimum height=26mm] (rec) at (0,9.45) {\textbf{Posture record}\\[4pt]configurations of substation 79 that survived the outage of line 175};
+\node[abox=offedge, minimum height=26mm] (wset) at (5.6,9.45) {\textbf{Withheld lines}\\[4pt]default\\$W$ = (106, 131, 33)\\[2pt]alternative\\$W'$ = (162, 110, 61)};
+\node[abox=offedge, minimum height=26mm] (lib) at (11.2,9.45) {\textbf{Topology library}\\[4pt]907 single-substation busbar assignments that relieved stressed states};
+% lanes, drawn behind the boxes with equal margins above and below their content
+\begin{scope}[on background layer]
+\bandframe{offband}{offedge}{($(L|-rec.north)+(0,0.55)$) rectangle ($(R|-rec.south)+(0,-0.55)$)}
+\bandframe{trband}{tredge}{($(L|-rev.north)+(0,0.5)$) rectangle ($(R|-rev.south)+(0,-0.5)$)}
+\bandframe{actband}{actedge}{($(L|-s1.north)+(0,1.2)$) rectangle ($(R|-note.south)+(0,-0.3)$)}
+\end{scope}
+\node[bandlab] at ($(R|-rec.north)+(0,0.55)$) {\lanetag{offedge}{Prepared offline}};
+\node[bandlab] at ($(R|-rev.north)+(0,0.5)$) {\lanetag{tredge}{\texttt{train()}}};
+\node[bandlab] at ($(R|-s1.north)+(0,1.2)$) {\lanetag{actedge}{\texttt{act()}, every five-minute step}};
 % environment, below the agent
 \node[draw=envedge, fill=envfill, rounded corners=3pt, line width=\lwstage, align=center, inner sep=7pt,
-      text width=6.4cm, text=ink] (env) at (7.95,-6.5) {\textbf{Grid2Op environment} \texttt{l2rpn\_idf\_2023}\\[2pt]\footnotesize 118 buses, three regions, adversarial line outages};
+      text width=8.2cm, text=ink, font=\small, anchor=north] (env) at ($(note.south)+(0,-1.05)$) {\textbf{Grid2Op environment} \texttt{l2rpn\_idf\_2023}\\[2pt]118 buses, three regions, adversarial line outages};
 % arrows between the stages
-\draw[arr] (s1.east)--node[alab,above]{no action}(s2.west);
-\draw[arr] (s2.east)--node[alab,above]{no action}(s3.west);
-\draw[arr] (s3.east)--node[alab,above]{action}(s4.west);
-\foreach \s in {s1,s2,s3,s4}{\draw[draw=edge, dotted, thick] (\s.south)--(\s.south|-ev.north);}
-% inputs feeding the stages
-\draw[darr] (rec.south)--(2.65,2.7)--(0,2.7)--(s1.north);
-\draw[arr] (wset.south)--(rev.north);
-\draw[arr] (rev.south)--node[alab,right,pos=0.45]{$W$ used in play}(7.95,2.7)--(5.3,2.7)--(s2.north);
-\draw[darr] (lib.south)--(13.25,2.7)--(10.6,2.7)--(s3.north);
+\draw[conn] (s1.east)--node[alab,above]{no action}(s2.west);
+\draw[conn] (s2.east)--node[alab,above]{no action}(s3.west);
+\draw[conn] (s3.east)--node[alab,above]{action}(s4.west);
+\foreach \s in {s1,s2,s3,s4}{\draw[draw=edge, dotted, line width=\lwconn] (\s.south)--(\s.south|-ev.north);}
+% inputs feeding the stages, all vertical
+\draw[conn] (rec.south)--(s1.north);
+\draw[conn] (wset.south)--(rev.north);
+\draw[conn] (rev.south)--(s2.north);
+\node[alab, anchor=west] at ($(s2.north)+(0.1,0.6)$) {$W$ used in play};
+\draw[conn] (lib.south)--(s3.north);
 % loop with the environment
-\draw[arr] (env.west)--(-3.05,-6.5)--node[alab,above,rotate=90]{observation $o_t$}(-3.05,0.0)--(s1.west);
-\draw[arr] (s4.east)--(18.95,0.0)--node[alab,above,rotate=-90]{action $a_t$}(18.95,-6.5)--(env.east);
+\draw[conn] (env.west)--(env.west-|LL)--node[alab,above,rotate=90]{observation $o_t$}(LL)--(s1.west);
+\draw[conn] (s4.east)--(RR)--node[alab,above,rotate=-90]{action $a_t$}(env.east-|RR)--(env.east);
 \end{tikzpicture}
 \end{document}

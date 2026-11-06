@@ -37,12 +37,12 @@ processing. The TikZ sources of all figures are in [`figures/src`](figures/src) 
 </picture>
 </p>
 
-The agent works on three time scales. Before the competition, three inputs were prepared offline: a
-library of single-substation busbar assignments that relieved stressed states, a record of substation
-configurations that survived the scheduled outage of line 175, and a set of withheld lines with one
-alternative. Once before the scenarios are scored, `train()` tests whether the alternative should
-replace the default set. At every five-minute step, `act()` consults four stages in a fixed order, and
-every stage that compares candidates uses the same forward simulation ([§2](#2-how-every-candidate-is-scored)).
+The agent works on three time scales. Three inputs are prepared offline: a record of substation
+configurations that survived the scheduled outage of line 175, a set of withheld lines with one
+alternative, and a library of single-substation busbar assignments that relieved stressed states.
+`train()` runs once, before evaluation, and tests whether the alternative should replace the default
+set. At every five-minute step, `act()` consults four stages in a fixed order, and every stage that
+compares candidates uses the same forward simulation ([§2](#2-how-every-candidate-is-scored)).
 
 ## 1. One step of `act()`
 
