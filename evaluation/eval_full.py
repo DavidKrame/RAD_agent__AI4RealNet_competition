@@ -1,27 +1,16 @@
-"""Shardable large-scale evaluation with per-scenario diagnostics.
+"""Evaluation harness: plays an agent on a range or list of scenarios and writes one record per scenario.
 
-WHY THIS EXISTS. The development loop for this agent ran on a fixed 70 scenarios — the first 70 of the
-764 available, in fixed order, with frozen seeds, never resampled — and those same 70 were inspected
-individually to design the rules. That is fitting to specific realisations, and it shows: an advantage of
-+9.72 on those 70 became +4.11 on held-out data, and a candidate that led on them was the worst out of
-sample. Running the same evaluation on more scenarios fixes the sample, but not the diagnosis: the
-existing harness records only a score and a step count per scenario, so a larger run would produce better
-statistics about outcomes we still could not explain. This records WHY each scenario ended as it did, and
-which parts of the controller acted, so failure modes can be characterised across the whole distribution
-instead of reconstructed by hand for a handful of episodes.
+Each record holds the steps played, how the episode ended, the operating cost, the low-carbon term, the
+attacks suffered, and the counters of each mechanism, so that failures can be characterized across many
+scenarios.
 
-MODES.
-  fast  — steps survived plus full diagnostics, no reference statistics required. The score is almost
-          entirely survival (a completed scenario is worth ~79.8 operations points regardless of how
-          economically it was run), so completions and steps carry nearly all the signal at a fraction of
-          the cost, and nothing needs precomputing.
-  score — additionally computes the official operations / low-carbon score. This requires the scorer's
-          DoNothing and reference-agent statistics for the chronics used, which is a substantial one-time
-          cost when the set is large.
+Modes:
+  fast  - steps survived and diagnostics; no reference statistics are needed.
+  score - additionally computes the official operations and low-carbon scores, which requires the
+          scorer's do-nothing and reference statistics for the scenarios used.
 
-SHARDING. Pass a chronic range; each shard writes its own file and they merge by concatenation. Scenarios
-are independent, so shards need no coordination. Seeding is per chronic index and identical to the
-development harness, so a scenario scored here is the same scenario scored there.
+Sharding: pass a scenario range; each shard writes its own file, and files merge by concatenation.
+Seeding is per scenario index, so a run is reproducible record by record.
 
 Usage:
   python eval_full.py --submission <folder> --from 0 --to 764 --mode fast --out results/shard000.json
@@ -33,20 +22,11 @@ AGENTS = os.path.join(os.path.dirname(HERE), "agent")   # the agent packages liv
 sys.path.insert(0, AGENTS)
 import numpy as np
 
-# Counters the controller maintains for its own branches. Recorded as deltas per scenario so a run tells
-# us not just what happened, but which mechanism was active when it happened — the correlation that a
-# 70-scenario sample was far too small to establish.
+# Mechanism counters, read from the agent when it defines them and recorded per scenario as their change
+# over that scenario, so that a record shows which mechanisms acted. Agents that lack a counter leave it
+# unrecorded.
 COUNTERS = [
-            # Overload amortisation and deliberate self-opening. Registered here BEFORE the arm runs:
-            # this list is hard-coded, and four previous rounds were read with their mechanism
-            # counters silently absent because the mechanism was added and the list was not. A
-            # pre-registered "read the firing count before the score" check is impossible unless the
-            # counter is in this list, so adding the counter is part of building the mechanism.
             "_ovfcycle_used", "_selfopen_used",
-            # Islanding defence (post_val). Registered WITH the mechanism, not after it: a counter absent
-            # from this list is invisible in every run, so a pre-registered "read the firing count before
-            # the score" check would be impossible. OFFERED and WON are separate, per the rule that a
-            # single counter cannot distinguish "never available" from "never competitive".
             "_isl_armed", "_isl_deep_used", "_isl_deep_fired", "_isl_ts0_fired",
             "_isl_escape_lines", "_isl_escape_splits", "_isl_escape_won", "_isl_fail",
             # Superimposed redispatching (post_val): armed / solved / offered / won / fail, separately.
@@ -59,12 +39,6 @@ COUNTERS = [
             "_secfix_armed", "_secfix_kept", "_runway_armed",
             # These two live on the dispatch module, reached by the fallback in the reader below.
             "_tprice_applied", "_secn1_armed", "_secprep_solves",
-            # Counters the CURRENT champion increments but which were never registered here, so they
-            # were absent from every run this lineage produced -- including `_lodfcut_screened`, the
-            # only record of how often the outage-factor screen runs. Found by auditing this list
-            # against the agent's actual `+= 1` sites in both directions; the reverse direction found
-            # `_sustain_fired`, which is listed here but is never incremented by the agent and so reads
-            # as a confident "this mechanism never fires".
             "_dispatch_capped", "_gla_clear", "_lodfcut_offered", "_lodfcut_screened", "_mg_cleared",
             "_cvx_computed", "_cvx_won", "_gla_fired", "_perarea_fired", "_perarea_multi",
             "_perarea_coexist_used", "_trip_fired", "_rb_fired", "_revert_done",
@@ -74,27 +48,14 @@ COUNTERS = [
             # fires and one that fires and is immediately overridden look identical in the score.
             "_starve_held", "_starve_released", "_starve_maint_released",
             "_starve_foreseen", "_starve_fc_calls", "_starve_fc_fail", "_bigpool_restored",
-            # Starvation-arm / relief COMPOSITION. `_fs_composed` is the only one that changes an
-            # action; `_fs_compose_declined` separates "the composite refused it" from
-            # `_fs_compose_illegal`'s "relief touched line status so composing was unsafe", and
-            # `_fs_compose_fail` makes a raised attempt distinguishable from a declined one. Without
-            # the last of these a broken build reads exactly like an inert mechanism.
+            # relief added to the opening of the withheld lines
             "_fs_composed", "_fs_compose_declined", "_fs_compose_illegal", "_fs_compose_fail",
-            # The SECOND orthogonal-actuator composition, on the curtailment-restore exit. `_cancel_fired`
-            # is the size of the exclusion itself and was never instrumented before, so no earlier run can
-            # say how many steps it covered.
             "_compc_kept", "_compc_declined", "_compc_storage", "_compc_flex", "_compc_fail", "_cancel_fired",
-            # Topology-exit composition: relief's continuous half folded onto the announced-outage guard and
-            # the GLA posture, both of which return topology and pre-empt everything downstream.
             "_topoc_kept", "_topoc_declined", "_topoc_empty", "_topoc_fail",
             "_dpc_armed", "_dpc_kept", "_dpc_declined", "_dpc_topo", "_dpc_fail",
             "_svc_armed", "_svc_kept", "_svc_fail",
             "_corr_armed", "_corr_applied", "_corr_declined", "_corr_nosens",
             "_corr_mwsum", "_corr_fail",
-            # HELD-POSTURE composition. The hold branch returns the EMPTY action, so the FULL relief is
-            # legal there, not only its continuous half. `_glac_armed` is the size of the exclusion itself;
-            # `_glac_collide` separates "relief would have undone the posture it is protecting" from
-            # `_glac_illegal`'s line-status refusal and `_glac_declined`'s composite refusal.
             "_glac_armed", "_glac_composed", "_glac_declined", "_glac_illegal", "_glac_collide",
             "_glac_fail", "_glac_nocont",
             # Feasible-redispatch clamp. `_feas_clamped` is the only one that changes an action;
@@ -108,73 +69,37 @@ COUNTERS = [
             # how often it fired or won, and the starvation posture none of how often it armed.
             "_fs_forced", "_joint_built", "_joint_won", "_joint_skipped",
             "_maint_released", "_maint_forced",
-            # announced-outage guard + per-decision solver memo. Added AFTER the first guard arms
-            # ran, which is why those arms carry no record of their own firing rate.
+            # scheduled-outage look-ahead
             "_mg_probed", "_mg_skipped", "_mg_fired", "_mg_nofix", "_mg_table_used",
             "_solve_hits",
-            # Action-pool arm. The pool file is the whole topology candidate set only on the
-            # `normal_act` side of the acceptance-margin gate -- the other side is generated live
-            # and never reads the file -- so these two counters bound how much of the score a pool
-            # change can reach. Added BEFORE the arms that use them, unlike `_mg_*` above.
             "_pool_normal_played", "_pool_big_played",
             # Flexibility top-up. `_flex_fired` is the only one that changes an action; `_flex_declined`
             # separates "the guard refused it" from `_flex_nogain`'s "there was nothing to recover",
             # and those two have opposite implications for a null result -- one says the mechanism is
             # being suppressed, the other that the state it targets never arose.
             "_flex_fired", "_flex_declined", "_flex_nogain",
-            # Starvation-target pricing. `_hp_switched` is the only one that changes which line is held;
-            # `_hp_vetoed` counts the steps the arm DEFERRED because no candidate cleared the gate on the
-            # state it would create, which is the half of the mechanism that can cost exposure. A null with
-            # `_hp_switched` at zero means the configured line was already the priced choice; a null with
-            # `_hp_vetoed` high means the posture is being suppressed, and those need opposite responses.
             "_hp_scored", "_hp_switched", "_hp_vetoed",
-            # Announced-outage latch repair: per-episode clearing of `_outage_latched`. The counter that
-            # matters is `_outage_fired` across a SEQUENTIAL run -- a sharded run cannot see the defect,
-            # since each worker holds an agent for only two to six episodes.
             "_latch_cleared",
             # Comfortable-band escalation on the published maintenance countdown. `_fe_armed` counts the
             # steps the trigger held and `_fe_escalated` the subset where the forward model predicted the
             # episode ending -- so `armed` high with `escalated` zero says the comfortable band genuinely
             # is safe on this set, and both zero says the trigger never fired at all.
             "_fe_armed", "_fe_escalated",
-            # Table-free announced-outage screen. The three stages separate cleanly: `_og_screened` says
-            # the trigger reached the forecast, `_og_fatal` that the screen predicted a death, and
-            # `_og_fired`/`_og_nofix` whether a pre-position was found for it. A null at any one stage has
-            # a different meaning, and the shipped table version was read for a whole platform round
-            # without being able to tell "never armed" from "armed and found nothing".
             "_og_screened", "_og_fatal", "_og_fired", "_og_nofix",
-            # Candidate-pool ordering. `_po_truncated` counts the capped calls where the 40-topology
-            # budget stopped the scan, `_po_endpoints` how many congested in-area endpoints were offered
-            # to it. If `_po_truncated` is near zero the cap rarely binds on the full set and the
-            # measured 90 % endpoint-drop rate does not generalise -- which is the arm's own falsifier.
             "_po_truncated", "_po_endpoints",
             # Evidence-ranked candidate selection and the live-path injection. `_pool_rank_trunc`
             # counts the decisions where the per-area budget actually bound, which is the only place
             # ranking can differ from the positional prefix; `_pool_live_used` counts decisions where
             # deep pool entries were offered on the generated-candidate branch as well.
             "_pool_rank_trunc", "_pool_live_used",
-            # Contingency screening through distribution factors, and the time-budgeted sweep.
-            # `_lodf_fired` / `_lodf_maint_fired` count candidates whose score was actually moved by
-            # the adversary screen and by the announced-outage screen -- they answer different
-            # questions and a null from one says nothing about the other. `_topo_budget_hits` counts
-            # decisions the CLOCK ended rather than the count, which is the only place the budget
-            # can change anything, and `_topo_scored` says how many candidates were reached.
             "_lodf_fired", "_lodf_maint_fired", "_topo_budget_hits", "_topo_scored",
-            # Steps where a PUBLISHED outage, not the current loading, opened the relief branch.
             "_lodf_armed",
-            # Bus-split optimiser: substations SOLVED for, proposals actually handed to the
-            # selector, and proposals the selector then played. The third is the one that says
-            # whether solving beat the curated shortlist, which the score alone cannot separate
-            # from the proposals simply being redundant with it.
             "_busopt_solved", "_busopt_added", "_busopt_won",
             # N-1 security gate on the starvation hold: armings refused, allowed, and those the
             # linear model could not judge. `blocked` is the mechanism; `abstain` says how often the
             # gate was silent, which distinguishes "the gate did nothing" from "the gate was never
             # able to run".
             "_fs_n1_blocked", "_fs_n1_passed", "_fs_n1_abstain",
-            # Counters exposed by the externally-contributed agents. `_merge_*` decide the
-            # best-of-two AC dispatch race per state, and without them a null result cannot be
-            # separated from a race that never ran. Added BEFORE those arms are launched.
             "_merge_raced", "_merge_dc_won", "_merge_ac_won",
             # Cascade-aware selection: candidates whose afterstate was priced for propagating a
             # trip, and the total lines the screen expected to fall. Without these a null result
@@ -183,9 +108,6 @@ COUNTERS = [
             # Separation guard: candidates priced for coming apart, and the two components of that
             # price. Without them a null cannot be told apart from a term that never fired.
             "_sepg_fired", "_sepg_split", "_sepg_bridge",
-            # Feasibility IP: solves attempted, proposals made, and DECLINES -- a decline is the
-            # program reporting that doing nothing already meets the limit, which is a different
-            # event from a failed solve and has to be countable separately.
             "_ip_solved", "_ip_added", "_ip_declined", "_ip_won", "_ip_moved",
             "_anticip_opf_fired", "_dispatch_blocked", "_attack_counter",
             "_maint_armed", "_maint_fired",
@@ -216,10 +138,6 @@ COUNTERS = [
             # and the optimiser declined to commit. `blocked` counts positions the forecast refused.
             "_maint_armed", "_maint_abstained", "_maint_applied", "_maint_blocked",
             "_maint_released", "_maint_fired",
-            # Learned proposer: offers made, offers the forecast vet accepted, and offers refused by
-            # the position-feasibility term. Acceptance RATE is the quantity that says whether a
-            # better-fitting network is actually used more, which the score alone cannot separate
-            # from the network being used the same amount and merely being righter.
             "_gnn_tried", "_gnn_used", "_gnn_rejected", "_gnn_feas_blocked"]
 
 
@@ -274,23 +192,14 @@ def islanding_report(obs, env):
 
 
 # --------------------------------------------------------------------------------------------------
-# Low-carbon (nres) reconstruction.
+# Low-carbon term.
 #
-# The competition score is 0.8*operations + 0.2*low-carbon, but a survival-only evaluation records the
-# first term alone and is structurally blind to the second. That blindness is not hypothetical: on the
-# returned platform artefacts one agent beat another by +0.376 points with completions exactly tied, the
-# whole margin coming from low-carbon usage that a steps-survived instrument cannot see.
-#
-# The low-carbon term needs no reference statistics and no anchor runs. grid2op's renewable-usage score
-# is a function of one ratio, total renewable energy actually delivered over total renewable energy
-# available before curtailment, and both quantities are attributes of the observation. Accumulating them
-# per step reproduces the official figure exactly.
-#
-# The operations term genuinely does need DoNothing/RecoPowerline anchors and is not reconstructed here.
-# It is replaced by a completion-anchored surrogate, which is sufficient because only PAIRED differences
-# between agents on the same scenarios are ever read from this file, and because the resulting ranking is
-# insensitive to the anchor constant over any plausible range.
-OP_ANCHOR = 79.8          # mean operations score of a completed episode, from returned platform artefacts
+# grid2op's renewable-usage score is a function of one ratio, the renewable energy delivered over the
+# renewable energy available before curtailment, and both are attributes of the observation, so
+# accumulating them per step reproduces the official term exactly. The operations term needs the
+# do-nothing and reference runs and is not reconstructed here; a completion-anchored surrogate replaces
+# it, used only to compare agents on the same scenarios.
+OP_ANCHOR = 79.8  # mean operations score of a completed episode in the competition's returned results
 
 
 def _surlinear(x, center=80.0):
@@ -331,12 +240,8 @@ def run(args):
         from lightsim2grid import LightSimBackend as BK; backend = BK()
     except Exception:
         from grid2op.Backend import PandaPowerBackend; backend = PandaPowerBackend()
-    # `other_rewards={"cost": ...}` makes the environment report the competition's own operating cost
-    # every step, at no behavioural cost -- an extra reward is computed and handed back in `info`, and
-    # nothing the agent sees changes. Without it a completed episode has no cost attached, and the
-    # operations score has to fall back on a constant: the local scorer then has NO resolution among
-    # completions, while the competition spreads them over nearly the full 0-80 range. That is four
-    # fifths of the objective, unmeasured.
+    # other_rewards={"cost": ...} makes the environment report the competition's operating cost at every
+    # step, in `info`, without changing what the agent sees, so completed episodes can be compared on cost.
     from grid2op.Reward import L2RPNSandBoxScore
     env = grid2op.make(args.env, backend=backend, other_rewards={"cost": L2RPNSandBoxScore})
 
@@ -345,22 +250,8 @@ def run(args):
     def _seed_for(ep):
         """The environment seed for episode `ep` -- the index itself unless a seed file was given."""
         return int(_env_seeds[ep]) if _env_seeds is not None else ep
-    # The agent is constructed on a freshly-made environment, with NO reset first, because that is
-    # what the scorer does (`scoring_program_local/scoring.py:341` and `:430` both call
-    # `grid2op.make(...)` and then `make_agent(...)` directly). A reset here was previously performed
-    # on the belief that the optimiser is otherwise unavailable; measured in clean separate processes,
-    # that is FALSE -- `_acopf_obj`, `_cvx` and `_acopf` are all present either way, and the resolved
-    # pool source is identical.
-    #
-    # The reset was not harmless. Construction-time resets advance state that a later seeded
-    # `env.reset(seed=...)` does not fully restore, and the effect runs in the direction that flatters
-    # us: one episode of eight survived past 600 steps under the old order and died at 534 under the
-    # scorer's. The same defect class, measured on the full 764 in an agent helper, was worth
-    # -0.1693 composite and 3 completions -- and removing it there restored byte-exact integrity.
-    #
-    # ANY RESULT PRODUCED BEFORE THIS CHANGE IS ON A DIFFERENT INSTRUMENT. Arms collected under the
-    # old order remain valid against each other, but must not be compared across this boundary; the
-    # `fs_on` reference itself has to be re-measured before new arms are read against it.
+    # The agent is constructed on a freshly made environment without a reset, as the competition's scorer
+    # does: a reset before construction changes the state from which the later seeded reset starts.
     mod = importlib.import_module(args.submission)
     path = os.path.join(AGENTS, args.submission)
     agent = mod.make_agent(env, path)
@@ -424,13 +315,13 @@ def run(args):
         attacks, first_overload = [], None
         tr_rho, tr_down, tr_act = [], [], []
         dn_act = env.action_space({})
-        prev = obs                    # the last LIVE state
+        prev = obs  # the last state before termination
         for t in range(maxsteps + 5):
             act = agent.act(obs, 0.0, False)
             nxt, _, done, info = env.step(act)
             played = t + 1
-            # Accumulated BEFORE the done-branch, because the step that ends an episode still has an
-            # operating cost and the competition charges it.
+            # Accumulated before the done branch, because the step that ends an episode still has an operating
+            # cost, which the competition charges.
             try:
                 c = (info.get("rewards") or {}).get("cost")
                 if c is not None and np.isfinite(c):
@@ -438,10 +329,8 @@ def run(args):
             except Exception:
                 pass
             if done:
-                # The termination CAUSE, which the state alone does not reveal. Roughly half of the
-                # failures on this agent end on an electrically healthy grid, and the difference between
-                # a dispatch that became physically infeasible and a power flow that failed to converge
-                # is visible only here. Without it a failure with no overloaded line is uninterpretable.
+                # The termination cause, which the state alone does not reveal: an infeasible dispatch and a power flow
+                # that fails to converge both end the episode, often on a grid with no overloaded line.
                 try:
                     exc = info.get("exception") or []
                     end_cause = type(exc[0]).__name__ if exc else "none"
@@ -483,8 +372,7 @@ def run(args):
             rho_tail.append(round(rmax, 3))
             if len(rho_tail) > 12: rho_tail.pop(0)
         after = snapshot(agent)
-        # Diagnose from the last LIVE observation. The terminal one reports every line open and zero
-        # loading regardless of what actually happened, so reading it would make every failure look alike.
+        # Diagnose from the last live observation: the terminal one reports every line open and zero loading.
         diag = prev
         rho = np.asarray(diag.rho, dtype=float)
         st = np.asarray(diag.line_status).astype(bool)
@@ -492,9 +380,8 @@ def run(args):
             "ep": ep, "chronic": names[ep], "steps": played, "max_steps": maxsteps,
             "completed": bool(played >= maxsteps - 1),
             "seconds": round(time.time() - t0, 1),
-            # The competition's operating cost over the played steps. This is the quantity the operations
-            # score is an interpolation of, and recording it is what gives the local scorer any resolution
-            # at all among completed episodes -- see the note at the environment construction.
+            # The competition's operating cost over the played steps, from which the operations score is
+            # interpolated.
             "ep_cost": round(ep_cost, 4),
             # why it ended: the state at the final step, enough to classify the failure without a replay
             "final_rho_max": round(float(np.nanmax(rho)) if rho.size else -1.0, 3),
@@ -523,9 +410,7 @@ def run(args):
             # completions, so exposure was systematically undercounted among survivors and every
             # attack-conditioned odds ratio was inflated.
             "attacks": attacks,
-            # The low-carbon term, reconstructed exactly, and the composite it feeds. Recorded per
-            # episode so that any two runs over the same scenarios can be compared on the quantity
-            # the competition actually pays for rather than on survival alone.
+            # The low-carbon term, reconstructed exactly, recorded per episode.
             "nres_score": round(nres_from(nres_num, nres_den), 6),
             "nres_ratio": round(100.0 * nres_num / nres_den, 4) if nres_den > 1e-6 else None,
             "episode_score": round(episode_score(played, maxsteps, nres_num, nres_den), 6),

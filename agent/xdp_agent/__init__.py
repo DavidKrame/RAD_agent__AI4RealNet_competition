@@ -1,9 +1,9 @@
 import os
 import sys
 
-# Codabench's evaluation image does NOT ship stable-baselines3, so we bundle it under
-# vendor/ and put it on the path before anything imports it. All of SB3's own
-# dependencies (torch, numpy, gymnasium, cloudpickle, pandas, ...) *are* present there.
+# The competition's evaluation image lacks stable-baselines3; a copy bundled under vendor/, when
+# present, is put on sys.path before anything imports it. Its own dependencies (torch, numpy,
+# gymnasium, cloudpickle, pandas) are available there.
 _VENDOR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor")
 if os.path.isdir(_VENDOR) and _VENDOR not in sys.path:
     sys.path.insert(0, _VENDOR)

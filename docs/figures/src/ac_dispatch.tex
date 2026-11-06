@@ -29,6 +29,6 @@
 \node[rule=5.4cm, anchor=north] (cons) at ([yshift=-4mm]qp.south) {\scriptsize each generator moves within its own ramp margin; overloads cost most, then curtailment, then relaxing a security limit; redispatch and storage are cheap};
 \node[sim=5.4cm, anchor=north] (chk) at ([yshift=-4mm]cons.south) {\scriptsize the solution becomes one action, offered only if the forecast lowers the peak loading $F_H$ below that of do-nothing};
 \draw[arr] (qp)--(cons); \draw[arr] (cons)--(chk);
-\stagemap{0.6,6.3}{3}{zoom: AC-anchored dispatch}
+\stagemap{3}{zoom: AC-anchored dispatch}
 \end{tikzpicture}
 \end{document}

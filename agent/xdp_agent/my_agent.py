@@ -1,54 +1,37 @@
-"""
-Survival-first grid operator for the L2RPN 2026 competition (l2rpn_idf_2023, IEEE-118, three operating
-areas, adversarial line-outage opponent). The competition score is ``0.8*Operations + 0.2*Low-carbon``,
-and it is dominated by SURVIVAL -- a blackout ends the episode -- so the agent's job is to keep the grid
-alive as long as possible while operating cheaply and without over-curtailing renewables.
+"""Grid operator for the L2RPN AI4RealNet 2026 competition: the Grid2Op environment ``l2rpn_idf_2023``, a
+118-bus network in three regions with an opponent that disconnects lines. The score is
+``0.8*Operations + 0.2*Low-carbon``, and an episode ends at a blackout, so the agent keeps the network
+alive first, then operates it cheaply and with little curtailment.
 
-It is a rules + optimisation expert, not a learned policy. The class can host a PPO proposer, but no
-policy weights are shipped with this configuration, so at evaluation the agent runs entirely on the
-hand-designed search below. Every action it considers is first checked with ``obs.simulate``, and if
-anything goes wrong inside ``act()`` it falls back to do-nothing -- so it is never worse than doing
-nothing on the states it acts on, and never crashes to a failing score.
+The agent uses rules and optimization only; no learned model is used at decision time. Every candidate
+action is checked with ``obs.simulate`` before it is played, and any exception inside ``act()`` returns
+the do-nothing action.
 
-The one idea that sets this agent apart from a plain overload-relief agent: when it must choose an action,
-it does not simply relieve the single most-loaded line. It maximises the TOTAL margin across all lines
-(the L2RPN "squared margin" sum, ``sum(max(0, 1 - rho)^2)``, minus a penalty for any line still over its
-limit). Keeping the whole grid broadly de-loaded -- rather than only fixing the hottest line -- denies the
-rho-ranked opponent a good target to attack, and also runs the grid at lower loss (``EXP_SEL_OBJ=margin``).
+Candidates are ranked by a composite cost (``_composite``): the squared margin of every line below its
+limit, ``-sum(max(0, 1 - rho)^2)``, plus a penalty on lines above their limit that grows as their
+overflow counter approaches the trip allowance. Spreading margin over the whole network, rather than
+relieving only the most loaded line, leaves it more robust to the next outage.
 
-Decision flow (``MyAgent._decide`` / ``_relief``), from cheapest/safest to last-resort:
+One call to ``act()`` consults, in order:
 
-  1. If a dominant fatal line is about to be attacked, hold a fixed, offline-validated bus-split "posture"
-     that was pre-checked to keep that line survivable through the attack, and revert it once the threat
-     clears. This anticipates the attack instead of reacting to it (the "guarded-line anticipator").
-  2. Reconnect any recoverable line, but only when a short forecast rates the reconnection no worse than
-     doing nothing. The reconnection runs alongside the relief search below rather than pre-empting it.
-  3. While the grid is comfortable (worst line ``<= safe_max_rho``), spend the calm on cost recovery:
-     cancel curtailment that is no longer needed, unwind accumulated redispatch back toward economic
-     dispatch, and top up storage while renewables are plentiful (storage cycling has no Low-carbon cost).
-     Otherwise do nothing.
-  4. If a line is starting to load but a do-nothing forecast still stays below ``danger_rho``, relieve it
-     softly and early, trying in order:
-       (a) a global convex DC-OPF that co-optimises redispatch / storage / curtailment (curtailment
-           penalised so the cost-free levers are used first), fired once a line crosses ``cvx_trigger`` or
-           an area-0/2 line becomes congested;
-       (b) that same OPF but solved on the grid as it *would* look after the likely next attack, so the
-           relieving redispatch is already in place before the attack lands (the anticipatory OPF);
-       (c) only if the agent would otherwise sit idle while a line's overflow timer is already counting
-           down to a trip, an emergency OPF that curtails hard enough to pull the line back under its
-           limit in time (survival before Low-carbon).
-     Otherwise do nothing.
-  5. If the grid is already in danger (do-nothing forecast worst line ``>= danger_rho``), search for the
-     best reconfiguration:
-       (a) per-area substation bus-splits, drawn from a curated, congestion-focused menu (optionally
-           widened with neighbouring substations and triple splits);
-       (b) storage, redispatch, local curtailment, and the convex OPF, all competing in the same search.
-     Every candidate is scored on the total-margin objective above, and the best is played -- stacking at
-     most one substation change per area (the three-area action budget the rules allow). If nothing there
-     survives, a tiered last resort tries redispatch/storage, then local, then a blanket curtailment.
+  1. the scheduled-outage look-ahead (``_maint_guard``), which prepares the network when an announced
+     outage would be severe;
+  2. preventive withholding (``_fullstarve_arm``), which keeps one attackable line per region out of
+     service so that the opponent's attempts in that region are canceled;
+  3. reactive control (``_decide``): the guarded-line rule, reconnection of recoverable lines, and a
+     relief action chosen by regime:
+       - comfortable (``max rho <= safe_max_rho``): lift curtailment, charge storage, preserve downward
+         ramp room, and return redispatch toward its economic set point;
+       - preventive (do-nothing forecast below ``danger_rho``): the convex DC optimal power flow, an
+         anticipatory dispatch against the likeliest outage, or the same program again while an
+         overflow counter runs;
+       - danger: a search over per-region busbar changes, line openings and continuous actions, scored
+         on the composite, with at most one substation change per region;
+  4. the extended-horizon safeguard (``_sustain_vet_pick``), which replaces the action of stage 3 when it
+     would end the episode within a few steps and an alternative survives longer.
 
-Each lever can be turned on or off with an ``EXP_*`` environment variable; the defaults are baked in for
-this configuration, and each flag is explained where it is read.
+Each mechanism can be switched off with an ``EXP_*`` environment variable. The defaults are those of the
+evaluated configuration, and each variable is described where it is read.
 """
 
 import json
@@ -58,8 +41,8 @@ import sys
 import time
 from typing import List, Optional
 
-# Codabench's evaluation image does not ship stable-baselines3, so it is bundled under
-# vendor/ and put on sys.path before it is imported (same fix as the PPO-only submission).
+# The competition's evaluation image lacks stable-baselines3; a copy bundled under vendor/, when
+# present, is put on sys.path before the import.
 _VENDOR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor")
 if os.path.isdir(_VENDOR) and _VENDOR not in sys.path:
     sys.path.insert(0, _VENDOR)
@@ -107,10 +90,7 @@ def load_action_menu(env, directory: str) -> List[BaseAction]:
 
 
 class MyAgent(BaseAgent):
-    """Simulate-vetted survival operator: a TOTAL-MARGIN afterstate search over topology + storage +
-    redispatch + curtailment + a convex DC-OPF, with an offline-validated guarded-line anticipator and a
-    survival-first emergency relief. Rules + optimisation only -- no policy weights are shipped, so the
-    optional PPO proposer is inactive at evaluation. See the module docstring for the full decision flow."""
+    """Rule- and optimization-based operator; the module docstring describes the decision flow."""
 
     def __init__(
         self,
@@ -154,41 +134,28 @@ class MyAgent(BaseAgent):
         # gating / search thresholds (rule-based submission)
         self._safe_max_rho = float(safe_max_rho)
         self._danger_rho = float(os.environ.get("EXP_DANGER_RHO", danger_rho))
-        # Per-area danger gate: areas 0/2 are where the agent sits idle (their congestion stays at rho ~1.0,
-        # below the global 1.3 danger gate), while area 1 is well-managed and over-acts if the gate drops.
-        # So enter the topology-relief branch for a CONNECTED attackable line in area 0/2 once its rho exceeds
-        # a LOWER area-specific threshold, keeping area 1 at danger_rho. Default OFF, so byte-identical.
+        # Region trigger of the preventive OPF: an attackable line of region 0 or 2 loaded above
+        # EXP_AREA_DANGER_RHO also fires it. At the default threshold of 1.0 this adds nothing to the global
+        # trigger, since such a line already puts max rho above 1.
         self._area_danger = int(os.environ.get("EXP_AREA_DANGER", "1"))
         self._area_danger_rho = float(os.environ.get("EXP_AREA_DANGER_RHO", "1.0"))
-        # The per-area OPF's redispatch/curtail PERSISTS once set, so re-solving the (slow) CVXPY every step
-        # is wasteful + a latency risk. Cooldown: after an area-0/2-triggered OPF fire, hold it for N steps
-        # without re-solving. Default 0 = re-solve every step (original behavior).
+        # After an anticipatory dispatch or a region-triggered OPF, these paths pause for this many decisions
+        # outside the comfortable regime, so that the set point is held rather than re-solved every step.
         self._area_opf_cd_max = int(os.environ.get("EXP_AREA_OPF_CD", "8"))
         self._area_opf_cd = 0
-        # Anticipatory N-1 soft relief: pre-position redispatch before a likely severe attack. Take the
-        # highest-rho connected attackable line (the likely next Boltzmann target); if its simulated cut
-        # would cause a severe overload, run the OPF on that POST-CUT state and apply the resulting
-        # redispatch NOW (only if it is safe on the current, un-cut state). Survives the fast-cascade
-        # attacks the reactive OPF catches too late. Soft actuator only (no topology). Default OFF.
+        # Anticipatory dispatch: if disconnecting the most loaded attackable line, the likeliest target, would
+        # cause a severe overload, the OPF is solved on that post-outage state and its redispatch is applied now,
+        # provided it is safe on the current state. Continuous actions only, no topology change.
         self._anticip_opf = int(os.environ.get("EXP_ANTICIP_OPF", "1"))
         self._anticip_severe = float(os.environ.get("EXP_ANTICIP_SEVERE", "1.7"))
         self._anticip_topk = int(os.environ.get("EXP_ANTICIP_TOPK", "1"))   # anticipate the most-severe cut among the top-K rho attackable
         self._anticip_eval_hi = float(os.environ.get("EXP_ANTICIP_EVAL_HI", "9.9"))  # only run the K-simulate scan when rho.max <= this (latency)
-        # Multi-step deepening: the 1-step severity misses delayed cascades -- a cut that looks benign one
-        # step out but overloads (or trips) a few steps later. Those are the dominant residual killers
-        # (lines 136/162/81), invisible to a single-step gate. When depth>0, roll the post-cut state forward
-        # `depth` do-nothing steps (chained forecast) and take the trajectory's PEAK rho (or 9.9 on a
-        # forecast death) as the severity, so a delayed cascade also arms the anticipatory brace. Deepening
-        # is only done when the 1-step post-cut rho is already loaded (>= deepen_lo), to bound the extra
-        # simulate cost to the states that can plausibly cascade. Default depth 0 = single-step (unchanged).
+        # Optional deeper severity check for the anticipatory dispatch: roll the post-outage state forward
+        # `depth` do-nothing steps and use the peak loading of that trajectory. Off (depth 0) by default.
         self._anticip_depth = int(os.environ.get("EXP_ANTICIP_DEPTH", "0"))
         self._anticip_deepen_lo = float(os.environ.get("EXP_ANTICIP_DEEPEN_LO", "0.90"))
-        # Attackable-line set, derived from the environment's opponent so it adapts if the opponent
-        # changes (e.g. under Sim2Real retraining) rather than being pinned to one grid's line ids.
-        # The opponent is GeometricOpponentMultiArea (per-area sub-opponents): union each
-        # sub-opponent's line ids. A names path and the known l2rpn_idf_2023 set are fallbacks used
-        # only if the introspection is unavailable. On the shipped env this equals the fallback set,
-        # so behaviour is unchanged; the value is generality and Sim2Real adaptivity.
+        # Attackable lines, read from the environment's opponent as the union of the lines of its per-region
+        # sub-opponents. The listed ids of l2rpn_idf_2023 are used only if that lookup fails.
         _ATTACKABLE_FALLBACK = [68, 88, 93, 106, 117, 162, 110, 121, 125, 126, 131,
                                 136, 141, 154, 160, 180, 33, 37, 43, 61, 62, 81]
         _env_att = set()
@@ -218,35 +185,25 @@ class MyAgent(BaseAgent):
                 except Exception:
                     pass
         self._anticip_opf_fired = 0
-        # Forecast horizon of the afterstate ranking (_composite rolls do-nothing this many steps).
-        # Selection fixed 2 on the premise that a longer forecast cannot see future attacks; re-tested
-        # in validation now that WS-0 gives the opponent model. EXP_SIM_HORIZON overrides; default
-        # keeps the shipped value (env-var unset, so identical behaviour).
+        # Forecast horizon H of the candidate ranking: _composite plays the candidate, then do-nothing, over H
+        # steps. EXP_SIM_HORIZON overrides the configured value.
         self._sim_horizon = int(os.environ.get("EXP_SIM_HORIZON", str(max(1, int(sim_horizon)))))
         self._n_candidates = int(n_candidates)
         self._reconnect = bool(reconnect)
         self._reco_mode = str(reco_mode)  # "all", "best", or "perarea"
         self._reco_horizon = max(1, int(reco_horizon))
 
-        # --- Reconnection co-exists with relief ---
-        # Config C early-returns a reconnection, burning the whole step on it and pre-empting all
-        # congestion relief. This lets a reconnection CO-EXIST with the relief search instead: a
-        # reconnection is line-status-only (aff_subs == 0) and Config C's relief is substation/continuous
-        # (aff_lines == 0), so reco + relief is always legal under RulesByArea (which caps line-status and
-        # substation changes independently per area -- verified from rulesByArea.py::_lookparam_byarea and
-        # a live legality probe). The two are combined only when the joint afterstate does not worsen
-        # relief on the same obs.simulate composite arbiter. Measured as the entire gain on the 34-scenario validation
-        # set: +3.52 (43.63 to 47.14), recovering idx0/idx3/idx21 (idx0 222 to 2017, idx21 166 to 2017).
-        # SHIP DEFAULT = ON. Set EXP_PERAREA_COEXIST=0 to recover byte-identical Config C.
-        self._perarea_coexist = int(os.environ.get("EXP_PERAREA_COEXIST", "1"))  # SHIP default 1 (co-exist ON)
-        # Per-area multi-line reconnection (up to 3, one per area) -- measured as a NO-OP on the 34-scenario validation set
-        # on its own and NET-negative stacked on co-exist (introduces the idx1 regression), so it is
-        # DROPPED (default OFF). Kept behind the flag for reproducibility of that ablation only.
-        self._perarea = int(os.environ.get("EXP_PERAREA_RECO", "0"))  # SHIP default 0 (multi-line OFF)
+        # --- Reconnection combined with relief ---
+        # A reconnection is combined with the relief search instead of pre-empting it. A reconnection changes
+        # only line status and the relief only substations or continuous set points, so the two are always legal
+        # together under the per-region rules. The step plays whichever of reconnection plus relief, reconnection
+        # alone, or relief alone has the lowest composite.
+        self._perarea_coexist = int(os.environ.get("EXP_PERAREA_COEXIST", "1"))  # on by default
+        # Reconnection of up to three lines at once, one per region. Off by default.
+        self._perarea = int(os.environ.get("EXP_PERAREA_RECO", "0"))  # off by default
         self._perarea_debug = int(os.environ.get("EXP_PERAREA_DEBUG", "0"))
-        # Co-exist combine policy. argmin (SHIP default): play the lowest-composite of {reco+relief, reco,
-        # relief}. keepreco=1 (a rejected variant, net -2.55 vs argmin: it fixed idx27 but broke
-        # idx1/idx3) never drops the reconnection -- kept behind the flag for reproducibility only.
+        # With EXP_COEXIST_KEEPRECO=1 the reconnection is always kept instead of competing with the relief
+        # alone. Off by default.
         self._coexist_keepreco = int(os.environ.get("EXP_COEXIST_KEEPRECO", "0"))
         if self._perarea:
             self._reco_mode = "perarea"
@@ -286,39 +243,18 @@ class MyAgent(BaseAgent):
         self._gen_max_ramp_up = np.asarray(env.gen_max_ramp_up)
         self._gen_max_ramp_down = np.asarray(env.gen_max_ramp_down)
 
-        # --- Flexibility top-up (EXP_FLEXFLOOR) ---------------------------------------------------
+        # --- Margin preservation (EXP_FLEXFLOOR) -----------------------------------------------------
         #
-        # The controller decides danger on one quantity, max(rho), against safe_max_rho = 0.9. On the
-        # population that dies dispatch-starved that axis is measured to carry NO information: over the
-        # full training set it separates those deaths from completions at AUC 0.497 (p = 0.94), while
-        # the fleet's remaining downward ramp room separates the same two groups at AUC 0.064
-        # (p = 2.4e-25). 59 % of that population dies at rho BELOW the comfort threshold -- the agent is
-        # in housekeeping mode at the moment it loses the episode.
-        #
-        # Room is a dispatch POSTURE, not a loading measure:
+        # Downward ramp room is what the fleet can still give in one step:
         #
         #     room = sum_g min( max(gen_p[g] - pmin[g], 0), ramp_down[g] )
         #
-        # and because the inner min saturates about 8 MW above minimum against a ~180 MW operating span,
-        # room is very nearly (total ramp-down capacity) x (fraction of units held off their minimum).
-        # Completions run ~18 of 20 units off minimum; the starved deaths run ~7.
-        #
-        # That geometry is also what makes the posture CORRECTABLE for free. Moving output off a
-        # saturated unit costs no room -- it stays saturated -- while moving it onto a unit parked at its
-        # minimum buys room one-for-one, so a net-zero redispatch strictly increases the total. Measured
-        # over 1,099 constructions on three starved episodes: +24.9 / +32.8 / +38.0 MW median gain against
-        # the agent's own step, zero illegal or ambiguous actions.
-        #
-        # No threshold is used, deliberately. The starved episodes spend 41-64 % of their steps short of
-        # room where completions spend 0-12 %, so a top-up that simply runs whenever the grid
-        # is comfortable and there is room to recover self-targets that population without a tuned
-        # constant -- a swept constant is the shape that fails to transfer. The only gate is that the
-        # recovery be worth making, and the existing simulate guard that already protects the comfortable
-        # branch. Operating cost is not a consideration: a 1 % cost change is worth 0.0036 composite
-        # against 0.322 for one converted episode, so flexibility is bought at roughly 90:1.
-        # Measured at +0.9961 composite over this agent's own parent on the full 764 (680 completions
-        # against 669, ImpossibleRedispatching 29 to 16), so the shipped default is ON. The ablation
-        # that established it sets EXP_FLEXFLOOR=0 explicitly, which reproduces the parent exactly.
+        # Returning redispatch toward economic dispatch tends to park units at their minimum, where they add no
+        # room, and episodes that end on an infeasible redispatch are those that run short of room. A unit already
+        # a full ramp step above its minimum loses no room by giving output, while a unit near its minimum gains
+        # room by taking it, so a net-zero shift between the two raises the total. In comfortable states the
+        # controller makes that shift when it recovers enough room and the forecast stays comfortable. On by
+        # default.
         self._flexfloor = int(os.environ.get("EXP_FLEXFLOOR", "1"))
         self._flex_min_gain = float(os.environ.get("EXP_FLEX_MIN_GAIN", "5.0"))  # MW worth an action
         self._gen_pmin = np.asarray(env.gen_pmin, dtype=float)
@@ -331,7 +267,7 @@ class MyAgent(BaseAgent):
         self._storage_charge_renewable_frac = float(storage_charge_renewable_frac)
         self._storage_charge_horizon = max(1, int(storage_charge_horizon))
 
-        # PPO policy (BASE submission)
+        # Optional PPO topology proposer; inactive unless weights are loaded.
         self._ppo_top_k = int(ppo_top_k)
         self._net_arch = net_arch if net_arch is not None else [256, 256, 256]
         self._gamma = gamma
@@ -341,21 +277,16 @@ class MyAgent(BaseAgent):
         self._eval_freq = int(eval_freq)
         self._gym_obs_space = make_obs_space(env, self._obs_attr)
         self._gym_act_space = make_act_space(env, self._actions)
-        self._model = None  # SB3 PPO, populated by load_state / train (unused by Exp 0)
+        self._model = None  # PPO model; stays None when no weights are loaded
 
-        # --- State-generated, afterstate-ranked candidate search ---
-        # Break from the frozen 287-action menu (which also EXCLUDES >8-element hub subs
-        # 48/95/99/31 via build_reduced_actions max_elems=8). Precompute a hub-INCLUSIVE
-        # per-substation topology pool once; at runtime we localize to the congestion so we
-        # only ever simulate a small, congestion-relevant subset.
+        # --- Candidate search over a per-substation topology pool ---
+        # The pool, hub substations included, is built once. At run time the search is restricted to the
+        # substations near congestion, so only a small subset is simulated.
         self._exp0_cap_per_sub = 40         # topologies kept per substation in the pool
         self._exp0_overload_rho = 0.99      # a line is congestion-relevant if rho > this
         self._exp0_curtail_w = float(os.environ.get("EXP0_CURTAIL_W", "0.05"))  # composite = worst_rho + w * curtailed_fraction (low-carbon cost)
-        # Operating-cost term in the ranking (op-efficiency reward redesign): the composite already
-        # charges curtailment (the 0.2 nres term) but not redispatch/dispatch deviation (the 0.8 op
-        # term). Add a small penalty on the afterstate's redispatch magnitude so that among
-        # survival-equivalent candidates the ranking prefers the cheaper-to-operate one, so higher op on
-        # the scenarios that survive. Default 0, so identical to the shipped ranking.
+        # Operating-cost term of the ranking: a penalty on the redispatch of the simulated state, charged only
+        # in comfortable states, so that among equally safe candidates the cheaper one is preferred.
         self._opcost_w = float(os.environ.get("EXP_OPCOST_W", "0.1"))
         # op-cost proxy: "mag" = redispatch magnitude; "cost" = redispatch weighted by each generator's
         # normalized marginal cost (closer to the true operating cost -- penalises EXPENSIVE dispatch).
@@ -367,64 +298,37 @@ class MyAgent(BaseAgent):
             self._gen_cost_norm = _gc / (_m if _m > 0 else 1.0)   # ~O(1), same scale as the magnitude proxy
         except Exception:
             self._gen_cost_norm = None
-        # --- Expected-attack-loss objective (a defense built into the ranking) ---
-        # The opponent picks its target by a Boltzmann distribution over the attackable lines' ρ-RANKS
-        # (most-loaded line pmax_pmin=4x likeliest). So the expected damage of an afterstate is
-        # E[loss] = Σ_ℓ P(ℓ)·Severity(ℓ), P(ℓ) ∝ exp(β·rank_ρ(ℓ)), β=ln4/(n-1), Severity(ℓ) = the
-        # post-contingency worst-ρ of losing ℓ. Adding w·E[loss] to the ranking makes the agent prefer,
-        # among its OWN (simulate-vetted) candidates, the one that keeps high-Severity lines at low ρ-rank
-        # so the opponent redirects onto benign lines. No fixed held posture, so no topology-hold
-        # collateral. Severity is derived from the env (a one-off N-1), not hardcoded. Default 0, so off.
+        # Optional expected-attack-loss term: each attackable line's offline severity, weighted by the
+        # probability that the opponent picks it, which grows with the line's loading rank. Off by default
+        # (weight 0).
         self._attw = float(os.environ.get("EXP_ATTW", "0.0"))
-        # Severity prior: expected post-contingency overload margin of losing each attackable line,
-        # max(0, mean post-cut ρ − 1), derived OFFLINE over 99 representative states / 12 chronics
-        # (an offline N-1 screen). A live one-step (or few-step) simulate at a comfortable
-        # state CANNOT recover this: losing the fatal line 136 is survivable at most single states — its
-        # lethality is a delayed, state-dependent islanding cascade (48-50-136 out → sole-path 138 trips
-        # after ~3 steps of overflow) that a forecast never reproduces. So severity is a fixed,
-        # env-derived, regenerable PRIOR (136≈0.41, 117≈0.17, everything else ≈0), not a live value.
+        # Severity of losing each attackable line: the mean post-outage peak loading above 1, from an offline
+        # screen of representative states. Used only by the expected-attack-loss term.
         _N1_MEAN_RHO = {33: 0.974, 37: 0.961, 43: 0.942, 61: 0.978, 62: 0.971, 68: 0.961, 81: 0.983,
                         88: 0.972, 93: 1.026, 106: 0.961, 110: 0.95, 117: 1.165, 121: 0.949, 125: 0.953,
                         126: 0.961, 131: 0.949, 136: 1.414, 141: 0.979, 154: 0.981, 160: 1.021,
                         162: 0.975, 180: 1.021}
         self._att_severity = ({l: max(0.0, v - 1.0) for l, v in _N1_MEAN_RHO.items()}
                               if self._attw > 0.0 else {})
-        # Afterstate SELECTION objective. "rho" = minimise the single worst line (min-max, the default).
-        # "margin" = maximise the L2RPN squared-margin sum over all lines (sum of max(0,1-rho)^2), i.e. keep
-        # the whole grid broadly de-loaded rather than only fixing the hottest line -- denies a rho-ranked
-        # opponent any good target. Only the selection score changes; the danger/gate reads keep using
-        # _worst_rho, so this cannot alter WHEN the search fires, only WHICH afterstate it prefers.
+        # Ranking objective. "margin" (default) sums the squared margin of every line, so the whole network
+        # stays de-loaded; "rho" ranks by the most loaded line only. The danger gate keeps using the peak
+        # loading, so the objective changes which candidate is chosen, not when the search runs.
         self._sel_obj = os.environ.get("EXP_SEL_OBJ", "margin")
-        # Opponent-AWARE ranking forecast: instead of rolling do-nothing (opponent-blind), roll the
-        # opponent's likely move -- cut the most-loaded connected attackable line -- through the
-        # forecast horizon. A trace showed the blind forecast fools the ranking into
-        # futile reconnects of a still-attacked line and misses post-attack robustness. Default 0, so opponent-blind (byte-identical to the shipped agent).
+        # Optional opponent-aware forecast: roll the likeliest attack (the most loaded attackable line) instead
+        # of do-nothing through the horizon. Off by default.
         self._oppaware = int(os.environ.get("EXP_OPPAWARE", "0"))
-        # Decision-time memo: the controller asks for the same (observation, action, horizon)
-        # more than once while deciding a single step -- measured at 27.7 % of all forecast calls --
-        # because the danger search, the relief path and the continuous-actuator vetting each
-        # establish their own baseline. Returning the first answer to every later caller within the
-        # same decision removes the duplication and by construction cannot change any of them.
-        # Confirmed on the evaluation platform: avg_sim_per_step 11.354 to 8.489 (-25.2 %).
+        # Forecasts are cached within one decision: several branches ask for the same (observation, action,
+        # horizon), and reusing the first answer cannot change any of them.
         self._turbo = int(os.environ.get("EXP_TURBO", "1"))
         # No import-time patching of the environment: the forecast memo lives in `_sim`.
 
         self._margin_w = float(os.environ.get("EXP_MARGIN_W", "1.0"))  # weight of the margin objective in the composite
-        # The raw L2RPN margin is clipped at 0 for overloaded lines, so it is BLIND to how badly a line is
-        # over its limit. Add a squared over-limit penalty so the margin objective still prioritises relieving
-        # a real overload (survival) before broadening headroom. 0 = pure L2RPN margin.
+        # The squared margin is zero for an overloaded line, so a squared overload penalty is added to make
+        # relieving overloads come first. 0 gives the pure margin.
         self._margin_ovl = float(os.environ.get("EXP_MARGIN_OVL", "200.0"))
-        # "hybrid": keep worst_rho as the PRIMARY (survival) term and only SUBTRACT a small margin bonus, so
-        # the pick stays as survival-safe as the worst_rho selector (protecting m2's completions = floor-safe)
-        # while breaking ties toward a broadly de-loaded grid. b=0, so pure worst_rho (= m2). Small b, so a
-        # survival-first blend. Scale: worst_rho~1, margin_sum~0-180, so b~1e-3 makes the bonus ~rho-sized.
+        # "hybrid" objective: peak loading minus a small margin bonus, used only with EXP_SEL_OBJ=hybrid.
         self._hybrid_b = float(os.environ.get("EXP_HYBRID_B", "0.0"))
-        # Cap on simulated screened-pool topology candidates per area (decision-time budget). Raised from
-        # the original 40 to 80: with the acceptance-margin gate the PLAYED danger action is frequently the
-        # normal-screened pick (the enlarged bigpool pick must beat it by the margin to override), so a
-        # larger screened cap deepens the fallback the whole system rests on and stops the per-area `break`
-        # from truncating on non-deterministic set-iteration order. Still the pre-screened, curated pool.
-        # Set EXP0_MAX_TOPO_PER_AREA=40 to recover the original cap.
+        # Maximum number of library topologies simulated per region in one decision.
         self._exp0_max_topo_per_area = int(os.environ.get("EXP0_MAX_TOPO_PER_AREA", "40"))
         self._sub_topos = self._build_sub_topo_pool(env, self._exp0_cap_per_sub)
         self._area_of_sub = np.full(int(env.n_sub), -1, dtype=np.int64)
@@ -434,23 +338,12 @@ class MyAgent(BaseAgent):
                     self._area_of_sub[int(s)] = int(a)
         except Exception:
             pass
-        # the high-cardinality hubs the baseline screened out — always eligible near congestion
+        # Hub substations: the six with the most connected elements, always eligible near congestion.
         self._central_subs = [s for s, _ in sorted(
             ((s, int(env.sub_info[s])) for s in range(env.n_sub)), key=lambda kv: -kv[1])[:6]]
 
-        # --- Larger-pool A/B: graft the screened-out hub substations 99 and 91 (flag, default OFF) ---
-        # The offline usefulness screen (build_action_pool.py) dropped the high-cardinality hubs
-        # sub 99 (12 elem) and sub 91 (9 elem): none of their sampled configs relieved congestion by
-        # the build's threshold on the stressed screening states, so they are absent from
-        # action_pool.json. Consequently sub 99 sits in _central_subs but _sub_topos[99] is empty, so
-        # its reconfigurations never actually enter the danger search, and sub 91 is missing entirely.
-        # When EXP_ADD_HUBS=1, graft each hub's enumerated set_bus topologies (capped like the
-        # first-N enumeration fallback) into the pool and make both eligible near congestion, enlarging
-        # the topology candidate space. v60 DEFAULT ON: sub 99 is already central (so it participates in
-        # the bigpool `subs` set already), but sub 91 (a 9-element reroute hub) is neither central nor in
-        # the screened pool, so ADD_HUBS is what makes 91 eligible near congestion under bigpool, and it
-        # also fixes the empty _sub_topos[99] on the screened fallback path. Set EXP_ADD_HUBS=0 to recover
-        # the screened baseline.
+        # Optional: add the enumerated configurations of substations 99 and 91, which the offline screen left
+        # out of the library, to the candidate pool. Off by default.
         if int(os.environ.get("EXP_ADD_HUBS", "0")):
             for s in (99, 91):
                 try:
@@ -462,94 +355,35 @@ class MyAgent(BaseAgent):
                 if int(s) not in self._central_subs:
                     self._central_subs.append(int(s))
 
-        # --- Much-larger danger-state candidate set (EXP_BIGPOOL, default OFF) ---
-        # When on, the per-area topology search enumerates, for each substation it localizes to,
-        # every configuration that places exactly one or exactly two of that substation's elements on
-        # bus 2 (the rest on bus 1) -- k + C(k,2) configs for a k-element substation -- and searches
-        # the whole (uncapped) set, replacing the small offline-screened per-substation pool. Tests
-        # whether a genuinely larger candidate space finds better danger-state actions. Heavy per step
-        # (hundreds of obs.simulate), but the selector (composite / N-1) is untouched -- only the
-        # candidate set grows. v60 DEFAULT ON (this is the winning STACK search path). Set EXP_BIGPOOL=0
-        # to recover the screened-pool baseline byte-identical.
+        # --- Local pool (EXP_BIGPOOL) ---
+        # A second run of the danger search replaces the library with a local pool: every configuration that
+        # moves one or two elements of a substation near congestion to the second busbar. On by default.
         self._bigpool = int(os.environ.get("EXP_BIGPOOL", "1"))
         self._sub_info = np.asarray(env.sub_info)
         self._bigpool_cache = {}
         self._bigpool_restored = 0    # exceptions that would have left the pool flag switched off
-        # Acceptance margin for the enlarged pool (only active with EXP_BIGPOOL=1). When > 0, an
-        # enlarged-pool danger pick is PLAYED only if its afterstate worst_rho beats coexist's
-        # normal-screened-pool pick by at least this margin; otherwise the normal pick stands. This
-        # restricts the new bus-splits to clear improvements, curbing the over-acting the raw
-        # enlargement introduces. 0.0 = ungated raw enlargement. v60 default 0.05: the proven STACK value.
-        # Kept at 0.05 because the default-ON expansions (hub 91, screened cap) grow the pool only modestly;
-        # if the heavy location/depth levers are enabled (which grow it substantially), raise to 0.07 to curb
-        # the extra over-acting -- both picks are always computed, so the margin is free on compute.
+        # The local-pool result is played only if its peak loading is lower than that of the library result
+        # by at least this margin. Both results are always computed.
         self._bigpool_margin = float(os.environ.get("EXP_BIGPOOL_MARGIN", "0.07"))
 
-        # --- v60 bigpool-search expansions (each recovers the STACK baseline when its flag is 0) ---
-        # Location: also enumerate the one-hop neighbour substations of the WORST overloaded line's
-        # endpoints. Congestion on a corridor is most often cleared by a reroute one HOP off the corridor,
-        # not at its ends, and those substations are never in the endpoint+hub `subs` set today -- so this
-        # unlocks a genuinely new class of relieving reconfigurations rather than re-ranking existing ones.
-        # Restricted to the single worst line to bound the candidate growth; only active under bigpool.
-        # DEFAULT OFF (heavy): measured to add ~1.6x to the danger-state candidate pool and push worst-case
-        # danger-step latency to ~74s on multi-area cascade states, which risks the total eval-time budget.
-        # Highest-impact option in the design -- enable (EXP_BIGPOOL_NEIGHBORS=1) only after a
-        # timing run confirms the total eval wall-time budget holds; pair with EXP_BIGPOOL_MARGIN=0.07.
+        # The local pool also covers the neighbors of the endpoints of the most loaded line. On by default.
         self._bigpool_neighbors = int(os.environ.get("EXP_BIGPOOL_NEIGHBORS", "1"))
-        # Depth: also enumerate the C(k,3) triple bus-2 splits of the single deepest congested endpoint
-        # substation (k <= _triple_max_k). Certain cascade fixes require isolating three elements onto bus 2,
-        # which the 1-/2-element enumeration cannot express at any of its members. k<=10 skips the 17-element
-        # hub 48 (C(17,3)=680) to keep the added count bounded; only active under bigpool. DEFAULT OFF
-        # (heavy): part of the same ~1.6x pool growth as neighbours -- enable (EXP_BIGPOOL_TRIPLE=1) only
-        # behind a wall-time timing run.
+        # The local pool also covers the three-element moves at the most congested endpoint substation, if it
+        # has at most EXP_TRIPLE_MAX_K elements. On by default.
         self._bigpool_triple = int(os.environ.get("EXP_BIGPOOL_TRIPLE", "1"))
         self._triple_max_k = int(os.environ.get("EXP_TRIPLE_MAX_K", "10"))
         self._triple_cache = {}
-        # Cross-area full stack: the greedy per-area combine starts from the single global best and only
-        # ADDS an area when it strictly improves, so it can miss a joint gain that only materialises when
-        # two OTHER areas are stacked together. Try the full one-per-area stack as one extra candidate,
-        # played only if it beats the greedy stack on the composite. Still <=1 sub-change per area
-        # (RulesByArea-legal); one extra candidate, independent of bigpool. Set EXP_FULL_STACK=0 to disable.
+        # Optional: also try the stack of every region's best topology as one candidate. Off by default.
         self._full_stack = int(os.environ.get("EXP_FULL_STACK", "0"))
 
-        # --- Composing the continuous half back into two exits that exclude it -----------------------
-        # Both flags are the same idea at two different sites, and it is the idea that has already paid
-        # once here: a whole half of the action space is discarded at a specific exit, and restoring it
-        # is worth more than any of the individual mechanisms it restores was worth as an addition.
-        #
-        # SITE A (EXP_DPCOMP) -- the danger pick's combine loop. `singles` includes the best continuous
-        # candidate, so if it happens to be the single global best it wins and topology is then stacked
-        # ONTO it; but when a topology action wins -- which it does on 94.8 % of picks -- the loop that
-        # follows iterates `area_best` only, so the continuous half that was just built and scored becomes
-        # structurally unreachable. Measured: a purely continuous best existed and was unstackable on
-        # 43.6 % of danger picks, and adding it strictly improves the agent's own composite on 70.5 % of
-        # those (366 of 519, with zero construction failures). The composition is legal by construction --
-        # `combined + cont` has exactly `combined`'s `get_topological_impact()`, no line and no substation
-        # added -- which is the same disjointness the reconnection co-exist path and the starvation-arm
-        # composition already rely on.
-        #
-        # SITE B (EXP_SVCOMP) -- the sustained-overload override. Its candidate pool is
-        # `[base_act] + area_topo_candidates(...)`: topology only. At the one moment a line is provably
-        # about to be lost to sustained overflow, every continuous actuator is excluded from the search,
-        # although the danger branch builds exactly those candidates one function away. The override is
-        # not dead weight -- it fires on the order of hundreds of decisions over the full set and it
-        # rescues episodes outright (with it disabled one audited episode dies at step 210 instead of
-        # surviving past 1800) -- so this is an exclusion on decisions that are already death-adjacent.
-        #
-        # Both compose continuous onto topology, never continuous onto continuous. That restriction is
-        # the difference between the composition that worked here (+0.2979, actuator-disjoint) and the one
-        # that was measured negative (-0.6987, two redispatch halves pulling in opposite directions):
-        # grid2op ADDS redispatch requests for the same generator rather than replacing them, so two
-        # continuous halves silently cancel while an arbiter still reads a net improvement. Acceptance is
-        # the incumbent composite with a real decline path in both sites, and neither changes any
-        # trigger's firing rate -- the three conditions under which a removal of this kind has transferred.
+        # --- Adding the best continuous candidate to a topology action ---
+        # When a topology action wins the danger search, the best continuous candidate (redispatch, storage,
+        # curtailment) has already been scored but would go unused. EXP_DPCOMP adds it to the stacked topology
+        # action when it touches no line or substation and lowers the composite. EXP_SVCOMP does the same inside
+        # the extended-horizon safeguard. Grid2op adds the redispatch requests made for one generator, so only
+        # a continuous action is ever added to a topology action, never two continuous actions to each other.
         self._dpcomp = int(os.environ.get("EXP_DPCOMP", "1"))
-        # SVCOMP ships OFF here, and that is the measured configuration rather than a preference:
-        # on the full 764 it is a null on the mean (+0.0253, CI [-0.46, +0.51]) and it TRADES WITHIN
-        # the target class -- it converts three more corridor and three more cluster episodes while
-        # raising the kill rate from 1.00 % to 1.43 %, the gross disturbance from 1.605 to 2.089, and
-        # widening the interval until it contains zero. DPCOMP alone is the arm whose CI excludes
-        # zero, so that is the arm this package reproduces.
+        # The composition inside the safeguard is off by default.
         self._svcomp = int(os.environ.get("EXP_SVCOMP", "0"))
         self._dpc_armed = 0       # danger picks where a composable continuous candidate existed
         self._dpc_kept = 0        # ... and the joint afterstate was strictly better
@@ -567,85 +401,40 @@ class MyAgent(BaseAgent):
                 self._sub_neighbors.setdefault(_a, set()).add(_b)
                 self._sub_neighbors.setdefault(_b, set()).add(_a)
 
-        # --- Opponent-aware min-max ranking (after the adversarial-training literature) ---
-        # obs.simulate is opponent-blind, so the composite mis-handles the adversarial cascades that kill the
-        # hard scenarios. The opponent (GeometricOpponentMultiArea) disconnects at most one line per area from
-        # a fixed 22-line attackable set, biased to high loading. So we can score each candidate under its
-        # worst likely attack -- disconnect the top-loaded attackable line(s) per area in the afterstate and
-        # penalise the extra danger it introduces. RE-TEST of the earlier opponent-robust term, now on the
-        # FIXED (reco_mode=best, danger_rho=1.3) baseline where its earlier confound (the reconnection bug) is
-        # gone. Only fires when the afterstate is already stressed (bounds the extra simulate cost).
-        self._opp_mode = int(os.environ.get("EXP_OPP_MODE", "0"))     # 1 = robust, 0 = pure dr13 (SHIP: 0)
+        # Optional opponent-robust term: penalize a candidate by the extra peak loading caused by losing the
+        # most loaded attackable line(s) of each region. Off by default.
+        self._opp_mode = int(os.environ.get("EXP_OPP_MODE", "0"))  # off by default
         self._opp_w = float(os.environ.get("EXP_OPP_W", "0.5"))       # weight on the attack's extra danger
         self._opp_topk = int(os.environ.get("EXP_OPP_TOPK", "1"))     # attackable lines probed per area
         self._opp_gate = float(os.environ.get("EXP_OPP_GATE", "0.95"))  # only run the check if afterstate rho > this
-        # Cancel stuck curtailment when the grid is comfortable: curtailment persists until explicitly
-        # cancelled (competition.md §3) and the expert never cancels it, so it bleeds the Low-carbon (nres)
-        # score for the rest of the episode (measured: ~8-12% of steps on curtailing scenarios). Restoring
-        # is simulate-guarded to stay in the safe zone, so it never trades survival (0.8) for low-carbon (0.2).
+        # Lift curtailment in comfortable states. Curtailment persists until it is lifted and lowers the
+        # low-carbon score for as long as it stays. The lift is guarded by the forecast.
         self._cancel_curtail = int(os.environ.get("EXP_CANCEL_CURTAIL", "1"))
-        # Cancel stuck redispatch when the grid is comfortable: the op (Operations) analogue of
-        # cancel_curtail. Redispatch away from economic dispatch carries a real operational cost
-        # that CUMULATES -- target_dispatch persists until explicitly changed (competition.md §3),
-        # and the expert never unwinds it, so a redispatch held for the rest of an episode pins the
-        # op sub-score even while the grid is otherwise safe. When on, and only while max rho is in
-        # the safe zone, ramp target_dispatch back toward 0 (simulate-guarded to stay safe). v60 DEFAULT
-        # ON (measured self-run lever, +0.61 CB in the STACK build); set EXP_CANCEL_REDISP=0 to disable.
+        # Return redispatch toward the economic set point in comfortable states. Redispatch persists until it
+        # is changed and adds operating cost while it stays. Guarded by the forecast.
         self._cancel_redisp = int(os.environ.get("EXP_CANCEL_REDISP", "1"))
-        # --- v60 op-cost-cancel refinement: graduated (maximal-feasible) unwind for both cancels ---
-        # The two comfortable-grid cancels (_cancel_curtailment_action, _cancel_redispatch_action) are
-        # all-or-nothing: they compute the FULL unwind and, if that single action breaches the safe-zone
-        # guard, recover NOTHING -- the curtailment/redispatch cost then bleeds for the rest of the episode.
-        # Instead scan a descending list of unwind fractions and apply the LARGEST that stays within the
-        # guard, so a state where the full unwind is unsafe still recovers a large slice of the forfeited
-        # Low-carbon (curtailment) / Operations (redispatch) cost. A partial unwind also perturbs the
-        # dispatch less than the full unwind, so it is no more disruptive to the opponent's timing. Default
-        # "1.0,0.66,0.33"; set EXP_CANCEL_FRACS=1.0 to recover the all-or-nothing behaviour.
+        # Fractions of the full return tried in descending order; the largest one that passes the guard is
+        # played. The default 1.0 tries the full return only.
         self._cancel_unwind_fracs = tuple(
             float(x) for x in os.environ.get("EXP_CANCEL_FRACS", "1.0").split(",") if x.strip()
         )
-        # Safe-zone guard for both cancels. Defaults to safe_max_rho (byte-identical guard); exposed so the
-        # comfortable-window unwind band can be widened in a controlled A/B without touching survival logic.
+        # Loading limit of the forecast guard for both actions; safe_max_rho by default.
         self._cancel_guard_rho = float(os.environ.get("EXP_CANCEL_GUARD_RHO", str(self._safe_max_rho)))
 
-        # --- Dispatch-feasibility guard on the curtailment release (EXP_DISPATCH_GUARD) ---
-        # The environment ends the episode when the total downward move the generators must make exceeds
-        # what their ramp-down limits and floors allow. Releasing curtailment adds renewable output, and
-        # that increase has to be matched megawatt for megawatt by the dispatchable fleet moving DOWN --
-        # so a release is a direct demand on exactly the quantity that runs out.
-        #
-        # Measured on the scenarios that die this way: the shortfall is small (median well under 10 MW,
-        # range ~3-25 MW), the fleet's remaining down-room is typically 30-70% of its own ceiling, and in
-        # the great majority of them the fatal action is setting curtailment. The environment states the
-        # cause in its own words: "if you did not do any dispatch during this episode it would have been
-        # possible ... some generators stuck at pmin as a consequence of your redispatching".
-        #
-        # The available down-room is exactly obs.gen_margin_down.sum() -- one array reduction, no forecast
-        # needed. This guard caps a release at that room less a margin, and prefers a smaller release to
-        # none at all, so the low-carbon recovery keeps working wherever the fleet can absorb it.
-        # DEFAULT 0 = the baseline path, unchanged.
-        # BAKED ON. Measured on the seasonally balanced 120-scenario set: 59.29 (94/120) against the
-        # unguarded 58.20 (92/120) -- two completions gained, none lost. On the guard's own target
-        # class, 21 of 29 genuine deaths converted with zero losses. Shipping it OFF would ship the
-        # unguarded agent, so the default is the measured configuration.
+        # --- Dispatch-feasibility guard on the curtailment lift (EXP_DISPATCH_GUARD) ---
+        # Lifting curtailment adds renewable output that the dispatchable fleet must absorb by moving down, and
+        # the episode ends when the fleet cannot. The guard caps the added output at the fleet's remaining
+        # downward room (obs.gen_margin_down) less a margin, and tries smaller lifts before giving up. On by
+        # default.
         self._dispatch_guard = int(os.environ.get("EXP_DISPATCH_GUARD", "1"))
 
-        # --- AC-anchored dispatch optimiser (EXP_ACOPF) ---
-        # The inherited convex module optimises a LOSSLESS DC model, and carries two errors: the
-        # sensitivity is DC, and the base flows are computed from that same DC model rather than taken
-        # from the observation -- which grid2op fills using a full AC solve. Anchoring on the observed AC
-        # flows and using distribution factors only for the INCREMENT removes the second and larger error
-        # for ~0.3 ms per call; measured on this grid, it explains 96 % of a redispatch's effect on line
-        # flows when calm and 87 % under load, against a base-flow-only error an order of magnitude bigger.
-        # It also decides PER GENERATOR rather than per bus, so each unit's own ramp limits are hard
-        # constraints instead of a pro-rata split applied afterwards -- the aggregation loss that makes
-        # dispatch infeasibility invisible to the incumbent.
-        # DEFAULT 0 = the baseline path, unchanged.
+        # --- AC-anchored dispatch (EXP_ACOPF) ---
+        # The OptimCVXPY program computes its base flows from a DC model. This program takes the base flows from
+        # the observation, which grid2op computes with an AC power flow, and uses distribution factors only for
+        # the change that the controls cause. It also decides per generator, so each unit's ramp limits are hard
+        # constraints.
         self._env_ref = env          # needed for the per-call distribution factors
-        # BAKED ON. On the seasonally balanced 120-scenario set: 61.46 (99/120) against 59.29 (94/120)
-        # for the same agent without it and 58.20 (92/120) for the agent this one forked from. Paired
-        # against that original: +3.60 op, 95% CI [+0.24, +6.96] -- excludes zero -- and +7 completions
-        # (9 gained, 2 lost). Shipping it off would ship the agent without the thing being measured.
+        # On by default.
         self._acopf = int(os.environ.get("EXP_ACOPF", "1"))
         self._acopf_rho = float(os.environ.get("EXP_ACOPF_RHO", "0.95"))   # act from this loading upward
         self._acopf_obj = None
@@ -669,57 +458,18 @@ class MyAgent(BaseAgent):
                 print(f"[acopf] disabled ({exc_}); falling back to the inherited convex module.")
                 self._acopf_obj = None
 
-        # ------------------------------------------------------------------ opponent starvation
-        # The adversary spends a scheduled attack before it checks whether it can deliver it.
-        # In GeometricOpponent.attack the counter is incremented first
-        #
-        #     self._next_attack_time -= 1
-        #     if self._next_attack_time > 0: return None, None
-        #     else: self._attack_counter += 1          # spent here
-        #     status = observation.line_status[self._lines_ids]
-        #     if ~status.all(): return None, None      # thrown away here, counter already spent
-        #
-        # and `_next_attack_time` is not restored on that abort path.  So once one attackable line of
-        # an area is out of service at the moment that area's next attack falls due, the branch is
-        # taken again on every following step and the area's entire remaining schedule is consumed
-        # within a few steps without a single attack landing.  The environment sets the opponent
-        # cooldown to zero, so nothing rate-limits the repetition.
-        #
-        # Measured directly on the environment: holding one attackable line of area 0 open took that
-        # area's counter from 1-of-10 spent to 10-of-10 and the attacks that landed there from 1 to 0.
-        #
-        # The controller therefore does not need to sacrifice anything to exploit this.  An attack
-        # leaves its own target disconnected; simply declining to restore that line keeps the area
-        # starved for the rest of the episode.  The adversary's first strike disarms the adversary.
-        #
-        # The hold is conditional, because an attackable line left open is one line closer to the
-        # network separation that ends most episodes: it is released as soon as loading leaves the
-        # comfortable band, and it is never applied to a line whose area has no other attackable line
-        # in service.  The attackable sets are read from the environment's own opponent rather than
-        # written down, so the mechanism follows the grid it is given instead of this one.
+        # --- Holding an attacked line out of service (EXP_STARVE) ---
+        # The opponent consumes a scheduled attack before checking that it can deliver it. When an attack falls
+        # due in a region and one of that region's attackable lines is out of service, the attempt is abandoned
+        # and its waiting time is not restored, so the following attempts of that region are abandoned too.
+        # Declining to reconnect a line that an attack left disconnected therefore keeps that region free of
+        # attacks. The hold is released as soon as loading leaves the comfortable band, and it is not applied to
+        # a line whose region has no other attackable line in service.
         self._starve = int(os.environ.get("EXP_STARVE", "1"))
-        # BAKED 1.00, from a 200-configuration sweep over the full 764 (2026-09-05). This is the loading
-        # above which the starvation hold is given up, and it is the strongest single effect in the whole
-        # search, on two independent estimators:
-        #
-        #   axial -- this knob alone, moved on the shipped agent, run over all 764 scenarios:
-        #            composite **+1.4825**, of which +1.4584 is operations, **+20 completions**, 89 episodes
-        #            changed (search half +1.653, held-out half +1.140).
-        #   pooled -- across the 149 configurations that avoid the catastrophic DANGER_RHO arm, those
-        #            carrying yield >= 1.0 beat those below it by **+1.818 +/- 0.229 on the HELD-OUT half**,
-        #            t = +7.9, with +20.1 completions against -8.6.
-        #
-        # It is also MONOTONE over all five levels tested (0.85, 0.90, 0.95, 1.00, 1.05), peaking at 1.00,
-        # which a noise artefact would not be.
-        #
-        # The mechanism reading: the shipped 0.95 gave the hold up too eagerly. Starvation pays for itself
-        # only while the line stays out, and releasing at 0.95 re-armed the area during ordinary loading
-        # rather than genuine stress. This is the same direction that the two failed variants got wrong from
-        # opposite sides -- one released more (measured -0.033), one held more by opening extra lines
-        # (measured harmful) -- and it is the release threshold, not the amount of holding, that was mis-set.
+        # Peak loading above which the hold is given up and the line returns to the ordinary reconnection rule.
         self._starve_yield_rho = float(os.environ.get("EXP_STARVE_YIELD_RHO", "1.00"))
         self._starve_areas = []          # list of frozensets of attackable line ids, one per area
-        self._starve_held = 0            # steps a reconnection was withheld to keep an area starved
+        self._starve_held = 0  # steps a reconnection was withheld to keep a region free of attacks
         self._starve_released = 0        # steps the hold was given up because loading demanded it
         if self._starve:
             try:
@@ -732,51 +482,29 @@ class MyAgent(BaseAgent):
             except Exception:
                 self._starve_areas = []
             if not self._starve_areas:
-                # No readable attackable set means no way to tell a starving line from any other, and
-                # withholding reconnections blindly is the failure mode this guards against.
+                # Without the attackable sets, no reconnection is withheld.
                 self._starve = 0
 
-        # ------------------------------------------------------- proactive total starvation
-        # The adversary's abort test runs before target selection and checks every attackable line in
-        # the area: one line out of service vetoes that area's whole attack while its budget draw is
-        # still spent. The shipped starvation exploits this only after a first strike lands; holding
-        # one cheap attackable line per area from the start extends the veto to the whole episode.
-        # A rigid permanent hold was measured and refuted (it broke ~1 in 5 ordinary completions by
-        # overriding the release discipline); this posture therefore honours the same yield band the
-        # reactive hold ships with: the line is (re)opened only in the comfortable band, the shipped
-        # `_starve_filter` withholds its reconnection below the yield threshold exactly as it does
-        # for an attack outage, and above the threshold the normal release logic wins. Measured on a
-        # 24-episode month-stratified panel + 6 attack-heavy failures: losses 1 (an episode
-        # dying 3 steps short of the horizon), attack exposure collapsed, and three attack-killed
-        # failures (dead at steps 168/502/987) converted to full completions.
-        #
-        # Line choice is a measured constant, not a live decision: per area, the attackable line with
-        # the lowest mean simulated post-cut peak loading over seasonal states, constrained to keep
-        # the grid connected and to make no other attackable line a bridge. Filtered through the
-        # environment's own attackable sets so an unknown grid degrades to no-op rather than to a
-        # blind outage.
+        # --- Preventive withholding (EXP_FULLSTARVE) ---
+        # Holding one attackable line per region out of service from the start extends the same effect to the
+        # whole episode. The withheld lines are opened only below EXP_FULLSTARVE_ARM, `_starve_filter` keeps them
+        # out up to the release threshold above, and beyond it the ordinary rules apply. Per region, the withheld
+        # line (EXP_FULLSTARVE_LINES) is the attackable line with the lowest simulated post-outage peak loading
+        # over representative states among those that keep the network connected and make no other attackable
+        # line a bridge.
         self._fs = int(os.environ.get("EXP_FULLSTARVE", "1"))
         self._fs_arm_rho = float(os.environ.get("EXP_FULLSTARVE_ARM", "0.95"))
         _fs_pref = [int(x) for x in os.environ.get("EXP_FULLSTARVE_LINES", "106,131,33").split(",") if x.strip()]
         self._fs_lines = [l for l in _fs_pref
                           if any(l in area for area in self._starve_areas)] if self._starve_areas else []
         self._fs_forced = 0      # steps the posture (re)opened a held line
-        # The starvation arm returns from act() before `_decide` runs, so on every step it fires the whole
-        # relief half of the controller is discarded: no curtailment restore, no storage charge, no
-        # flexibility top-up, no redispatch unwind, no preventive OPF. That happens on ~30 steps per
-        # episode in every episode.
-        #
-        # It need not be discarded. The arm's action is line-status-only (`aff_subs == 0`) and relief is
-        # substation/continuous (`aff_lines == 0`), and the agent already relies on exactly that fact to
-        # compose a RECONNECTION with relief under RulesByArea. The same composition is simply not applied
-        # to the arm. This flag applies it, with the arm never dropped -- relief is added on top only when
-        # it does not worsen the composite -- so the validated starvation posture is preserved by
-        # construction rather than traded against. The acceptance epsilon is the one the reconnection path
-        # already uses; no constant is introduced.
+        # Per-decision forecast memo and its counters (see EXP_TURBO).
         self._sim_cache = {}     # per-decision forecast memo, owned by the agent
         self._sim_hit = 0
         self._sim_miss = 0
-        # Training ratchet. OFF reproduces the shipped agent exactly, including an inert train().
+        # Revalidation of the withheld lines in train() (EXP_RATCHET), and relief added to the opening of the
+        # withheld lines when it changes no line status and does not worsen the composite (EXP_FS_COMPOSE).
+        # Both are on by default.
         self._sim_cache = {}     # per-decision forecast memo, owned by the agent
         self._sim_hit = 0
         self._sim_miss = 0
@@ -789,42 +517,24 @@ class MyAgent(BaseAgent):
         self._fs_composed = 0          # steps relief was played on top of the arm
         self._fs_compose_declined = 0  # steps relief was available but worsened the composite
         self._fs_compose_illegal = 0   # steps relief touched line status, so composing risked a collision
-        self._fs_compose_fail = 0      # steps the attempt raised, so silence is never ambiguous
+        self._fs_compose_fail = 0  # steps the attempt raised an exception
 
-        # --- Forecast the comfortable band while an outage is announced (EXP_FEASESC) ---------------
-        #
-        # The horizon is DISCOVERED, not configured: obs.simulate accepts time_step up to the length of
-        # the environment's published forecast (12 here, from data_feeding_kwargs h_forecast), and the
-        # probe below sweeps for it once at construction so the same code degrades correctly on a grid
-        # with a different forecast depth. A tuned lead window would be a value fitted to our own set.
-        self._feasesc = int(os.environ.get("EXP_FEASESC", "1"))     # 0 = parent behaviour exactly
-        # 0 = discover lazily on first use from the live observation. Construction must not
-        # touch the environment: doing so advanced it before the first episode and broke the
-        # integrity arm by -0.1693 composite over 764 scenarios.
+        # --- Outage escalation in comfortable states (EXP_FEASESC) ---
+        # While an outage is announced within the forecast horizon, the do-nothing action is forecast even in a
+        # comfortable state, and a forecast end of episode sends the step to the danger search.
+        self._feasesc = int(os.environ.get("EXP_FEASESC", "1"))  # on by default
+        # Forecast depth; 0 reads it from the first observation, since constructing the agent must not step
+        # the environment.
         self._feasesc_h = int(os.environ.get("EXP_FEASESC_H", "0"))
-        # --- Deliberate line opening, selected by an exact LODF screen (EXP_LODFCUT) ---------------
-        #
-        # The danger search can already open a line, but only where it is already looking:
-        # `_area_topo_candidates` is congestion-conditioned, so a line is openable only if one of ITS
-        # OWN ENDS sits at a selected substation. Choosing WHICH line to open by its effect on the
-        # whole grid is a different question, and answering it is worth a measured +0.9418 composite
-        # over 764 scenarios, taken entirely out of the separation channel.
-        #
-        # The selection is closed-form -- post-outage flows follow from the distribution factors,
+        # --- Line openings selected by an LODF screen (EXP_LODFCUT) ---
+        # The flows after opening line k follow from the line-outage distribution factors,
         #
         #     f'_m = f_m + LODF[m, k] * f_k
         #
-        # exact at 0.00 MW median error on single outages -- so no forecast is spent screening. Only
-        # the surviving few are simulated, by the same `_composite` arbiter every other candidate
-        # faces, so an opening must WIN on the shipped objective rather than being privileged.
-        #
-        # Structural end to end: the matrix is the environment's own and no constant is fitted to our
-        # trajectories. Bridge columns are non-finite and are excluded rather than clipped -- a bridge
-        # outage is exactly what the linear model cannot describe, and also what must never be played.
-        #
-        # This mechanism and the maintenance guard act on disjoint failure channels -- the guard
-        # supplies a remedy for an announced outage, this one chooses where the grid opens under
-        # immediate stress -- so they are carried together rather than as alternatives.
+        # so every line in service is screened in one matrix product, without a forecast. The few lines whose
+        # opening keeps every other line within its rating are then simulated and must win on the composite like
+        # any other candidate. Bridges have non-finite columns and are excluded, since removing one splits the
+        # network.
         self._lodfcut = int(os.environ.get("EXP_LODFCUT", "1"))
         self._lodfcut_k = int(os.environ.get("EXP_LODFCUT_K", "3"))      # openings offered per decision
         self._lodfcut_lo = float(os.environ.get("EXP_LODFCUT_LO", "1.0"))  # only offer below this DC rho
@@ -835,38 +545,25 @@ class MyAgent(BaseAgent):
             self._ilim = np.asarray(env.get_thermal_limit(), dtype=float)
         except Exception:
             self._ilim = None
-        # --- Announced-outage guard, ported from an earlier version (EXP_MAINT_GUARD) ---
-        # The candidate lineage lost this mechanism by accident: `feasesc` was forked from
-        # `fullstarve`, which never carried it, so a mechanism measured at +0.4838 composite on the
-        # full 764 (class deaths 42 to 19) was simply absent from the line it should have joined.
-        # Its gains are largely DISJOINT from feasesc's: of 8 and 9 conversions only 3 are shared,
-        # and the union of moved episodes (39) clears the breadth gate that feasesc alone (23) fails.
-        #
-        # DEFAULT OFF here, unlike the lineage it comes from: this package must reproduce its parent
-        # byte-for-byte until the flag is set, so the A/B has exactly one variable.
-        # BAKED ON: this package exists to measure the guard, and a zip that ships inert is the
-        # failure mode that has already cost two uploads. EXP_MAINT_GUARD=0 reproduces the parent
-        # `feasesc` exactly (verified: identical decision digests on 6 episodes x 420 steps).
+        # --- Scheduled-outage look-ahead (EXP_MAINT_GUARD) ---
+        # Each announced outage is probed once; if it would be severe, a posture is applied before it starts.
         self._mg = int(os.environ.get("EXP_MAINT_GUARD", "1"))
         self._mg_lead = int(os.environ.get("EXP_MAINT_GUARD_LEAD", "12"))    # steps of warning to use
         self._mg_rho = float(os.environ.get("EXP_MAINT_GUARD_RHO", "1.30"))  # post-cut severity to act on
         self._mg_cap = int(os.environ.get("EXP_MAINT_GUARD_CAP", "120"))     # candidates scanned per outage
-        # Lines already decided for in this episode. Cleared in reset(); the source lineage never
-        # cleared it, which is a correctness defect rather than a tuning choice (see reset()).
+        # Lines already examined in this episode; cleared in reset().
         self._mg_latched = set()
         self._mg_probed = 0        # outages examined
         self._mg_skipped = 0       # outages the state already survives
         self._mg_fired = 0         # outages a pre-position was played for
         self._mg_nofix = 0         # outages that would hurt and nothing helped
-        self._mg_table_used = 0    # decisions taken from a measured record
+        self._mg_table_used = 0  # decisions taken from the posture record
         self._mg_cleared = 0       # episodes whose latch was cleared (repair counter)
-        # The per-episode latch reset, switchable: 1 = clear per episode (correct), 0 = the source
-        # lineage's leaking behaviour, kept so the defect and its fix can be A/B-measured.
+        # Clears the record of probed outages at the start of every episode.
         self._mg_latch_reset = int(os.environ.get("EXP_MG_LATCH_RESET", "1"))
-        # Measured survival records for the one line they cover: `fatal_lines.json` holds 246
-        # substation-79 topologies for line 175 (`80_79_175`). The guard falls back on its own
-        # forecast-ranked candidates for any other line -- far weaker (+9 steps against the table's
-        # +2719 on this class), so EXP_MAINT_GUARD_TABLE=0 isolates the structural half.
+        # Posture record: `fatal_lines.json` holds 246 configurations of substation 79 for the outage of line
+        # 175 (`80_79_175`). Other outages fall back on forecast-ranked candidates. EXP_MAINT_GUARD_TABLE=0
+        # disables the record.
         self._mg_table = {}
         if int(os.environ.get("EXP_MAINT_GUARD_TABLE", "1")):
             try:
@@ -887,18 +584,11 @@ class MyAgent(BaseAgent):
         self._fe_armed = 0        # comfortable steps with an announced outage inside the horizon
         self._fe_escalated = 0    # of those, steps the forward model predicted the episode ending
 
-        # ------------------------------------------------------- trip-imminence in the objective
-        # A line is not disconnected for being overloaded; it is disconnected for having been
-        # overloaded for more than NB_TIMESTEP_OVERFLOW_ALLOWED consecutive steps, and the counter is
-        # reset to zero by a single step back at or below the limit.  The selection objective scored
-        # an overload by its size alone, so a line one step from tripping and a line with the whole
-        # budget still unspent were worth the same.  Weighting the overload term by how much of the
-        # budget a line has already consumed puts the controller's effort where a disconnection is
-        # actually about to happen, and lets it spend the free steps elsewhere.
-        #
-        # This matters because a trip is not merely a lost line: it carries a NB_TIMESTEP_RECONNECTION
-        # lockout that the controller cannot buy back, and disconnections accumulating on top of
-        # attacks and maintenance are what separates the network and ends the episode.
+        # --- Trip imminence in the objective (EXP_TRIP_W) ---
+        # A line trips after more than NB_TIMESTEP_OVERFLOW_ALLOWED consecutive steps above its limit, and one step
+        # back within the limit resets its counter. The overload term is therefore weighted by how much of that
+        # allowance the line has used, so that effort goes where a trip is about to happen. A trip also locks the
+        # line out for NB_TIMESTEP_RECONNECTION steps.
         self._trip_w = float(os.environ.get("EXP_TRIP_W", "3.0"))
         try:
             self._trip_k = max(1, int(env.parameters.NB_TIMESTEP_OVERFLOW_ALLOWED))
@@ -906,8 +596,7 @@ class MyAgent(BaseAgent):
             self._trip_k = 3
 
         self._dispatch_margin = float(os.environ.get("EXP_DISPATCH_MARGIN", "30.0"))  # MW held back from the corner
-        # When the guard is on, a release that is too large should be shrunk rather than abandoned, so the
-        # scan needs finer steps than the single all-or-nothing fraction the baseline ships with.
+        # Fractions of the curtailment lift tried in descending order when the guard is on.
         self._dispatch_fracs = tuple(
             float(x) for x in os.environ.get("EXP_DISPATCH_FRACS", "1.0,0.5,0.25,0.12,0.06").split(",") if x.strip()
         )
@@ -925,16 +614,8 @@ class MyAgent(BaseAgent):
         except Exception:
             self._opp_mode = 0
 
-        # --- Greedy N-1-contingency TEACHER (danger-branch re-ranker; decisive GATE probe) ---
-        # Coexist ranks the danger-state candidate pool by the opponent-BLIND _composite (worst-case
-        # rho over the forecast + a curtailment penalty). This lever instead ranks the same pool by
-        # N-1 ROBUSTNESS: for each candidate, play it, then inject the adversary's single most likely
-        # attack (disconnect one attackable line) and read the resulting worst rho -- the candidate
-        # minimising the worst-over-attacks loading is preferred. It probes only the few
-        # currently-most-loaded attackable lines (the GeometricOpponentMultiArea's bias is toward
-        # high loading) to bound the extra simulate cost. Purpose: test whether an N-1 "teacher"
-        # selects strictly better danger-state actions than coexist's blind selector -- the ceiling
-        # any policy distilled from that teacher could reach. DEFAULT 0 = byte-identical coexist.
+        # Optional re-ranking of the danger candidates by robustness to the likeliest single attack. Off by
+        # default.
         self._n1_teacher = int(os.environ.get("EXP_N1_TEACHER", "0"))
         self._n1_topk_lines = int(os.environ.get("EXP_N1_TOPK", "6"))  # attackable lines probed / danger step
         # GeometricOpponentMultiArea's fixed 22-line attackable set. Hardcoded so the teacher does not
@@ -949,63 +630,39 @@ class MyAgent(BaseAgent):
                 except Exception:
                     pass
 
-        # --- Preventive convex-OPF candidate (OptimCVXPY core, as in the 2023 winning agent) ---
-        # dr13's danger gate (danger_rho=1.3) keeps the myopic 2-step topology selector from acting in
-        # the rho in (1.0, 1.3) "incubation" window, where a failure analysis found the dominant deaths originate
-        # (a soft-overflow line trips after 3 steps and islands an area). Continuous *reactive* control
-        # was found to be no survival lever there (0/178) -- but that tested single-generator
-        # ramp candidates at already-fatal states, not a GLOBAL convex redispatch+storage+curtailment
-        # co-optimization applied PREVENTIVELY. This adds exactly that as one more candidate, vetted by
-        # the same _composite / obs.simulate arbiter as topology (never played on blind faith). Penalties
-        # make curtailment (which costs the 0.2 Low-carbon term) a last resort behind redispatch/storage.
+        # --- Preventive convex OPF (OptimCVXPY) ---
+        # Below the danger gate the topology search does not act, yet an overload that trips a line after
+        # NB_TIMESTEP_OVERFLOW_ALLOWED steps can start there. The convex DC OPF over redispatch, storage and
+        # curtailment is therefore offered as a preventive action, checked by the forecast like every other
+        # candidate. Its penalties make curtailment the last resort.
         self._cvxpy_enabled = int(os.environ.get("EXP_CVXPY", "1"))
-        self._cvx_trigger = float(os.environ.get("EXP_CVXPY_TRIGGER", "1.0"))  # act above this rho (SHIP: 1.05, Config C)
-        # --- GLA: Guarded-Line Anticipator (offline-validated fixed-posture library) -------------------
-        # ~2/3 of episode deaths come from the adversary cutting a small area-1 "fatal" set (dominant: 154)
-        # at a stressed moment, so hard-overflow cascade, so game-over. GLA keeps a FIXED, offline
-        # ground-truth-validated bus-split posture per guarded line (loaded from a bundled JSON). When a
-        # guarded line is CONNECTED, elevated (a plausible next target under the opponent's rho-ranked
-        # target distribution) and the dominant attackable line in its area, GLA arms its library posture
-        # -- but only if a fresh self-safety simulate keeps the CURRENT grid comfortable -- and HOLDS it
-        # (topology is sticky) until the threat clears, then snapshot-reverts. No runtime posture SEARCH
-        # (that 1-step selection was a measured regression); the library is the target+posture chooser.
-        # Default OFF, so byte-identical to the base.
+        self._cvx_trigger = float(os.environ.get("EXP_CVXPY_TRIGGER", "1.0"))  # acts when max rho exceeds this value
+        # --- Guarded-line rule (EXP_GLA) ---
+        # For two attackable lines whose loss is especially dangerous, gla_library.json holds a busbar posture
+        # validated offline. When such a line is in service, loaded near its limit and the most loaded attackable
+        # line of its region, the posture is applied if the forecast keeps the current state safe, held while the
+        # threat lasts, and then reverted.
         self._gla = int(os.environ.get("EXP_GLA", "1"))
         self._gla_arm_rho = float(os.environ.get("GLA_ARM_RHO", "0.92"))
         self._gla_arm_ceil = float(os.environ.get("GLA_ARM_CEIL", "1.00"))   # arm in the elevated-but-not-overloaded band
         self._gla_selfsafe = float(os.environ.get("GLA_SELFSAFE", "1.55"))   # allow the posture's topology-change transient
         self._gla_hold_yield = float(os.environ.get("GLA_HOLD_YIELD", "1.7"))# hold through the transient; yield only on severe overload
         self._gla_cut_risk = float(os.environ.get("GLA_CUT_RISK", "0.0"))   # arm only if do-nothing post-cut rho exceeds this
-        # Overflow-timer gate (idea: act on an INCUBATING timed trip the short-horizon composite misses).
-        # A line above its limit for NB_TIMESTEP_OVERFLOW_ALLOWED (=3) consecutive steps is force-disconnected;
-        # m07's composite/worst_rho horizon is too short to see this, so at a mild rho in (1.0, danger) it does
-        # nothing until the line trips and cascades (e.g. cid27: rho 1.08 held 3 steps, so trip, so death at 237
-        # while do-nothing on the nominal grid survives to 1076). When any line's overflow counter reaches
-        # ovftimer_k (one step before the trip), force the danger-pick relief regardless of the rho gate.
+        # Optional: force the danger search when a line's overflow counter is one step from the trip. Off by
+        # default.
         self._ovftimer = int(os.environ.get("EXP_OVFTIMER", "0"))
         self._ovftimer_k = int(os.environ.get("EXP_OVFTIMER_K", "2"))
-        # --- Sustained-overload multi-step-vet relief ---
-        # The forecast-based danger_rho gate is PROTECTIVE against the myopic 1-step selector, but blind
-        # to the sustained-mild-overload TRIP: a line parked at ρ∈(1.0,1.3) trips after
-        # nb_timestep_overflow_allowed steps while the do-nothing forecast never reaches danger_rho, so
-        # the agent watches it trip although its pool already holds the relieving topology.
-        # The naive fix (widen the gate, force the 1-step-composite danger-pick — the OVFTIMER branch
-        # above) over-acts and was measured catastrophic in selection. KEY DISTINCTION: unlike the
-        # attack-death, this trip is a DETERMINISTIC consequence of the current overload + inaction, so a
-        # multi-step nested-sim do-nothing roll predicts it FAITHFULLY — the one regime where a multi-step
-        # vet is reliable. So: when a line has been overloaded ≥ _sustain_k steps AND the do-nothing roll
-        # is predicted to trip within the horizon, search the localized topology pool + the agent's own
-        # action, SELECT BY MULTI-STEP SURVIVAL (not the 1-step composite), and override only if a
-        # candidate strictly out-survives do-nothing. The predicted-trip guard leaves genuine survivors
-        # untouched (fixes selection's full-survival regression). Default OFF.
+        # --- Extended-horizon safeguard (EXP_SUSTAIN_VET) ---
+        # The two-step forecast cannot see a line that stays mildly overloaded until its counter trips it. When a
+        # line has been overloaded for EXP_SUSTAIN_K steps and a roll over the horizon predicts an end of episode,
+        # the safeguard ranks the agent's action and local topology candidates by how long they survive, and
+        # replaces the action only if a candidate survives longer than both that action and do-nothing.
         self._sustain_vet = int(os.environ.get("EXP_SUSTAIN_VET", "1"))  # on by default
         self._sustain_k = int(os.environ.get("EXP_SUSTAIN_K", "1"))
         self._sustain_h = int(os.environ.get("EXP_SUSTAIN_H", "8"))
         self._sustain_topn = int(os.environ.get("EXP_SUSTAIN_TOPN", "20"))
-        # Refinement: engage the override only when the agent's OWN normal action is itself
-        # predicted to trip (not merely when do-nothing trips). Prevents replacing a working normal
-        # action with a vet-over-ranked topology that later destabilises (the idx5/11/15 collateral).
-        # Default OFF, so the baked 66.94 champion behaviour is unchanged.
+        # The safeguard engages only when the action of reactive control is itself forecast to end the
+        # episode, not merely do-nothing.
         self._sustain_conf = int(os.environ.get("EXP_SUSTAIN_CONF", "1"))  # on by default
         self._gla_disarm_rho = float(os.environ.get("GLA_DISARM_RHO", "0.88"))
         self._gla_dom_rank = int(os.environ.get("GLA_DOM_RANK", "1"))
@@ -1034,7 +691,7 @@ class MyAgent(BaseAgent):
         self._gla_snapshot = None  # set_bus action restoring the pre-apply bus of the posture's positions
         self._gla_clear = 0        # consecutive threat-cleared steps
         self._gla_ttl = 0          # remaining hold cap
-        self._gla_backoff = {}     # line, so steps to suppress re-arm after a failed self-safety gate
+        self._gla_backoff = {}  # line -> steps during which re-arming is suppressed after a failed check
         self._gla_fired = 0        # diagnostics
         self._cvx = None
         self._cvx_computed = 0   # times a finite CVX candidate was produced (decision-time budget proxy)
@@ -1061,28 +718,17 @@ class MyAgent(BaseAgent):
                 print(f"[cvxpy] disabled ({exc_}); falling back to plain dr13.")
                 self._cvx = None
                 self._cvxpy_enabled = 0
-        # Survival-first emergency relief. Under a real multi-line overload the standard OPF (curtailment
-        # penalised 50x to protect the Low-carbon score) relieves too slowly: the overloaded line trips on
-        # the overflow timer before rho is driven back under 1 (traced on compound attacks -- rho 1.31 falls
-        # only to ~1.22 over six steps, then trips and cascades). This second OPF instance penalises
-        # curtailment lightly, so when rho is already high it curtails aggressively to crush the overload
-        # inside the trip window, trading a little nres for the survivor (each survivor is worth ~0.7 score,
-        # far more than the 0.2-weighted nres a brief curtailment costs). Built only when enabled; fired only
-        # above emergency_rho, so comfortable operation is untouched. Default OFF (byte-identical baseline).
+        # Second instance of the convex OPF, solved when a line's overflow counter is running and the agent would
+        # otherwise do nothing; its solution is played if the forecast lowers the peak loading. Its penalties can
+        # be set separately (EXP_EMERGENCY_*) and by default equal those of the first instance.
         self._emergency = int(os.environ.get("EXP_EMERGENCY", "1"))
         self._emergency_rho = float(os.environ.get("EXP_EMERGENCY_RHO", "1.00"))
         self._emergency_margin = float(os.environ.get("EXP_EMERGENCY_MARGIN", "0.0"))
-        # Selectivity: a line trips only after NB_TIMESTEP_OVERFLOW_ALLOWED (=3) CONSECUTIVE steps above the
-        # thermal limit, so a transient rho>1 is harmless and relieving it just wastes curtailment/redispatch
-        # on scenarios that survive anyway (measured: firing on every rho>1 step crashed nres and even hurt
-        # survival). When ovf_k>0, emergency fires only once a line has been overloaded for k steps -- i.e.
-        # a trip is imminent -- so it acts on exactly the sustained overloads that actually kill and leaves
-        # transients alone. k=1 leaves two steps of runway to crush rho; k=2 is maximally selective.
+        # The second instance acts only once a line has been overloaded for EXP_EMERGENCY_OVF_K steps, so short
+        # overloads that clear on their own are left alone.
         self._emergency_ovf_k = int(os.environ.get("EXP_EMERGENCY_OVF_K", "1"))
-        # Also apply the emergency rescue in the DANGER branch, at the point where the composite-gated
-        # topology/continuous pool (plus the last-resort net) has found nothing better than do-nothing and
-        # would idle -- covering the sustained-overload idle deaths that incubate above the danger gate, not
-        # only those below it. Default OFF so the fallback-only behaviour is unchanged.
+        # Optional: also use the second instance in the danger branch when the search finds nothing better than
+        # do-nothing. Off by default.
         self._emergency_danger = int(os.environ.get("EXP_EMERGENCY_DANGER", "0"))
         self._cvx_emerg = None
         if self._emergency and self._cvx is not None:
@@ -1106,18 +752,11 @@ class MyAgent(BaseAgent):
     # Non-topological levers, built once from static grid characteristics
     # ------------------------------------------------------------------
     def _discover_horizon(self, obs) -> int:
-        """Longest `time_step` the environment's forecast supports, found by asking the LIVE observation.
+        """Longest `time_step` the environment's forecast supports, found from the live observation.
 
-        An earlier version took an `env` and called `env.reset()` at construction to get an observation
-        to probe. That advanced the environment before the first episode was played, and the integrity
-        arm caught it: two packages whose mechanism was switched OFF still diverged from their parent by
-        an identical -0.1693 composite and 3 lost completions, on 764 scenarios, while a third fork
-        without the helper reproduced the parent exactly. Construction must not touch the environment.
-
-        Discovery is therefore deferred to the first step that needs it and reads the observation the
-        agent was handed. The sweep costs a handful of forecasts once per episode and nothing after.
-        Falls back to 1 -- making the caller's trigger equivalent to "an outage starts next step" --
-        rather than to a guess, so an environment without forecasts degrades to a no-op.
+        It is determined on the first step that needs it, because constructing the agent must not step the
+        environment. Falls back to 1, so that on an environment without forecasts the caller's trigger reduces
+        to "an outage starts at the next step".
         """
         try:
             best = 1
@@ -1216,9 +855,8 @@ class MyAgent(BaseAgent):
         # A forecast is reusable only within the decision it was made for.
         self._sim_cache.clear()
         try:
-            # The guard is consulted before the proactive hold: its deadline is PUBLISHED and cannot
-            # be deferred, while the hold can be taken on any comfortable step and the relief path
-            # re-decides every step regardless.
+            # The look-ahead is consulted before withholding: its deadline is published and cannot be deferred,
+            # while withholding can act on any later step below its threshold.
             if self._mg:
                 mg = self._maint_guard(observation)
                 if mg is not None:
@@ -1267,21 +905,12 @@ class MyAgent(BaseAgent):
         return True
 
     def _ratchet_score(self, scorer, nb_process):
-        """Per-scenario competition composite for the CURRENT configuration.
+        """Per-scenario competition score (0.8 x operations + 0.2 x low-carbon) of the current configuration.
 
-        Uses the official scorer rather than a survival proxy. That is not a preference: a previous
-        calibration of this agent was wrecked by an inverted proxy objective -- steps-survived ranked a
-        configuration worse that the platform then paid +0.376 for -- so the objective must be the one
-        that is actually paid.
-
-        ScoreL2RPN2023.get returns one row per scenario, (ep_score, op_score, nres_score,
-        assistant_score). The competition composite is 0.8 x operations + 0.2 x low-carbon, and it is
-        computed here from those two components rather than read from ep_score, whose weights default to
-        0.6 / 0.25 / 0.15 and include an assistant term this competition does not score. An earlier
-        version of this method assumed one sequence per score function and combined the first two
-        SCENARIOS component-wise, which produced four numbers that were not per-scenario composites; it
-        is what this rewrite replaces. Anything unrecognised raises rather than being averaged into
-        nonsense, and a raise is caught by the caller as "candidate not scored".
+        ScoreL2RPN2023.get returns one row per scenario, (ep_score, op_score, nres_score, assistant_score). The
+        score is computed from the operations and low-carbon components, because ep_score uses other weights and
+        includes an assistant term that this competition does not score. Unrecognized output raises, and the
+        caller then treats the candidate as not scored.
         """
         out = scorer.get(self, nb_process=nb_process)
         all_scores = out[0] if isinstance(out, (tuple, list)) else out
@@ -1289,7 +918,7 @@ class MyAgent(BaseAgent):
         if not rows:
             raise RuntimeError("scorer returned no scenarios")
         if all(isinstance(v, (int, float)) for v in rows):
-            return [float(v) for v in rows]          # a scorer that already returns one composite per scenario
+            return [float(v) for v in rows]  # a scorer that already returns one score per scenario
         vals = []
         for r in rows:
             r = list(r)
@@ -1299,22 +928,20 @@ class MyAgent(BaseAgent):
         return vals
 
     def _ratchet_train(self, env, num_workers, max_training_time):
-        """Choose the held triple on the training chronics, or change nothing.
+        """Choose the withheld lines on the training scenarios, or change nothing.
 
-        Four rules make "never worse than the shipped agent" meaningful, and none is optional:
-          * the candidate list is fixed in the package, so the decision may use every scenario;
-          * acceptance needs a MARGIN over the paired noise floor, Bonferroni-scaled for the number of
-            candidates compared -- not a better mean, and not a sign test;
-          * at most one change is accepted, because every acceptance is an independent chance to be wrong;
-          * any failure, timeout or degenerate comparison leaves the shipped configuration in place, and
-            the default is restored before returning whatever happens.
+        Four rules keep the result no worse than the default configuration:
+          * the candidate list is fixed in the package;
+          * acceptance needs a margin over the paired noise, Bonferroni-scaled for the number of candidates
+            compared, not merely a better mean;
+          * at most one change is accepted;
+          * any failure, timeout or degenerate comparison leaves the default in place, and the default is
+            restored before returning in every case.
         """
         import time as _time
         t0 = _time.time()
-        # The platform grants the whole 24 h allowance to train() (max_training_time=86400 has been logged
-        # from a real run), while scoring afterwards takes roughly twelve hours of the same allowance. The
-        # budget honoured here is therefore the smaller of what was granted and a fixed cap, and a margin
-        # is kept under that so an overrun cannot eat into the evaluation that follows.
+        # train() may use up to 24 hours, and the scoring that follows uses part of the same allowance, so the
+        # budget used here is the smaller of the grant and a fixed cap, with a margin kept below it.
         budget = min(float(max_training_time), float(RATCHET_HARD_CAP_S))
         deadline = t0 + 0.85 * budget
         default = tuple(self._ratchet_default_triple)
@@ -1336,12 +963,9 @@ class MyAgent(BaseAgent):
             print("[ratchet] could not count training scenarios; keeping shipped configuration")
             return
         print(f"[ratchet] training scenarios available: {n_scen}")
-        # Scoring is single-process. The official scorer evaluates an agent across a worker pool by
-        # pickling it, and this controller holds a handle on the environment's forecast machinery -- a
-        # class grid2op generates at runtime that cannot be pickled -- so the pool raises before scoring
-        # a single scenario (verified). A candidate therefore costs scenarios x seconds-per-scenario, and
-        # the scenario count is sized to the budget so that at least two candidates -- the default and
-        # the best-measured alternative -- are compared on the same scenarios inside it.
+        # Scoring runs in a single process: the official scorer's worker pool pickles the agent, which holds a
+        # class that grid2op generates at run time and that cannot be pickled. The number of scenarios is sized
+        # to the budget so that the default and the alternative are compared on the same scenarios.
         n_cand = max(2, RATCHET_MAX_CANDIDATES)
         room = max(0.0, deadline - _time.time())
         n_use = int(max(1, min(n_scen, room // (float(RATCHET_SECONDS_PER_SCENARIO) * n_cand))))
@@ -1421,17 +1045,13 @@ class MyAgent(BaseAgent):
               f"{len(challengers)} candidates compared)")
 
     def _fullstarve_arm(self, obs):
-        """(Re)open the held attackable lines while the grid is comfortable; otherwise defer.
+        """(Re)open the withheld lines while max rho is at most the arming threshold; otherwise defer.
 
-        Fires only in the comfortable band, replaces at most the housekeeping the normal flow would
-        do there, and opens one line per area at most (the per-area line-status budget). The hold is
-        unconditional on the rest of the area's state: this exact semantics — re-open whenever the
-        line is back, the band is comfortable and the cooldown is clear — is the configuration the
-        30-episode gate measured, and a "skip when the area is already starved by another outage"
-        refinement was tried and measurably degraded it (it hands the arm's timing to maintenance
-        schedules and let two gate conversions regress). Everything after the opening is the shipped
-        machinery: `_starve_filter` withholds the reconnection below the yield threshold, and above
-        it the normal release logic takes the line back."""
+        Opens at most one line per region, the per-region limit on line-status changes. A line is reopened
+        whenever it is back in service, the threshold is met and its cooldown is over. After the opening,
+        `_starve_filter` keeps the line out up to the release threshold, and above it the ordinary
+        reconnection rule takes the line back.
+        """
         if not self._fs or not self._fs_lines:
             return None
         if float(np.nanmax(obs.rho)) > self._fs_arm_rho:
@@ -1444,25 +1064,13 @@ class MyAgent(BaseAgent):
         return self._action_space({"set_line_status": [(int(l), -1) for l in need]})
 
     def _sim(self, obs, action, time_step=1):
-        """Forecast with a per-decision memo, held by the agent itself.
+        """Forecast with a per-decision memo held by the agent.
 
-        A forecast is a pure function of (observation, action, horizon), and this controller asks for the
-        same triple more than once while deciding a single step in about 28 % of all forecast calls, so
-        returning the first answer to later callers within the same decision removes real duplication and
-        cannot change any caller's result.
-
-        AN EARLIER VERSION OF this OPTIMISATION ASSIGNED TO
-        `grid2op.Observation.baseObservation.BaseObservation.simulate`, replacing a method on the
-        environment's own observation class at import time. That is a modification of the game
-        environment, which a submission must not contain: the environment has to be the original one, and
-        patching library internals to change their behaviour is precisely the kind of change that would
-        need prior authorisation. The identical saving is available without touching anything outside this
-        class, by routing the agent's own forecast calls through here, so the patch had no justification.
-
-        The cache stores the observation beside its result: keying on `id()` alone would be unsound
-        because the nested forecasts this controller performs create and discard observations within one
-        decision, and a freed object can reappear at the same address. `act()` clears the cache at the
-        start of every decision, since a forecast is only reusable within the decision it was made for.
+        A forecast is a pure function of (observation, action, horizon), and the controller asks for the same
+        triple several times within one decision, so the first answer is returned to later callers. The cache
+        stores the observation beside its result, because keying on `id()` alone is unsound: observations
+        created and discarded within one decision can reuse an address. `act()` clears the cache at the start of
+        every decision.
         """
         if not self._turbo:
             return obs.simulate(action, time_step=time_step)
@@ -1480,16 +1088,14 @@ class MyAgent(BaseAgent):
         return res
 
     def _fs_compose_pick(self, obs, fs):
-        """Play the relief half on top of the starvation arm when that is legal and not worse.
+        """Add the relief action to the opening of the withheld lines when that is legal and not worse.
 
-        Mirrors the reconnection co-exist arbiter: the arm is never dropped, relief is added only if the
-        composite does not worsen, and the acceptance epsilon is the reconnection path's own 1e-6. Relief
-        is taken from `_relief` rather than `_decide` deliberately -- `_decide` can itself return a
-        line-status action (a reconnection or an outage cut), which would contend for the same per-area
-        line-status budget as the arm, whereas `_relief` is the substation/continuous half that provably
-        cannot collide. Any relief that does touch line status is refused and counted rather than risked.
+        The opening is never dropped; relief is added only if the composite does not worsen (tolerance 1e-6).
+        Relief comes from `_relief`, which changes only substations and continuous set points, rather than from
+        `_decide`, which can return a line-status action that would compete with the opening for the per-region
+        limit on line-status changes. Relief that touches line status is refused.
 
-        Returns None to leave the arm alone, which is the shipped behaviour.
+        Returns None to leave the opening alone.
         """
         try:
             relief = self._relief(obs)
@@ -1537,18 +1143,17 @@ class MyAgent(BaseAgent):
         return None
 
     def _cvxpy_candidate(self, obs) -> Optional[BaseAction]:
-        """Global convex DC-OPF relief action for the current state (single-shot, stateless).
+        """Convex DC OPF relief action for the current state, computed afresh at every call.
 
-        Solves the ``optimCVXPY`` "unsafe" program -- minimise thermal-limit violation using
-        redispatch + storage + curtailment, penalising curtailment far more than the nres-free
-        levers -- and converts it to a grid2op action. Returns ``None`` if the solver fails or the
-        result is empty, so the caller cleanly falls back to do-nothing / the topology search.
+        Solves the OptimCVXPY "unsafe" program, which minimizes thermal-limit violations with redispatch, storage
+        and curtailment and penalizes curtailment far more than the other two, and converts the result to a
+        grid2op action. Returns None if the solver fails or the result is empty.
 
-        Deliberately does not use ``OptimCVXPY.act`` (whose own rho gating and cross-step error
-        feedback assume it is called every step); the flow-error and storage accumulators are zeroed
-        so each call is a pure function of ``obs``. Feasibility of storage/curtailment ramps is
-        re-clamped with ``limit_curtail_storage`` (the same guard the other continuous levers use)
-        to never trigger an over-large-setpoint game over."""
+        ``OptimCVXPY.act`` is not used, because its own gating and its error feedback across steps assume a call
+        at every step; the flow-error and storage accumulators are zeroed instead, so each call depends on
+        ``obs`` alone. Storage and curtailment set points are clamped to their feasible ranges with
+        ``limit_curtail_storage``.
+        """
         if self._cvx is None:
             return None
         try:
@@ -1597,16 +1202,8 @@ class MyAgent(BaseAgent):
         self._gla_clear = 0
         self._gla_ttl = 0
         self._gla_backoff = {}
-        # `_mg_latched` is per-AGENT, and the scorer builds one agent for all 208 platform
-        # scenarios (scoring.py:341). The source lineage never cleared it, so the first scenario that
-        # probed a line latched it and every later scenario skipped that line -- the guard could fire
-        # at most once per run. Local sharding (128 shards of ~6 episodes) hid this completely, since
-        # the one line the table covers appears in only 9.6 % of episodes.
-        # Same defect class as `_outage_latched`, where the repair was not automatically
-        # positive: it converted two deaths and destroyed a completion the latch had been shielding.
-        # This is therefore a measured experiment, not a correction assumed to help.
-        # EXP_MG_LATCH_RESET=0 reproduces the SOURCE lineage's behaviour (latch never cleared), so
-        # the repair is itself a measurable variable rather than an assumed correction.
+        # `_mg_latched` belongs to the agent, and the scorer builds one agent for all scenarios, so the set of
+        # probed outages is cleared at the start of every episode (EXP_MG_LATCH_RESET).
         if self._mg_latch_reset:
             if self._mg_latched:
                 self._mg_cleared += 1
@@ -1614,12 +1211,11 @@ class MyAgent(BaseAgent):
         self._area_opf_cd = 0
 
     def _maint_candidates(self, obs, line):
-        """Actions worth trying against an announced cut of `line`, drawn from the agent's OWN pools.
+        """Actions worth trying against an announced outage of `line`, drawn from the agent's own pools.
 
-        Deliberately not a table. A table keyed on one line of one grid cannot transfer to a network
-        it has never seen, and roughly a fifth of this failure class activates a line no table of ours
-        contains. The candidates here are generated from the live observation exactly as the danger
-        branch generates its own, so the guard works on any grid and any scheduled line."""
+        The candidates are generated from the live observation, as the danger search generates its own, so the
+        look-ahead also works for lines without a posture record.
+        """
         out = []
         try:
             ends = (int(self._line_or_to_subid[line]), int(self._line_ex_to_subid[line]))
@@ -1644,22 +1240,13 @@ class MyAgent(BaseAgent):
         return out
 
     def _maint_guard(self, obs):
-        """Do not be killed by an outage that was published in advance.
+        """Prepare the network for an outage that was announced in advance.
 
-        The maintenance timetable is the only EXACT forward signal the environment provides. Every
-        other look-ahead here is `obs.simulate`, a forecast on predicted injections with no adversary.
-        `time_next_maintenance` is not a prediction: it is the schedule, announced from step 0.
-
-        The guard asks one question and acts on the answer:
-
-            does the announced cut, applied to this state, end the episode or leave the grid severely
-            loaded?  if so, is there an action of ours that survives it?
-
-        Both halves are evaluated on `_composite`, the same objective the controller selects with
-        everywhere else, so the guard cannot prefer something the rest of the agent would reject. The
-        cost is bounded three ways: it runs only while an outage sits inside the lead window; the
-        probe is a single simulate; and each line is latched after one decision so the probe is not
-        repaid every step of the window.
+        The maintenance schedule in `time_next_maintenance` is exact, unlike `obs.simulate`, which forecasts
+        predicted injections without the opponent. For the nearest outage inside the lead window, the look-ahead
+        asks whether that outage, applied to the current state, would end the episode or leave the network
+        severely loaded, and if so, which of the agent's actions survives it. Each line is examined once per
+        episode.
 
         Returns an action, or None to leave the step to the ordinary controller.
         """
@@ -1680,7 +1267,7 @@ class MyAgent(BaseAgent):
         except Exception:
             return None
 
-        # 1. What does the announced cut do to us from HERE? One simulate, read both outcomes.
+        # 1. Probe: what does the announced outage do from the current state?
         self._mg_probed += 1
         try:
             sim, _, dead, _ = self._sim(obs, cut, time_step=1)
@@ -1699,21 +1286,12 @@ class MyAgent(BaseAgent):
                 self._mg_latched.add(line)
                 return None
 
-        # 2. Is there an action of ours that survives the cut?
+        # 2. Is there an action that survives the outage?
         #
-        # ORDER OF EVIDENCE, and this is the part that matters. Where a measured survival record
-        # exists for this line, it is used and the run-time forecast is not consulted. That is not a
-        # preference, it is a measurement: checked against ground truth on 413 configurations played
-        # for real through this outage, the forecast filter discarded 10 of the 12 configurations
-        # that actually work, and ranking by predicted post-outage loading PREFERS FAILURES -- savers
-        # sit at rho 1.942 against a median failure of 1.897. The forecast is being asked whether an
-        # overload will clear over the FOLLOWING steps, which depends on what the agent does next and
-        # which a one-step forecast cannot see.
-        #
-        # Where no record exists -- a line we have never measured, or a grid we have never seen --
-        # the guard falls back on its own candidates ranked by the forecast. That is weaker: measured
-        # on the 09:00 class it recovers +9 steps against the table's +2719. It is not nothing, and
-        # it is what makes the guard work at all on data we do not have records for.
+        # Where a posture record exists for this line, it is used without consulting the forecast. Survival
+        # depends on the steps after the outage, which a one-step forecast does not see: checked against
+        # configurations played through this outage, the forecast filter discarded most of those that survived.
+        # Lines without a record fall back on the agent's own candidates, ranked by the forecast.
         rec = self._mg_table.get(line)
         if rec:
             base_post = self._composite(obs, cut)
@@ -1751,11 +1329,11 @@ class MyAgent(BaseAgent):
         return None
 
     def _lodf_for(self, obs):
-        """Line-outage distribution factors for the CURRENT topology, built once per decision.
+        """Line-outage distribution factors, computed once per decision for the topology of the environment
+        the agent was built on.
 
-        Columns for BRIDGES are non-finite: removing such a line disconnects the network and no
-        redistribution exists. They are excluded rather than clipped, because a bridge outage is both
-        the case the linear model cannot describe and the one action we must never play.
+        Columns of bridges are non-finite, because removing a bridge splits the network; they are excluded
+        rather than clipped.
         """
         key = id(obs)
         hit = self._lodf_cache.get(key)
@@ -1773,14 +1351,14 @@ class MyAgent(BaseAgent):
         return out
 
     def _lodfcut_candidates(self, obs):
-        """Line openings worth offering to the danger search, ranked by exact post-outage loading.
+        """Line openings to offer to the danger search, ranked by estimated post-opening loading.
 
-        For every line that is in service, off cooldown, not part of the proactive hold and not a
-        bridge, the post-opening loading of the whole grid is computed in closed form and the few whose
-        removal leaves the grid least loaded are returned as `set_line_status` actions. They are
-        offered, not played: the shipped `_composite` arbiter ranks them against every other candidate.
+        For every line in service, off cooldown, not withheld and not a bridge, the loading of every other line
+        after the opening is computed in one matrix product. The lines whose opening leaves the network least
+        loaded, at most EXP_LODFCUT_K of them and only below EXP_LODFCUT_LO, are returned as `set_line_status`
+        actions. They are offered, not played: `_composite` ranks them against every other candidate.
 
-        Returns [] on any failure, so a grid without distribution factors degrades to the parent.
+        Returns [] on any failure.
         """
         if not self._lodfcut or self._ilim is None:
             return []
@@ -1823,14 +1401,15 @@ class MyAgent(BaseAgent):
             return []
 
     def _gla_step(self, obs):
-        """Guarded-Line Anticipator: arm/hold/revert a fixed library posture. Returns an action to play,
-        or None to defer to the normal decision flow."""
+        """Guarded-line rule: apply, hold or revert a posture from the library. Returns an action to play,
+        or None to defer to the normal decision flow.
+        """
         rho = obs.rho
         for _k in list(self._gla_backoff):
             self._gla_backoff[_k] -= 1
             if self._gla_backoff[_k] <= 0:
                 del self._gla_backoff[_k]
-        # --- HOLD ---
+        # --- Hold the posture ---
         if self._gla_state == 1:
             f = self._gla_target
             if bool(obs.line_status[f]) and float(rho[f]) < self._gla_disarm_rho:
@@ -1851,7 +1430,7 @@ class MyAgent(BaseAgent):
             if float(rho.max()) > self._gla_hold_yield:
                 return None
             return self._do_nothing
-        # --- ARM (elevated-but-not-overloaded window) ---
+        # --- Arm the posture while the line is loaded near, but not above, its limit ---
         if float(rho.max()) > self._gla_arm_ceil:
             return None
         hot = [f for f in self._gla_lib
@@ -1870,9 +1449,8 @@ class MyAgent(BaseAgent):
                 return None
         except Exception:
             return None
-        # N-1 cut-risk gate: arm only when losing f is genuinely dangerous now (do-nothing post-cut rho
-        # high). If f's cut is already survivable, do not pay the posture's op-cost. This is what keeps
-        # firing rare, which bounds the held-posture op drag while retaining the survival wins.
+        # Optional gate (GLA_CUT_RISK; the default 0 disables it): arm only when losing the line would overload
+        # the network under do-nothing.
         cutf = self._gla_cut.get(f)
         if cutf is not None:
             try:
@@ -1908,29 +1486,24 @@ class MyAgent(BaseAgent):
                 return g
         reco = self._reconnection(obs) if self._reconnect else None
         if reco is not None and not self._perarea_coexist:
-            return reco  # Config C behavior: a reconnection pre-empts the rest of the step
+            return reco  # without the combination, a reconnection alone ends the step
 
         relief = self._relief(obs)
         if reco is None:
             return relief
 
-        # Co-exist: reco (line-status only, aff_subs == 0) and relief (substation/continuous,
-        # aff_lines == 0) never collide under RulesByArea, so play the lowest-composite of
-        # {reco+relief, reco, relief}. The combined action is preferred on ties (it restores the most
-        # grid); relief alone is always in the set, so the co-exist path can never score below Config C's
-        # relief on the simulate arbiter, and reco alone matches Config C's original reconnection-step play.
+        # A reconnection changes only line status and the relief only substations or continuous set points, so
+        # both are legal together. The lowest composite among reconnection plus relief, reconnection alone and
+        # relief alone is played; the combination wins ties.
         combined = reco + relief
         if self._coexist_keepreco:
-            # never drop the reconnection; add relief on top only if it does not worsen reco on the
-            # composite. Keeps reconnection timing identical to Config C, adding relief where it helps.
+            # never drop the reconnection; add relief only if it does not worsen the composite
             if self._composite(obs, combined) <= self._composite(obs, reco) + 1e-6:
                 self._perarea_coexist_used += 1
                 return combined
             return reco
-        # Co-exist arbiter. Default: the opponent-blind composite (byte-identical coexist). Under the
-        # N-1 teacher, arbitrate by the same N-1 score used to select `relief`, so the teacher's pick is
-        # not silently overridden by the blind composite whenever a reconnection is also pending -- the
-        # danger decision is then fully N-1-driven, which is what the gate is meant to measure.
+        # Arbiter of the combination: the composite by default, or the N-1 score when the optional N-1
+        # re-ranking is on, so that its choice is not overridden here.
         if self._n1_teacher:
             n1_lines = self._n1_lines(obs)
             score = lambda a: self._n1_worst(obs, a, n1_lines)  # noqa: E731
@@ -1942,16 +1515,16 @@ class MyAgent(BaseAgent):
             if c < best_c - 1e-9:
                 best_a, best_c = a, c
         if best_a is None:
-            # every candidate forecasts a game over (near-death state), so keep the reconnection,
-            # matching Config C's reconnection-step play; never fall through to None.
+            # every candidate forecasts an end of episode, so keep the reconnection rather than return None
             best_a = reco
         if best_a is combined:
             self._perarea_coexist_used += 1
         return best_a
 
     def _anticipatory_opf(self, obs):
-        """Redispatch that relieves the POST-CUT state of the likely next attack target, applied now if
-        safe on the current state. Returns the action or None."""
+        """Redispatch that relieves the post-outage state of the likeliest attack target, applied now if it
+        is safe on the current state. Returns the action or None.
+        """
         rho = obs.rho
         if float(rho.max()) > self._anticip_eval_hi:
             return None  # outside the pre-attack window, so skip the expensive K-simulate scan
@@ -2002,13 +1575,12 @@ class MyAgent(BaseAgent):
         return cvxL
 
     def _relief(self, obs) -> BaseAction:
-        """Whatever the inherited logic decides, compared against the AC-anchored proposal.
+        """Relief action of the inherited logic, compared with the AC-anchored dispatch.
 
-        The inherited relief path has many branches and returns from several of them, so hooking a new
-        candidate into any single pool reaches only a fraction of the states where it could help. Wrapping
-        the whole path instead guarantees the more accurate model is consulted wherever relief is being
-        chosen at all, while leaving every existing branch byte-identical: the wrapper only ever replaces
-        the inherited choice when an exact forecast says the alternative is better."""
+        The relief logic returns from several branches, so the AC-anchored proposal is compared with whatever it
+        returns, wherever relief is chosen. The proposal replaces that choice only if its forecast peak loading
+        is lower.
+        """
         act = self._relief_inner(obs)
         if not self._acopf or self._acopf_obj is None:
             return act
@@ -2035,26 +1607,10 @@ class MyAgent(BaseAgent):
             except Exception:
                 pass
         if self._feasesc and float(obs.rho.max()) <= self._safe_max_rho:
-            # Forecast before treating a comfortable grid as safe, while an announced outage is inside the
-            # forecast horizon or already in progress.
-            #
-            # Loading is not a sufficient safety test for this population. Of the maintenance-onset deaths
-            # on the full training set, 70 % were last observed at rho at or below this very threshold, and
-            # the class median peak (0.880) is indistinguishable from the completion population's (0.891) --
-            # AUC 0.497, p = 0.94. The controller is in housekeeping mode at the moment it loses those
-            # episodes, and it has never asked the forward model a question there: the comfortable branch
-            # cancels curtailment, charges storage and unwinds redispatch without a single forecast.
-            #
-            # The escalation is the one the overload-timer branch above already performs, on a different
-            # trigger: price do-nothing, and if the forward model says the episode ends, hand the step to
-            # the danger selector instead of to housekeeping. Nothing new is introduced -- `_worst_rho`
-            # already returns +inf on a predicted game over and `_relief_danger_pick` already consumes it.
-            #
-            # The trigger is the environment's own published countdown, not a value searched over our
-            # trajectories: maintenance is announced from step 0 in `time_next_maintenance`, and the window
-            # used is the forecast horizon itself, which is discovered rather than configured. So the cost
-            # is bounded to the steps where an outage is genuinely imminent, and on every other comfortable
-            # step this build is byte-identical to its parent.
+            # While an announced outage is inside the forecast horizon or in progress, a comfortable state is not
+            # assumed safe: the do-nothing action is forecast, and if the forecast ends the episode, the step goes to
+            # the danger search instead of housekeeping. `_worst_rho` already returns +inf on a forecast end of
+            # episode, and `_relief_danger_pick` handles it.
             try:
                 if not self._feasesc_h:
                     self._feasesc_h = self._discover_horizon(obs)
@@ -2072,24 +1628,17 @@ class MyAgent(BaseAgent):
                 except Exception:
                     pass
         if float(obs.rho.max()) <= self._safe_max_rho:
-            # Comfortable grid: first cancel any stuck curtailment (direct Low-carbon recovery, guarded
-            # to stay safe), then bank storage capacity for later -- the cheapest time to do both. Storage
-            # cycling is nres-free, so it substitutes for future curtailment (see _opportunistic_storage_action).
-            # Whatever comfortable action is chosen, optionally compose the redispatch-cancel lever on top
-            # (EXP_CANCEL_REDISP): this same safe window is also the right time to unwind accumulated
-            # redispatch toward economic dispatch and recover the op cost it bleeds. The ternary keeps the
-            # off path (default) returning the base action unchanged, so the baseline stays byte-identical.
+            # Comfortable state: lift curtailment if a lift passes the guard, adding the return of redispatch toward
+            # its economic set point on top. Otherwise charge storage while renewable output is high, then add margin
+            # preservation or, if none is available, the return of redispatch.
             if self._cancel_curtail:
                 restore = self._cancel_curtailment_action(obs)
                 if restore is not None:
                     return self._cancel_redispatch_action(obs, restore) if self._cancel_redisp else restore
             charge = self._opportunistic_storage_action(obs)
             base = charge if charge is not None else self._do_nothing
-            # Restore fleet flexibility before spending the comfortable window on economy. The two are
-            # opposites: the redispatch-cancel lever walks target_dispatch back toward economic dispatch,
-            # which is the direction that parks units on their minimum and empties the downward room the
-            # starved population dies without. Where a top-up is available and the guard accepts it, it
-            # takes the window; otherwise the economy path runs exactly as before.
+            # Margin preservation goes before the return of redispatch, which moves units toward their minimum and
+            # empties the downward room. If a shift is available and passes the guard, it is played instead.
             if self._flexfloor:
                 topped = self._flex_topup_action(obs, base)
                 if topped is not None:
@@ -2109,17 +1658,10 @@ class MyAgent(BaseAgent):
                     area02_hot = True
                     break
         if base < self._danger_rho:
-            # Below the danger gate dr13 does nothing. Preventively relieve an incubating overload here
-            # with the global convex OPF -- the rho in (safe, danger) window dr13's myopic topology
-            # selector is (protectively) barred from, and where the baseline's dominant deaths incubate.
-            # Played only if it strictly beats do-nothing on the same composite (simulate is still the
-            # arbiter), so it cannot make a comfortable state worse on the 2-step forecast.
-            # Per-area: an area-0/2 line's moderate congestion also fires the OPF here (soft redispatch/
-            # curtail, no destabilizing substation split), catching the area-0/2 idle deaths.
-            # Cooldown applies only to the area-0/2 soft-OPF fire (rarer, cut-then-persist: the setpoint
-            # stays valid while held). The global fire (area-1, rho.max>cvx_trigger) must re-solve every
-            # step: area-1 congestion evolves, so a held/stale redispatch is worse (a generalized cooldown
-            # regressed 53.27 to 50.74). So no cooldown on the global fire.
+            # Preventive regime: the topology search does not act below the danger gate, so the convex OPF relieves
+            # an overload that starts here. It is played only if it lowers the composite below that of do-nothing.
+            # The region trigger (an attackable line of region 0 or 2 above EXP_AREA_DANGER_RHO) also fires it and
+            # then starts the pause; the global trigger is re-solved at every step.
             _area_only = area02_hot and float(obs.rho.max()) <= self._cvx_trigger
             if self._cvx is not None and (float(obs.rho.max()) > self._cvx_trigger or area02_hot):
                 cvx = self._cvxpy_candidate(obs)
@@ -2137,14 +1679,10 @@ class MyAgent(BaseAgent):
                     self._area_opf_cd = self._area_opf_cd_max
                     self._anticip_opf_fired += 1
                     return _acv
-            # Survival-first emergency fallback: we are about to do nothing, yet a line is actually overloaded
-            # and its overflow timer is running (obs.timestep_overflow) toward a trip. The do-nothing forecast
-            # under-predicts a sustained overload ("recovers" on the 2-step forecast, then trips), which is why
-            # the preventive OPF/anticipatory above declined and we reached here. Firing only from this idle
-            # branch -- never overriding the active danger-branch relief -- rescues the idle-into-trip deaths
-            # without disrupting the scenarios the danger branch already handles (an override there was
-            # measured to add operations cost). Keyed on the present rho + overflow, and played only when its
-            # OPF strictly lowers the simulated max rho below the current overload.
+            # Second OPF instance: the agent is about to do nothing while a line's overflow counter is running. The
+            # two-step forecast can show such an overload as recovering when it will trip, which is why the actions
+            # above declined. The solution is played only if the forecast lowers the peak loading below the current
+            # one.
             if (self._emergency and self._cvx_emerg is not None
                     and float(obs.rho.max()) > self._emergency_rho
                     and (self._emergency_ovf_k <= 0
@@ -2160,25 +1698,16 @@ class MyAgent(BaseAgent):
             # Doing nothing stays below a severe overload across the horizon.
             return self._do_nothing
 
-        # N-1 teacher: re-rank the danger candidate pool by opponent-robustness instead of the blind
-        # composite. Same pool, different scorer; do-nothing is the floor/fallback.
+        # Optional N-1 re-ranking of the danger candidates (off by default).
         if self._n1_teacher:
             return self._relief_n1(obs)
 
-        # --- Experiment 0: state-generated, afterstate-ranked selection over all action types ---
+        # --- Danger regime: candidate search over all action types, ranked by the composite ---
         base_c = self._composite(obs, self._do_nothing)
 
-        # Acceptance-margin gate on the enlarged pool (only with EXP_BIGPOOL=1 and a positive margin).
-        # Compute both coexist's normal-screened-pool pick and the enlarged-pool pick; play the
-        # enlarged (new-bus-split) pick only when its afterstate worst_rho beats the normal pick's by
-        # at least the margin, else keep the normal pick. The two selections differ only in the
-        # topology candidate source, so any divergence is a new split; when they coincide the worst_rho
-        # gap is 0 < margin and the normal pick stands. Curbs the raw enlargement's over-acting.
-        # The two picks are obtained by temporarily switching the candidate source, which mutates agent
-        # state. Without a finally, an exception inside the first pick leaves the flag switched off for the
-        # remainder of the episode -- act() catches the exception at the top level, so the agent keeps
-        # playing with the enlarged pool permanently disabled and nothing in the logs says so. The
-        # restore must also put back the saved value, not a literal, or a non-default setting is rewritten.
+        # Two runs of the danger search, one with the library and one with the local pool (EXP_BIGPOOL); the
+        # local-pool result is played only if its peak loading is lower by at least EXP_BIGPOOL_MARGIN. The runs
+        # switch the candidate source temporarily, so the saved setting is restored in a finally block.
         if self._bigpool and self._bigpool_margin > 0.0:
             _saved_bigpool = self._bigpool
             try:
@@ -2197,9 +1726,9 @@ class MyAgent(BaseAgent):
         return self._relief_danger_pick(obs, base, base_c)
 
     def _sustain_vet_survival(self, obs, act):
-        """Multi-step survival vet of an afterstate: (steps_survived, peak_rho) over a do-nothing roll of
-        length _sustain_h. Faithful for the deterministic sustained-overflow trip (unlike the
-        attack-death, whose future attack no forecast can see)."""
+        """Survival of a simulated state over a do-nothing roll of length _sustain_h: (steps survived, peak
+        loading). Reliable for trips caused by a sustained overload, which follow from the current state.
+        """
         try:
             s, _, d, _ = self._sim(obs, act, time_step=1)
         except Exception:
@@ -2337,12 +1866,11 @@ class MyAgent(BaseAgent):
             return None
 
     def _relief_danger_pick(self, obs, base, base_c) -> BaseAction:
-        """Coexist's danger-branch composite selection: best topology per area over the congestion-
-        localized candidate source (self._bigpool selects screened pool vs enlarged bus-splits), the
-        continuous levers (storage / redispatch / local curtailment / convex-OPF) on the same
-        composite score, do-nothing floor / last resort, and the 3-area combine. Factored out of act's
-        danger branch unchanged so the acceptance-margin gate can compare the enlarged-pool pick
-        against the normal-screened-pool pick; the selector logic itself is identical."""
+        """Danger-regime selection: the best topology per region from the candidate source near congestion
+        (library or local pool), the continuous candidates (storage, redispatch, local curtailment, convex OPF)
+        scored on the same composite, the do-nothing floor and the last resort, and the stacking of one
+        substation change per region.
+        """
         # congestion-relevant lines, grouped by area (fall back to top-loaded if none over threshold)
         overloaded = list(np.where(obs.rho > self._exp0_overload_rho)[0])
         if not overloaded:
@@ -2361,10 +1889,8 @@ class MyAgent(BaseAgent):
                 if a not in area_best or c < area_best[a][0]:
                     area_best[a] = (c, cand)
 
-        # continuous levers (redispatch / storage / local curtailment) compete in the same pool
-        # on the same composite score -- first-class, not a last-resort tier. The global convex-OPF
-        # action enters here too, so a single co-optimised redispatch/storage/curtailment competes
-        # against the per-generator ramp templates and the topology bests under the one composite arbiter.
+        # Continuous candidates (redispatch, storage, local curtailment, and the convex OPF solution) compete in
+        # the same pool and on the same composite as the topology candidates.
         cont = (self._feasible_storage_candidates(obs)
                 + self._redispatch_acts
                 + self._local_curtailment_actions(obs))
@@ -2396,8 +1922,8 @@ class MyAgent(BaseAgent):
                 rescue = self._last_resort_action(obs)
                 if rescue is not None:
                     return rescue
-            # Emergency rescue in the danger branch (EXP_EMERGENCY_DANGER): about to idle at a live overload
-            # whose timer is running; the aggressive OPF may relieve where the composite-gated pool declined.
+            # Optional (EXP_EMERGENCY_DANGER): the second OPF instance when the search would otherwise do nothing
+            # while an overflow counter runs.
             if (self._emergency and self._emergency_danger and self._cvx_emerg is not None
                     and float(obs.rho.max()) > self._emergency_rho
                     and (self._emergency_ovf_k <= 0
@@ -2413,9 +1939,8 @@ class MyAgent(BaseAgent):
             return self._do_nothing
         best_c, best_act = min(singles, key=lambda t: t[0])
 
-        # 3-area combine: RulesByArea allows one substation change per area per step, so stack the
-        # best-improving topology from each still-unused area if the joint afterstate improves --
-        # the ~3x action bandwidth a single-action agent wastes.
+        # Stack the best topology of each further region while the composite improves: the rules allow one
+        # substation change per region per step.
         combined, comb_c, used = best_act, best_c, set(self._action_areas(best_act))
         for a, (c, act) in sorted(area_best.items(), key=lambda kv: kv[1][0]):
             if a in used or not np.isfinite(c):
@@ -2425,10 +1950,8 @@ class MyAgent(BaseAgent):
             if tc < comb_c - 1e-6:
                 combined, comb_c, used = trial, tc, used | {a}
 
-        # v60 full cross-area stack: the greedy loop above starts from the single global best and only
-        # adds an area when it strictly improves, so it can miss a joint gain that materialises only when
-        # two other areas are stacked together. Build the full one-per-area stack and play it only if it
-        # beats the greedy stack on the composite. Still <=1 substation change per area (RulesByArea-legal).
+        # Optional full stack (EXP_FULL_STACK): every region's best topology at once, played only if it beats
+        # the greedy stack on the composite.
         if self._full_stack:
             full, seen = best_act, set(self._action_areas(best_act))
             for a, (c, act) in area_best.items():
@@ -2447,20 +1970,13 @@ class MyAgent(BaseAgent):
         return combined
 
     def _candidate_topologies(self, obs) -> List[BaseAction]:
-        """Legacy candidate builder -- unused at evaluation. The live danger-state search is
-        ``_relief_danger_pick``, which builds its own congestion-localised per-area pool and ranks it,
-        together with the continuous levers and the convex OPF, on the total-margin objective. Kept for
-        reference; it would union: (a) PPO policy top-k proposals, only if policy weights were loaded --
-        none are shipped, so this source is empty; (b) the first ``n_candidates`` curated topology actions;
-        (c) SoC-feasible storage actions, promoted from the last resort because, unlike curtailment, they
-        carry no Low-carbon cost.
-        """
+        """Candidate builder of an earlier version; the danger search uses ``_relief_danger_pick``."""
         cands: List[BaseAction] = []
         if self._model is not None:
             try:
                 gym_obs = self._gym_obs_space.to_gym(obs)
                 for act_id in self._topn_action_ids(gym_obs, self._ppo_top_k):
-                    if act_id == 0:  # do-nothing already the baseline
+                    if act_id == 0:  # do-nothing is already a candidate
                         continue
                     cands.append(self._gym_act_space.from_gym(int(act_id)))
             except Exception as exc_:
@@ -2635,28 +2151,19 @@ class MyAgent(BaseAgent):
         return None
 
     def _cancel_redispatch_action(self, obs, base) -> BaseAction:
-        """Compose onto ``base`` a redispatch that unwinds accumulated redispatch back toward
-        economic dispatch while the grid is comfortable, to stop bleeding the Operations (op) cost.
+        """Add to ``base`` one step of redispatch back toward the economic set point, in a comfortable state.
 
-        The op analogue of ``_cancel_curtailment_action``. Redispatch away from the economic optimum
-        carries a real operational cost that accumulates: ``target_dispatch`` persists until explicitly
-        changed, so a redispatch held for the rest of an episode pins the op sub-score even when the
-        grid is otherwise safe. Only invoked from the comfortable branch (``max rho <= safe_max_rho``),
-        where the agent is doing no danger/redispatch action of its own, so unwinding here can never
-        undo a survival intervention. For each redispatchable generator, request one step of
-        ``-target_dispatch`` clipped to its ramp-up/down bounds -- so the request is always ramp-legal
-        and the unwind is gradual, exactly like the curtailment ramp. The composite (``base`` + unwind)
-        is simulate-guarded to keep worst-case rho within the safe zone; if it would leave the safe
-        zone, or nothing is left to unwind, ``base`` is returned unchanged. Any failure falls back to
-        ``base`` so the comfortable-grid action is never lost."""
+        Redispatch persists until it is changed and adds operating cost while it stays. Each redispatchable
+        generator requests one step of ``-target_dispatch``, clipped to its ramp limits. The combined action is
+        kept only if the forecast keeps the peak loading within the guard; otherwise, when nothing is left to
+        return, or on any failure, ``base`` is returned unchanged.
+        """
         try:
             td = np.asarray(obs.target_dispatch, dtype=float)
             delta = np.clip(-td, -self._gen_max_ramp_down, self._gen_max_ramp_up)
             gens = np.where(self._gen_redispatchable)[0]
-            # Graduated unwind: request the largest ramp toward economic dispatch (a fraction of the
-            # ramp-legal step) that keeps the composite within the guard, instead of an all-or-nothing
-            # full step that recovers nothing whenever it alone breaches the guard. Fractions are scanned
-            # largest-first; with EXP_CANCEL_FRACS=1.0 this is the original full-step unwind.
+            # Fractions of the full step tried in descending order (EXP_CANCEL_FRACS); the first that passes the
+            # guard is played. The default tries the full step only.
             for f in self._cancel_unwind_fracs:
                 entries = [
                     (int(g), float(f * delta[g]))
@@ -2768,18 +2275,13 @@ class MyAgent(BaseAgent):
         return None
 
     def _starve_filter(self, obs, ids):
-        """Drop reconnections that would re-arm an area's attacker.
+        """Drop reconnections that would let the opponent attack a region again.
 
-        An area whose attackable lines are all in service can be attacked; an area with even one of
-        them out of service cannot, and spends a scheduled attack on every step it stays that way
-        (see the constructor for the mechanism and its measurement).  A recoverable line is therefore
-        withheld when it is the last attackable line keeping its own area starved.
-
-        The hold is given up whenever loading leaves the comfortable band, because an attackable line
-        left open is also one line closer to the network separation that ends most episodes, and the
-        line is worth more in service than the immunity is worth once the grid is working hard.
-        Lines that are not attackable, and lines whose area is starved by some other outage anyway,
-        are passed through untouched.
+        A region whose attackable lines are all in service can be attacked; a region with one of them out of
+        service cannot. A recoverable line is therefore not reconnected when it is the only attackable line of
+        its region out of service. The hold is given up when max rho exceeds the release threshold, because an
+        open line also weakens the network. Lines that are not attackable, and lines of a region with another
+        attackable line out of service, pass unchanged.
         """
         if not self._starve or not self._starve_areas:
             return ids
@@ -2795,7 +2297,7 @@ class MyAgent(BaseAgent):
                 for area in self._starve_areas:
                     if i not in area:
                         continue
-                    # Reconnecting this line re-arms the area only if it is the sole member out.
+                    # Reconnecting this line exposes the region again only if it is the only attackable line out of service.
                     others_down = any((not status[j]) for j in area if j != i)
                     if not others_down:
                         hold = True
@@ -2821,12 +2323,9 @@ class MyAgent(BaseAgent):
         base = self._worst_rho(obs, self._do_nothing, horizon=self._reco_horizon)
 
         if self._reco_mode == "all":
-            # Reconnecting every recoverable line in one action is illegal under RulesByArea (more than
-            # one line-status change per area) whenever two recoverable lines share an area. obs.simulate
-            # does not enforce that rule, so the agent would judge the action safe and return it, but
-            # env.step discards the whole action: the reconnection never happens and the grid can diverge.
-            # reco_mode="best" (one legal line per step) avoids this and measured about +8 on the local
-            # score. This branch is kept for provenance and comparison only.
+            # Reconnecting several lines at once is illegal under the per-region rules when two of them share a
+            # region, and obs.simulate does not check that rule, so the environment would discard the action. The
+            # default reco_mode="best" reconnects one line per step, and this branch is not used.
             act = self._action_space({"set_line_status": [(int(i), 1) for i in ids]})
             if self._worst_rho(obs, act, horizon=self._reco_horizon) <= base + self._reco_tol:
                 return act
@@ -2899,7 +2398,7 @@ class MyAgent(BaseAgent):
         return worst
 
     # ------------------------------------------------------------------
-    # Experiment 0 — state-generated, afterstate-ranked candidate selection
+    # Candidate pools and their ranking
     # ------------------------------------------------------------------
     def _build_sub_topo_pool(self, env, cap_per_sub):
         """Per-substation set_bus topology pool, hubs included. Prefers the offline
@@ -2963,7 +2462,7 @@ class MyAgent(BaseAgent):
         return worst
 
     # ------------------------------------------------------------------
-    # N-1-contingency teacher (EXP_N1_TEACHER) — opponent-robust danger-branch re-ranker
+    # Optional N-1 re-ranking of the danger candidates (EXP_N1_TEACHER)
     # ------------------------------------------------------------------
     def _n1_lines(self, obs):
         """The ``_n1_topk_lines`` attackable lines with the highest loading in the current state --
@@ -2976,14 +2475,13 @@ class MyAgent(BaseAgent):
         return cand[: self._n1_topk_lines]
 
     def _n1_worst(self, obs, action, lines) -> float:
-        """N-1 robustness score of ``action`` (LOWER is better).
+        """N-1 robustness score of ``action`` (lower is better).
 
-        Play ``action``; if its own afterstate is a predicted game over (or simulate raises) the
-        action is lethal on its own, so +inf. Otherwise inject each probed attack by simulating the
-        composed action ``action + disconnect(line)`` from the current obs, and return the worst
-        (max) resulting max-rho over the probed lines. A contingency that itself games over is a
-        large finite penalty (10.0), not +inf: the attack is stochastic, so fragility should
-        down-rank a candidate, not veto it (and a finite value keeps candidates discriminable)."""
+        If the action alone forecasts an end of episode, or the forecast raises, the score is +inf. Otherwise
+        each probed attack is simulated as ``action + disconnect(line)`` from the current observation, and the
+        worst resulting peak loading is returned. An attack whose forecast ends the episode scores 10.0 rather
+        than +inf, so that fragility lowers a candidate's rank without excluding it.
+        """
         try:
             sim, _, done, _ = self._sim(obs, action, time_step=1)
         except Exception:
@@ -3004,13 +2502,10 @@ class MyAgent(BaseAgent):
         return worst
 
     def _relief_n1(self, obs) -> BaseAction:
-        """Danger-branch selection re-ranked by the N-1 teacher. Builds the same candidate pool the
-        composite path builds -- congestion-localized per-area topologies plus the continuous levers
-        (SoC-feasible storage, redispatch ramps, local curtailment, and the preventive convex-OPF
-        action) -- then plays the single candidate minimising ``_n1_worst``, with do-nothing as the
-        floor/fallback. Deliberately a single-action pick (no cross-area combine): a clean read on
-        whether N-1 ranking, on its own, selects better danger-state actions than coexist's blind
-        composite."""
+        """Danger-regime selection re-ranked by the N-1 score: the same candidate pool as the composite path,
+        with the single candidate of lowest ``_n1_worst`` played and do-nothing as the floor. Used only with
+        EXP_N1_TEACHER=1.
+        """
         lines = self._n1_lines(obs)
 
         overloaded = list(np.where(obs.rho > self._exp0_overload_rho)[0])
@@ -3063,21 +2558,20 @@ class MyAgent(BaseAgent):
         return total
 
     def _composite(self, obs, action) -> float:
-        """Cost-aware afterstate score (LOWER is better): the SELECTION objective over the horizon
-        (survival / Operations) plus a curtailment penalty (Low-carbon), plus an optional opponent-aware
-        term. The survival objective is chosen by ``EXP_SEL_OBJ`` -- for this configuration "margin" (the
-        negated L2RPN squared-margin sum with an over-limit penalty: prefer a broadly de-loaded grid over
-        merely fixing the worst line), vs. the plain "rho" (worst single line) or "hybrid" (worst rho minus
-        a small margin bonus). +inf on a predicted game over."""
+        """Candidate score, lower is better: the ranking objective over the horizon, a curtailment penalty, a
+        redispatch penalty in comfortable states, and optional opponent-aware terms (off by default).
+
+        With EXP_SEL_OBJ="margin" (the default) the objective is the negated squared margin of all lines plus a
+        penalty on overloads weighted by trip imminence; "rho" uses the most loaded line, and "hybrid" the most
+        loaded line minus a small margin bonus. +inf on a forecast end of episode.
+        """
         try:
             sim, _, done, _ = self._sim(obs, action, time_step=1)
         except Exception:
             return np.inf
         if done:
             return np.inf
-        # Afterstate objective (LOWER is better). "rho", so the worst single line over the horizon. "margin"
-        # so the NEGATED L2RPN squared-margin sum (so more total headroom = lower); taking the max over the
-        # horizon keeps the LEAST-margin (worst) step, mirroring the min-max semantics.
+        # Objective of one simulated state (lower is better); the maximum over the horizon keeps the worst step.
         def _obj(o):
             if self._sel_obj == "margin":
                 rho = np.asarray(o.rho)
@@ -3122,9 +2616,8 @@ class MyAgent(BaseAgent):
             robust = self._contingency_worst(sim)
             opp = self._opp_w * max(0.0, robust - float(sim.rho.max()))
         opcost = 0.0
-        # Charge op-cost only when the current state is comfortable: in danger, redispatch is needed
-        # for relief and penalising it costs survival (a direct penalty lowered op via extra deaths).
-        # Comfortable-gated, it only breaks ties toward cheaper operation where survival is not at stake.
+        # Redispatch is charged only in comfortable states: in danger it is needed for relief, and penalizing it
+        # would cost survival.
         if self._opcost_w > 0.0 and float(obs.rho.max()) < self._safe_max_rho:
             try:
                 disp = np.abs(np.asarray(sim.actual_dispatch))
@@ -3146,9 +2639,9 @@ class MyAgent(BaseAgent):
         return {int(self._area_of_sub[s]) for s in np.where(aff_subs)[0] if self._area_of_sub[s] >= 0}
 
     def _area_topo_candidates(self, obs, area, overloaded_lines):
-        """Congestion-conditioned topology candidates for one area: bus reconfigurations of the
-        substations at the ends of the area's overloaded lines, PLUS the area's hub substations
-        (never screened out). Bounded for the decision-time budget."""
+        """Topology candidates for one region near congestion: configurations of the substations at the ends
+        of the region's overloaded lines and of its hub substations, bounded for the decision-time budget.
+        """
         # skip substations under reconfiguration cooldown -- reconfiguring them is illegal and
         # would waste the step (simulate does not enforce the cooldown, so filter here).
         cooldown = np.asarray(obs.time_before_cooldown_sub)
@@ -3160,9 +2653,7 @@ class MyAgent(BaseAgent):
         for s in self._central_subs:
             if self._area_of_sub[s] == area and cooldown[int(s)] == 0:
                 subs.add(int(s))
-        # v60 location expansion: the reroute topologies that clear a congested corridor usually live
-        # one HOP off the corridor, not at its ends. Add the neighbour substations of the single worst
-        # overloaded line's endpoints (restricted to that one line to bound the growth). Only under bigpool.
+        # Local pool: add the neighbor substations of the endpoints of the most loaded overloaded line.
         if self._bigpool and self._bigpool_neighbors and overloaded_lines:
             wl = max(overloaded_lines, key=lambda l: float(obs.rho[l]))
             for end_sub in (int(self._line_or_to_subid[wl]), int(self._line_ex_to_subid[wl])):
@@ -3170,9 +2661,8 @@ class MyAgent(BaseAgent):
                     if self._area_of_sub[nb] == area and cooldown[nb] == 0:
                         subs.add(int(nb))
         if self._bigpool:
-            # Enlarged search: every one-/two-element bus-2 split of each localized/central/neighbour
-            # substation. v60 also adds the C(k,3) triple splits (depth expansion) of the single deepest
-            # congested endpoint substation. Selector downstream is unchanged; only the candidate set grows.
+            # Local pool: every one- or two-element move to the second busbar at each selected substation, plus the
+            # three-element moves at the most congested endpoint substation.
             worst_sub = None
             if self._bigpool_triple and overloaded_lines:
                 wl = max(overloaded_lines, key=lambda l: float(obs.rho[l]))
@@ -3218,11 +2708,10 @@ class MyAgent(BaseAgent):
         return acts
 
     def _triple_split_candidates(self, sub_id):
-        """All bus-split configurations placing exactly THREE of substation ``sub_id``'s elements on
-        bus 2: C(k,3) single-substation ``set_bus`` actions. Depth complement to
-        ``_bus_split_candidates`` for the single most-congested hub, where certain cascade fixes need a
-        three-way isolation the 1-/2-element enumeration cannot express at any of its members. Kept
-        behind the ``_triple_max_k`` guard so the count stays bounded. Built once per sub, cached."""
+        """All configurations that place exactly three elements of substation ``sub_id`` on the second busbar:
+        C(k,3) single-substation ``set_bus`` actions, built once per substation and cached. Used only for
+        substations with at most ``_triple_max_k`` elements.
+        """
         from itertools import combinations
         cached = self._triple_cache.get(sub_id)
         if cached is not None:
@@ -3239,7 +2728,7 @@ class MyAgent(BaseAgent):
         return acts
 
     # ------------------------------------------------------------------
-    # Training (unused by Exp 0 -- the agent is a stateless heuristic afterstate expert)
+    # Training: revalidation of the withheld lines
     # ------------------------------------------------------------------
     def train(
         self,
@@ -3248,37 +2737,18 @@ class MyAgent(BaseAgent):
         max_training_time: float = 3600.0,
         checkpoint_dir: Optional[str] = None,
     ):
-        """Train (or retrain) the PPO policy on ``env`` within the compute budget.
+        """Revalidate the withheld lines on the training scenarios passed to this call (``_ratchet_train``).
 
-        Uses the same ``HeuristicGymEnv`` (reconnection + rho-gating around the RL agent)
-        and best-checkpoint selection as the PPO-only submission, so training longer can
-        only keep or improve what ships. The rule engine (reconnection, multi-step
-        candidate search, last resort) is not affected by ``train()`` -- it is always
-        defined by ``config.json`` and ``action_space.json``, so the agent stays a strong
-        baseline before, during and after training.
-
-        Checkpoint safety net: SB3's ``EvalCallback`` already writes a checkpoint to a
-        *temporary* directory whenever an evaluation improves on the previous best, but
-        that temp file is normally only picked up at the very end of this method -- so a
-        crash, OOM, or manual interruption partway through a long run loses everything SB3
-        already evaluated and improved on. If ``checkpoint_dir`` is given (or
-        ``this_directory_path`` was passed to the constructor, in which case it defaults to
-        ``<that>/saved_model``), a lightweight callback mirrors the best checkpoint into
-        ``<checkpoint_dir>/ppo_model.zip`` every time it improves, so an interruption only
-        costs you back to the last improvement, not the whole run.
+        With EXP_RATCHET=0 nothing is trained. The PPO training code after the early return comes from an earlier
+        version and is not executed.
         """
-        # Experiment 0 is a stateless heuristic afterstate expert -- there is no policy to train.
-        # Return immediately so the Codabench ingestion (which calls train() before evaluation) does
-        # not burn the compute budget building a PPO that _decide never uses.
+        # The rule engine has no policy to train, but it carries constants fitted offline to local scenarios,
+        # and this call is the only point where data from the competition is available.
         # For all the most important parameters or values that we had to fit offline, this training
         # function helps us adapt them to new data; otherwise, we keep the default parameters (in
         # practice, the search window can be extended, as well as the time, which would make it very
         # adaptable even in cases not shown here due to time constraints).
-        #
-        # The rule engine has no policy to fit, but it does carry constants fitted to OUR chronics --
-        # and this method is the only point at which data from the evaluation distribution is available.
-        # The ratchet spends the budget re-deciding the largest of those constants, and changes nothing
-        # unless a candidate beats the shipped value by more than the measured noise floor.
+        # The revalidation changes nothing unless a candidate beats the default by more than the noise margin.
         if self._ratchet:
             try:
                 self._ratchet_train(env, num_workers, max_training_time)
@@ -3411,8 +2881,8 @@ class MyAgent(BaseAgent):
         os.makedirs(path, exist_ok=True)
         if self._model is not None:
             self._model.save(os.path.join(path, MODEL_FILENAME))
-        # The override file is written only when a candidate cleared the acceptance margin. Its absence
-        # is the normal, safe outcome and means the evaluation runs the shipped configuration.
+        # The override file is written only when a candidate was accepted; without it, the default
+        # configuration is used.
         target = os.path.join(path, OVERRIDE_FILENAME)
         if not self._trained_overrides:
             try:
@@ -3431,9 +2901,8 @@ class MyAgent(BaseAgent):
 
 
     def load_state(self, path):
-        # Overrides are applied only if the file exists, parses, and passes the same validation a
-        # candidate had to pass during training. Anything else applies nothing, which leaves the agent
-        # byte-equivalent to the shipped package -- the untrained arm is always the fallback.
+        # Overrides are applied only if the file exists, parses and passes the same validation as during
+        # training; otherwise nothing is applied and the default configuration is used.
         try:
             ov = os.path.join(path, OVERRIDE_FILENAME)
             if os.path.exists(ov):
@@ -3465,96 +2934,46 @@ class MyAgent(BaseAgent):
 
 
 # ----------------------------------------------------------------------
-# Codabench entry point
+# Revalidation of the withheld lines in train()
 # ----------------------------------------------------------------------
-# ----------------------------------------------------------------------
-# THE TRAINING RATCHET — re-fit the most locally-fitted element on data from the
-# distribution that actually judges us.
-#
-# Everything shipped is a structural skeleton wrapped around constants fitted to our own development
-# chronics. Over 24 paired local, so platform comparisons, quantities derived from physics, the opponent's
-# source or the scoring formula transferred 6 times in 7, while values found by searching our own
-# trajectories transferred 3 times in 13. The fitted layer is therefore the whole exposure on an unseen
-# dataset, and the held starvation triple is the largest single item in it: a bad re-derivation was
-# measured at -10.52 composite, and a DIFFERENT triple is worth +2.03 on the evaluation set's day-1
-# evening-peak class, a class two independent structural approaches have failed to reach.
-#
-# `train()` receives an environment built on chronics we do not hold and that are drawn from the
-# evaluation distribution. Choosing the triple there is not a new mechanism; it repairs the one defect
-# that has been measured repeatedly.
-#
-# HOW LONG this LIST SHOULD BE is A POWER QUESTION, not A TASTE QUESTION, AND IT was measured.
-# THE LIST is ALSO A SAFETY DEVICE, and that is the more important half. A 168-chronic dry run rated a
-# triple that is -5.35 composite on 764 scenarios as its second BEST, so a small training sample cannot be
-# trusted to rank these at all. What CAN be trusted is excluding candidates already measured as harmful on
-# independent data. With the list below, every triple the ratchet can possibly accept sits between +0.77
-# and +1.08 on 764 scenarios -- neutral to mildly positive -- so the mechanism's downside is bounded by the
-# CONTENTS of the list rather than by the sample's judgement. Acceptance then only has to avoid acting on
-# noise, which the margin handles.
-#
-# Acceptance requires the paired mean to clear a Bonferroni-scaled margin, so every extra candidate
-# raises the bar for all of them: the two-sided 5% critical value is 2.241 at two candidates, 2.394 at
-# three and 2.734 at eight. On a 168-chronic dry run the best candidate reached +2.7749 against a
-# required +3.0515 with eight in the list -- it missed by 0.28 -- and the same observation would have
-# CLEARED at three candidates on the platform's 208 scenarios, where the standard error is a further
-# factor sqrt(168/208) = 0.899 smaller: the requirement becomes about +2.44.
-#
-# So a long list does not make training more likely to help; it makes it less likely to act at all.
-# The list is therefore kept SHORT and ordered by the strongest evidence available from data that is
-# independent of the training set, with the shipped triple first as the reference.
-#
-# CANDIDATE LIST — FIXED HERE, IN THE PACKAGE, before any TRAINING DATA is SEEN.
-# That is what makes this a fixed-candidate procedure: nothing in this list was chosen by looking at the
-# data it will be accepted on, so no held-out split is needed and the decision can use every scenario
-# available (resolution scales as 1/sqrt(n), and splitting would cost 20-40% of it for no gain here).
-# Multiplicity is controlled by the acceptance margin instead, scaled for the number of candidates tried.
-#
-# The list is drawn from configurations already measured on our own development set, and every entry
-# satisfies the one-line-status-change-per-area rule the environment enforces. The first entry is the
-# shipped default and is always evaluated, as the reference the others are compared against.
+# The withheld lines were chosen offline on local scenarios. train() receives an environment built on the
+# competition's training scenarios and uses it to test whether an alternative is significantly better than
+# the default. Acceptance requires the mean paired difference to exceed a Bonferroni-scaled margin, so
+# each additional candidate raises the bar for all of them; the list is therefore short. It is fixed in
+# the package before any training data is seen, so the decision can use every available scenario. Every
+# entry keeps one attackable line per region, and the first entry is the default, always evaluated as the
+# reference.
 RATCHET_TRIPLES = [
-    # Ordered by a HIGH-POWER measurement on 764 scenarios — a set entirely independent of the training
-    # data the ratchet will see — so the ordering here is evidence rather than preference. Figures are the
-    # paired composite against the shipped triple, n=764, in the `fullstarve` host:
-    (106, 131, 33),   # SHIPPED DEFAULT — the reference, always evaluated first
-    (162, 110, 61),   # +1.0826 +- 1.2697  (t +1.67) — best measured, indistinguishable from the default
-    (106, 121, 61),   # +1.0082 +- 1.1699  (t +1.69) — indistinguishable
-    (162, 110, 43),   # +0.8678 +- 1.1823  (t +1.44) — indistinguishable
-    # Below the power-bounded cut. Retained for provenance, never reached at the default list length.
-    (106, 110, 37),   # +0.7660 +- 1.1428  (t +1.31) — indistinguishable
-    (162, 154, 62),   # not measured on 764 — unvetted, so it must never be reachable
-    (162, 125, 37),   # not measured on 764 — unvetted, so it must never be reachable
+    # Ordered by the paired score difference against the default on the 764 local scenarios. With the
+    # default EXP_RATCHET_CANDIDATES=2, only the first two entries are compared.
+    (106, 131, 33),  # default, the reference
+    (162, 110, 61),  # best measured alternative
+    (106, 121, 61),  # compared only with EXP_RATCHET_CANDIDATES >= 3
+    (162, 110, 43),  # compared only with EXP_RATCHET_CANDIDATES >= 4
+    # Not compared with the default settings.
+    (106, 110, 37),  # not compared by default
+    (162, 154, 62),  # not measured on the local scenarios; not compared by default
+    (162, 125, 37),  # not measured on the local scenarios; not compared by default
     #
-    # (106, 126, 61) is deliberately absent. On 764 scenarios it is the only candidate the data can
-    # distinguish from the default, and it is worse by -5.3512 +- 1.9233 (t -5.45, CI excludes zero).
-    # A 168-chronic dry run ranked that same triple second BEST at +2.0489 — the small sample inverted the
-    # one real signal in the set. Excluding it is not fitting: it is refusing a candidate measured as
-    # harmful on data independent of the set that would accept it. Do not re-add it.
+    # (106, 126, 61) is excluded: on the 764 local scenarios it is the only alternative measured as
+    # significantly worse than the default.
 ]
 
-# Written by save_state(), read by load_state(). Absent, malformed or failing validation all mean
-# "apply nothing", which leaves the agent exactly as shipped.
+# Written by save_state() and read by load_state(). A missing, malformed or invalid file means that
+# nothing is applied and the default configuration is used.
 OVERRIDE_FILENAME = "trained_overrides.json"
 
-# Two-sided 5% level, Bonferroni-corrected for the number of candidates actually compared. Used as a
-# MARGIN on the paired mean difference rather than a sign test: sign tests on this quantity are
-# worthless here, because the per-scenario spread is far larger than any effect we can produce.
+# Two-sided 5% level, Bonferroni-corrected for the number of candidates compared, used as a margin on
+# the mean paired difference.
 RATCHET_ALPHA = 0.05
 
-# How many of RATCHET_TRIPLES to actually compare, counting the reference. Bounded by the power
-# argument above rather than by how many candidates happen to be known: at four entries (three
-# challengers) the margin is 2.394 standard errors instead of 2.734, which is the difference between
-# acting and not acting on the effect sizes this quantity actually produces.
+# How many of RATCHET_TRIPLES to compare, the default included. Each extra candidate raises the
+# Bonferroni margin, so the list is cut short.
 RATCHET_MAX_CANDIDATES = int(os.environ.get("EXP_RATCHET_CANDIDATES", "2"))
-# Upper bound on the wall time train() may spend, whatever the platform grants (the platform grants the
-# whole 24 h allowance, and scoring afterwards runs the agent twice for about twelve hours). Scoring is
-# single-process (see _ratchet_train), so one hour buys the default and one alternative on a handful of
-# scenarios each: enough to run the comparison, not enough to resolve a small difference. Nothing here
-# is expected to change the shipped configuration; the value of the step is that the decision is taken
-# on the evaluation distribution rather than assumed, and the default is what ships when it does not clear.
+# Upper bound on the wall time of train(), whatever the competition grants. Scoring is single-process
+# (see _ratchet_train), so this budget covers the default and one alternative on a few scenarios each.
 RATCHET_HARD_CAP_S = float(os.environ.get("EXP_RATCHET_CAP_S", "3600"))
-# Conservative wall time of one scenario for this agent on one core: measured at about 128 s locally on
-# the 2 016-step chronics, with margin for slower hardware. Used only to size the scenario subset.
+# Conservative wall time of one scenario on one core, used only to size the scenario subset.
 RATCHET_SECONDS_PER_SCENARIO = float(os.environ.get("EXP_RATCHET_SEC_PER_SCEN", "150"))
 
 

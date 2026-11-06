@@ -19,6 +19,6 @@
 \node[out=6.2cm, anchor=north west] (rec) at (0,-1.55) {\textbf{record}, for line 175: 246 configurations of substation 79, ranked by how often each survived the outage offline; the first that the forecast does not show as fatal is applied};
 \node[opt=6.2cm, anchor=north west] (gen) at (7.4,-1.55) {\textbf{no record}: up to 120 generated busbar and dispatch candidates; the best on $J_H$ is applied};
 \node[note, anchor=north west, text width=14cm, align=left] at ($(rec.south west)+(0,-0.3)$) {The record is preferred because survival depends on the steps after the outage, which a one-step forecast does not see. Over the 764 local scenarios, the stage acts in 68; without it, completions fall from 706 to 689.};
-\stagemap{0.55,4.15}{1}{zoom: scheduled-outage look-ahead}
+\stagemap{1}{zoom: scheduled-outage look-ahead}
 \end{tikzpicture}
 \end{document}

@@ -1,16 +1,10 @@
-"""Build a hub-INCLUSIVE, usefulness-SCREENED per-substation topology pool for the candidate search.
+"""Build the per-substation topology library used by the candidate search (``action_pool.json``).
 
-Rejects two free assumptions of the baseline / v0.1:
-  1. `build_reduced_actions` excludes >8-element hubs (subs 48/99/...) via max_elems=8.
-  2. v0.1 kept the *first* 40 configs per sub (enumeration order, not usefulness).
-
-Here, for every substation with >=4 elements, we take its configs (for hubs, a RANDOM SAMPLE of the
-full 2^(k-1) space, not the first slice), and keep only those that *measurably relieve congestion*:
-a config is kept if, on at least one stressed state, its 1-step simulated max-rho is below do-nothing's
-by > `margin`. Configs are ranked by how many stressed states they help, capped per sub. The result is
-indexed by substation -> action_pool.json; the agent localizes to the congestion at runtime.
-
-Screening states are do-nothing-driven high-rho states (a proxy for attack-driven congestion; noted).
+For every substation with at least four elements, the configurations are enumerated, or randomly sampled
+for substations with too many to enumerate, and evaluated by one-step simulation on stressed states. A
+configuration is kept if, on at least one such state, it lowers the peak loading below that of do-nothing
+by more than ``margin``. The kept configurations are ranked by how many states they help and capped per
+substation. The stressed states are high-loading states reached by playing do-nothing.
 """
 import argparse
 import json

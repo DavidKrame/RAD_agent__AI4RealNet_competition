@@ -1,38 +1,67 @@
 \input{style}
 \begin{document}
-% Overview of the agent: what is prepared offline, what train() revalidates, and the four stages
-% that act() consults at every step, all of which score candidates by the same forward simulation.
+% Overview of the agent on its three time scales: inputs prepared offline, the revalidation done once
+% by train(), and the four stages that act() consults at every step. The environment sits below the
+% agent so that the observation and the action close one loop around act().
+% Each time scale has its own light tint; boxes are left white so that the text stays legible.
+\ifdefined\darktheme
+  \definecolor{offband}{HTML}{151B23}\definecolor{offedge}{HTML}{8696AD}
+  \definecolor{trband}{HTML}{211B0F}\definecolor{tredge}{HTML}{D4A72C}
+  \definecolor{actband}{HTML}{0F1B2B}\definecolor{actedge}{HTML}{4C8EDA}
+  \definecolor{simfill}{HTML}{0F2420}\definecolor{simedge}{HTML}{4FB3A0}
+  \definecolor{envfill}{HTML}{151B23}\definecolor{envedge}{HTML}{8B949E}
+\else
+  \definecolor{offband}{HTML}{E6EBF1}\definecolor{offedge}{HTML}{50627A}
+  \definecolor{trband}{HTML}{FBEBC6}\definecolor{tredge}{HTML}{8F6505}
+  \definecolor{actband}{HTML}{DCE8F6}\definecolor{actedge}{HTML}{1F5596}
+  \definecolor{simfill}{HTML}{D3EDE5}\definecolor{simedge}{HTML}{2A7364}
+  \definecolor{envfill}{HTML}{E6EBF1}\definecolor{envedge}{HTML}{3F4A56}
+\fi
+\tikzset{
+  abox/.style={draw=#1, fill=paper, rounded corners=3pt, line width=\lwstage, align=center,
+               inner sep=6pt, text width=3.7cm, text=ink},
+  bandlab/.style={font=\footnotesize, anchor=north east, inner sep=4pt, text=ink},
+  alab/.style={font=\scriptsize, text=ink, inner sep=2pt},
+}
+\newcommand{\astg}[1]{\tikz[baseline=(b.base)]\node[circle, fill=actedge, text=paper, inner sep=0pt,
+  minimum size=4.2mm, font=\footnotesize\bfseries] (b) {#1};}
 \begin{tikzpicture}
-% time-scale bands
-\fill[band] (-1.9,3.9) rectangle (13.6,6.35);
-\fill[band] (-1.9,1.35) rectangle (13.6,3.6);
-\fill[band] (-1.9,-3.45) rectangle (13.6,1.05);
-\node[lanelab] at (-1.9,6.35) {built offline, before the competition};
-\node[lanelab] at (-1.9,3.6) {\texttt{train()}: once, before the scenarios are scored};
-\node[lanelab] at (-1.9,1.05) {\texttt{act()}: every five-minute step};
-% offline artifacts
-\node[out=3.25cm] (rec) at (0,4.95) {Posture record\\[1pt]\scriptsize postures of substation 79 that survived the outage of line 175};
-\node[out=3.25cm] (wset) at (3.9,4.95) {Withheld lines\\[1pt]\scriptsize default $W=(106,131,33)$\\alternative\\$W'=(162,110,61)$};
-\node[out=3.25cm] (lib) at (7.8,4.95) {Topology library\\[1pt]\scriptsize 907 single-substation assignments that relieved stressed states};
+% bands
+\fill[offband, rounded corners=5pt] (-2.45,6.15) rectangle (18.35,9.15);
+\fill[trband, rounded corners=5pt] (-2.45,2.95) rectangle (18.35,5.65);
+\fill[actband, rounded corners=5pt] (-2.45,-4.75) rectangle (18.35,2.45);
+\node[bandlab] at (18.35,9.15) {\textcolor{offedge}{\textbf{Prepared offline}}, before the competition};
+\node[bandlab] at (18.35,5.65) {\textcolor{tredge}{\textbf{\texttt{train()}}}, once, before the scenarios are scored};
+\node[bandlab] at (18.35,2.45) {\textcolor{actedge}{\textbf{\texttt{act()}}}, at every five-minute step};
+% offline inputs
+\node[abox=offedge, minimum height=24mm] (rec) at (2.65,7.45) {\textbf{Posture record}\\[2pt]\footnotesize configurations of substation 79 that survived the outage of line 175};
+\node[abox=offedge, minimum height=24mm] (wset) at (7.95,7.45) {\textbf{Withheld lines}\\[2pt]\footnotesize default\\$W=(106,131,33)$\\[1pt]alternative\\$W'=(162,110,61)$};
+\node[abox=offedge, minimum height=24mm] (lib) at (13.25,7.45) {\textbf{Topology library}\\[2pt]\footnotesize 907 single-substation busbar assignments that relieved stressed states};
 % train()
-\node[rule=3.4cm] (rev) at (3.9,2.3) {Revalidation\\[1pt]\scriptsize $W'$ replaces $W$ only if it wins on training scenarios by a significance margin};
+\node[abox=tredge, minimum height=15mm] (rev) at (7.95,4.15) {\textbf{Revalidation}\\[2pt]\footnotesize $W'$ replaces $W$ only if it scores significantly better on training scenarios};
 % act() stages
-\node[stage, minimum height=17mm] (s1) at (0,-0.4) {\stg{1}\ Scheduled-outage look-ahead\\[2pt]\scriptsize prepares for an announced outage};
-\node[stage, minimum height=17mm] (s2) at (3.9,-0.4) {\stg{2}\ Preventive withholding\\[2pt]\scriptsize keeps one attackable line per region out of service};
-\node[stage, minimum height=17mm] (s3) at (7.8,-0.4) {\stg{3}\ Reactive control\\[2pt]\scriptsize relieves loading; searches candidates when in danger};
-\node[stage, minimum height=17mm] (s4) at (11.7,-0.4) {\stg{4}\ Extended-horizon safeguard\\[2pt]\scriptsize replaces an action forecast to end the episode};
-\node[sim=14.6cm, minimum height=10mm] (ev) at (5.85,-2.35) {Forward simulation with \texttt{obs.simulate}: a candidate is played for one step and followed by do-nothing, giving its peak loading $F_H$ and its cost $J_H$};
-\node[note, anchor=south west, font=\scriptsize\itshape] at (-1.85,-3.42) {The first stage that acts returns the action; \textbf{4} may replace the action of \textbf{3}. Dotted lines: the stage scores its candidates by forward simulation.};
-% environment
-\node[proc=3.0cm, minimum height=22mm] (env) at (-5.3,-0.4) {Grid2Op environment\\[2pt]\scriptsize \texttt{l2rpn\_idf\_2023}: 118 buses, three regions, adversarial line outages};
-% flows
-\draw[arr] (env.east)--node[note,above]{observation $o_t$}(s1.west);
-\foreach \a/\b in {s1/s2,s2/s3,s3/s4}{\draw[arr] (\a)--(\b);}
-\draw[arr] (s4.east)--(14.2,-0.4)--(14.2,-3.9)--node[note,below,pos=0.5]{one action $a_t$ per step}(-5.3,-3.9)--(env.south);
-\draw[darr] (rec.south)--(s1.north);
-\draw[arr] (wset)--(rev);
-\draw[arr] (rev)--node[note,left,pos=0.4]{$W$ in play}(s2);
-\draw[darr] (lib.south)--(s3.north);
+\node[abox=actedge, minimum height=35mm] (s1) at (0,0.0) {\astg{1}\ \textbf{Scheduled-outage look-ahead}\\[3pt]\footnotesize if an announced outage would be severe, prepares the network before it starts};
+\node[abox=actedge, minimum height=35mm] (s2) at (5.3,0.0) {\astg{2}\ \textbf{Preventive withholding}\\[3pt]\footnotesize keeps one attackable line per region out of service, so attacks there are canceled};
+\node[abox=actedge, minimum height=35mm] (s3) at (10.6,0.0) {\astg{3}\ \textbf{Reactive control}\\[3pt]\footnotesize relieves loading by regime; when in danger, searches topology and dispatch actions};
+\node[abox=actedge, minimum height=35mm] (s4) at (15.9,0.0) {\astg{4}\ \textbf{Extended-horizon safeguard}\\[3pt]\footnotesize checks the action of 3 over 8 steps; if it would end the episode, replaces it by an alternative that survives longer};
+\node[draw=simedge, fill=simfill, rounded corners=3pt, line width=\lwstage, align=center, inner sep=6pt,
+      text width=19.2cm, text=ink, minimum height=11mm] (ev) at (7.95,-2.95) {\textbf{Forward simulation} with \texttt{obs.simulate}: a candidate action is played for one step, then do-nothing,\\giving its peak loading $F_H$ and its cost $J_H$};
+\node[font=\footnotesize\itshape, text=ink, anchor=south, inner sep=5pt, align=center] at (7.95,-4.75) {Stages 1 and 2 end the step when they act. Otherwise stage 3 chooses an action, and stage 4 checks it before it is sent.\\Dotted lines: the stage scores candidate actions by forward simulation.};
+% environment, below the agent
+\node[draw=envedge, fill=envfill, rounded corners=3pt, line width=\lwstage, align=center, inner sep=7pt,
+      text width=6.4cm, text=ink] (env) at (7.95,-6.5) {\textbf{Grid2Op environment} \texttt{l2rpn\_idf\_2023}\\[2pt]\footnotesize 118 buses, three regions, adversarial line outages};
+% arrows between the stages
+\draw[arr] (s1.east)--node[alab,above]{no action}(s2.west);
+\draw[arr] (s2.east)--node[alab,above]{no action}(s3.west);
+\draw[arr] (s3.east)--node[alab,above]{action}(s4.west);
 \foreach \s in {s1,s2,s3,s4}{\draw[draw=edge, dotted, thick] (\s.south)--(\s.south|-ev.north);}
+% inputs feeding the stages
+\draw[darr] (rec.south)--(2.65,2.7)--(0,2.7)--(s1.north);
+\draw[arr] (wset.south)--(rev.north);
+\draw[arr] (rev.south)--node[alab,right,pos=0.45]{$W$ used in play}(7.95,2.7)--(5.3,2.7)--(s2.north);
+\draw[darr] (lib.south)--(13.25,2.7)--(10.6,2.7)--(s3.north);
+% loop with the environment
+\draw[arr] (env.west)--(-3.05,-6.5)--node[alab,above,rotate=90]{observation $o_t$}(-3.05,0.0)--(s1.west);
+\draw[arr] (s4.east)--(18.95,0.0)--node[alab,above,rotate=-90]{action $a_t$}(18.95,-6.5)--(env.east);
 \end{tikzpicture}
 \end{document}

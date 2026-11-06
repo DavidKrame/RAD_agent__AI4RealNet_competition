@@ -1,8 +1,6 @@
-"""
-Download the L2RPN IDF 2023 dataset and create the train/val/test split used for training.
+"""Download the l2rpn_idf_2023 dataset and split it into 764 training, 34 validation and 34 test scenarios.
 
-Run this once, from anywhere (it writes to grid2op's own data directory, not the current
-folder), before using train_ppo.py:
+Run it once, from anywhere: it writes to grid2op's data directory, not to the current folder.
 
     python3 prepare_data.py
 """

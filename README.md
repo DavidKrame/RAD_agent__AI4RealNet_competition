@@ -16,13 +16,6 @@ curtailment, and redispatch, is applied.
 </picture>
 </p>
 
-The agent works on three time scales. Offline, before the competition, it was given a library of busbar
-assignments, a record of postures that survived one scheduled outage, and a set of lines to withhold. Once
-before scoring, `train()` checks whether an alternative set of withheld lines should replace the default.
-At every five-minute step, `act()` consults four stages in a fixed order, and each stage that compares
-candidates scores them by the same forward simulation. The step-by-step description opens each part of this
-picture in turn, down to the individual rules.
-
 <p align="center">
   <a href="docs/how_the_agent_works.md"><img src="docs/figures/button_how_it_works.svg" alt="How the agent works, step by step" height="48"></a>
 </p>
@@ -31,35 +24,22 @@ picture in turn, down to the individual rules.
 
 The controller combines six components, each of which can be studied or reused on its own.
 
-1. *Preventive withholding.* In this environment, an outage attempt in a region proceeds only if every line of
-   that region is in service. Keeping one line per region out of service therefore cancels these attempts,
-   which are consumed rather than postponed. Over the 764 local scenarios, realized outages fall from 2,468 to
-   62.
+1. *Preventive withholding.* In this environment, an outage attempt in a region proceeds only if every
+   attackable line of that region is in service. Keeping one line per region out of service therefore
+   cancels these attempts, which are consumed rather than postponed. Over the 764 local scenarios, realized
+   outages fall from 2,468 to 62.
 2. *AC-anchored dispatch.* A convex quadratic program sets redispatch, curtailment, and storage jointly. It is
    anchored on the observed AC flows, uses the power-transfer distribution factors (PTDF) only for the flow
    change it induces, and bounds each generator's request by its own ramp margin.
 3. *Line-opening screen.* The loading of every line after a candidate opening is estimated with line-outage
    distribution factors (LODF), at the cost of one matrix-vector product per candidate.
-4. *Scheduled-outage look-ahead.* Before an announced outage, the agent applies a configuration recorded
-   offline as surviving that outage.
+4. *Scheduled-outage look-ahead.* When an announced outage would be severe, the agent prepares the network
+   before it starts, with a configuration recorded offline as surviving that outage when one exists.
 5. *Margin preservation.* Before redispatch is returned toward its economic set point, part of it is shifted,
    at zero net change, toward generators close to their minimum output, so that downward ramping capacity
    remains available for later corrections.
 6. *Revalidation of fitted parameters.* A parameter fitted offline is replaced only when an alternative
    performs significantly better on new data.
-
-### Withholding mechanism
-
-<p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/withholding_rule_dark.png">
-  <img alt="The three regions with their attackable lines; one line per region is held open, so an attack that falls due finds a line out of service and is canceled." src="docs/figures/withholding_rule_light.png" width="840">
-</picture>
-</p>
-
-The withheld line of each region is selected offline so that the network remains secure without it. The
-function implementing each mechanism, and the environment variable that disables it, are listed in
-[`docs/code_map.md`](docs/code_map.md).
 
 ## Results
 
@@ -116,18 +96,36 @@ instructions are given in [`evaluation/README.md`](evaluation/README.md).
 ## Repository structure
 
 ```
-agent/xdp_agent/     the agent, a self-contained package exposing make_agent(env, path)
-evaluation/          evaluation harness used for all local results
-analysis/            reproduce_results.py and make_figures.py
-results/             competition result files and per-scenario local records
-data/                scenario lists of the 764 / 34 / 34 split
-docs/                step-by-step description, code map, and figures
+.
+├── agent/
+│   └── xdp_agent/              the agent package, exposing make_agent(env, path)
+│       ├── my_agent.py         control cycle, candidate search, safeguards and train()
+│       ├── ac_dispatch.py      AC-anchored dispatch program
+│       └── ...                 OptimCVXPY baseline, offline libraries and the scripts that build them
+├── analysis/
+│   ├── reproduce_results.py    recomputes the reported results from results/
+│   └── make_figures.py         draws the results figure
+├── data/                       scenario lists of the 764 / 34 / 34 split
+├── docs/
+│   ├── how_the_agent_works.md  step-by-step description
+│   ├── code_map.md             where each mechanism lives in the code
+│   └── figures/                figures and their TikZ sources
+├── evaluation/
+│   ├── eval_full.py            evaluation harness used for all local results
+│   └── run_eval.sh             launcher for a laptop or a SLURM cluster
+├── results/
+│   ├── competition/            files returned by the competition's evaluation
+│   └── local_764/              per-scenario records of the local runs
+├── LICENSE
+├── NOTICE.md
+└── requirements.txt
 ```
 
 ## Implementation notes
 
-The code is the version evaluated in the competition. Only comments and docstrings were edited for this
-release; the Python syntax tree of every file is unchanged.
+The agent in `agent/xdp_agent/` is the version evaluated in the competition. Only comments and docstrings
+were edited for this release; with docstrings set aside, the syntax tree of every Python file in that folder
+is identical to the evaluated version.
 
 PTDF and LODF are computed with LightSim2Grid for the environment on which the agent is constructed. In the
 competition, that environment was never stepped, so the factors corresponded to the nominal topology. In the
@@ -136,9 +134,10 @@ current topology.
 
 ## Funding
 
-This work was carried out within the project *Power Network Optimization in the Age of Climate Extremes*
-([VI.Vidi.233.247](https://doi.org/10.61686/GOOEL09973)), funded by the Dutch Research Council (NWO)
-through a Vidi grant awarded to Alessandro Zocca.
+This work is part of the project *Power Network Optimization in the Age of Climate Extremes* with file number
+VI.Vidi.233.247 of the research programme Vidi ENW, which is (partly) financed by the Dutch Research Council
+(NWO) under the grant [https://doi.org/10.61686/GOOEL09973](https://doi.org/10.61686/GOOEL09973). The
+project is led by Alessandro Zocca.
 
 ## Citation
 
@@ -146,9 +145,9 @@ through a Vidi grant awarded to Alessandro Zocca.
 @inproceedings{rad2026rollout,
   title     = {Real-Time Topology and Dispatch Control Under Uncertain Adversarial Attacks
                ({A} Rollout-Based Approach)},
-  author    = {AUTHOR_1 and AUTHOR_2 and AUTHOR_3 and AUTHOR_4},
+  author    = {Krame Kadurha, David and van der Burg, Robbert and Zocca, Alessandro and Bhulai, Sandjai},
   booktitle = {VENUE},
-  year      = {2026}
+  year      = {YEAR}
 }
 ```
 

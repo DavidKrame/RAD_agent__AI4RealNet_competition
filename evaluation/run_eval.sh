@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
 # =============================================================================
-# run_eval.sh — full-set evaluation of one agent, on a cluster or on a laptop
+# run_eval.sh: full-set evaluation of one agent, on a cluster or on a laptop
 #
-# DUAL-MODE, one script:
-#   sbatch hpc/run_eval.sh                  -> one node, every core filled
-#   sbatch --array=0-15 hpc/run_eval.sh     -> spread across array tasks instead
-#   bash   hpc/run_eval.sh                  -> local run, WORKERS parallel processes
+# One script, three ways to run it:
+#   sbatch evaluation/run_eval.sh                  -> one node, every core filled
+#   sbatch --array=0-15 evaluation/run_eval.sh     -> spread across array tasks instead
+#   bash   evaluation/run_eval.sh                  -> local run, WORKERS parallel processes
 #
-# The same file works in all three so the thing that was tested locally is the thing
-# that runs on the cluster, rather than a second script that drifts from the first.
+# The same file serves all three, so what runs on the cluster is what was tested locally.
 #
-# WHY ONE NODE IS THE DEFAULT. The work is ~11 core-hours of independent scenarios. An
+# Why one node is the default: the work is ~11 core-hours of independent scenarios. An
 # array of single-core tasks finishes just as fast, but if the site hands out whole
 # nodes, each task is billed as an entire node however few cores it uses, and the same
 # work is charged many times over. Filling one node is charged once and needs no
 # knowledge of local accounting rules.
 #
-# RESUMABLE. A worker whose output file already exists is skipped, so a job that hit a
+# Resumable: a worker whose output file already exists is skipped, so a job that hit a
 # time limit, a failed node, or a requeue can simply be resubmitted and it continues.
 # To force recomputation, delete the corresponding results/*.json.
 #
@@ -27,14 +26,12 @@
 #   WORKERS     parallel processes when run locally  (default 4)
 #   OUTDIR      results directory                    (default results)
 #   SEEDS       JSON list of per-scenario env seeds   (optional; re-draws opponent attacks)
-#   EPSFILE     JSON list of episode ids to run       (optional; a SUBSET of the env, e.g. only the
-#               chronics of a dataset that appear in no other dataset). When given, TOTAL is ignored
-#               and the ids are sliced across workers instead of a contiguous range.
+#   EPSFILE     JSON list of episode ids to run       (optional; a subset of the environment's scenarios).
+#               When given, TOTAL is ignored and the ids are sliced across workers instead of a
+#               contiguous range.
 #
-# CONCURRENT ARMS. Several arms may be submitted at once; they are independent jobs. Each must be given
-# its own OUTDIR, which separates both the result files and -- because the per-worker log name is derived
-# from it -- the logs. Without that derivation every arm would write logs/worker_000.log and a failed
-# slice could not be traced back to the arm that produced it.
+# Several runs may be submitted at once as independent jobs. Give each its own OUTDIR: it separates the
+# result files and, since the per-worker log names are derived from it, the logs.
 # =============================================================================
 #SBATCH --job-name=l2rpn-eval
 #SBATCH --nodes=1
@@ -76,15 +73,14 @@ mkdir -p "$OUTDIR" logs
 if [ -n "${SLURM_ARRAY_TASK_ID:-}" ]; then
     NWORK="${SLURM_ARRAY_TASK_COUNT:-1}"; ONLY="${SLURM_ARRAY_TASK_ID}"
 elif [ -n "${SLURM_JOB_ID:-}" ]; then
-    # SLURM's own count is authoritative. Do NOT use bare `nproc` here: it honours OMP_NUM_THREADS,
+    # SLURM's own count is authoritative. Do not use bare `nproc` here: it honours OMP_NUM_THREADS,
     # which is set to 1 just above so each worker stays single-threaded, so `nproc` reports 1 and the
     # whole run collapses onto a single worker that silently takes days instead of minutes.
     NWORK="${SLURM_CPUS_ON_NODE:-$(nproc --all)}"; ONLY=""
 else
     NWORK="${WORKERS:-$(nproc --all)}"; ONLY=""
 fi
-# An explicit id list replaces the contiguous range: the pools this battery uses are SUBSETS of an
-# environment (the chronics of one dataset that appear in no other), which a [from,to) slice cannot express.
+# An explicit id list replaces the contiguous range, for runs on a subset of the environment's scenarios.
 if [ -n "$EPSFILE" ]; then
     TOTAL=$(python -c "import json,sys;print(len(json.load(open(sys.argv[1]))))" "$EPSFILE")
 fi
@@ -104,9 +100,8 @@ run_worker() {
     fi
     local t0; t0=$(date +%s)
     echo "[$(ts)] START worker $i  scenarios [$from,$to)"
-    # SEEDS (optional): a JSON list of env seeds, one per scenario index. Supplying it re-draws the
-    # OPPONENT's attacks on identical load data, which is the only axis on which a fresh sample can be
-    # taken from chronics we already hold -- the load series are files, the adversary is not.
+    # SEEDS (optional): a JSON list of environment seeds, one per scenario index. Changing them re-draws
+    # the opponent's attacks on the same load data.
     if [ -n "$EPSFILE" ]; then
         # This worker's share of the id list, written to its own file so eval_full sees a plain list.
         local slice="$OUTDIR/.eps_w$(printf '%03d' "$i").json"

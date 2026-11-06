@@ -1,38 +1,19 @@
-"""AC-anchored per-generator dispatch optimiser.
+"""AC-anchored per-generator dispatch program.
 
-WHY THIS EXISTS
----------------
-The convex module this agent inherits (`OptimCVXPY`, an RTE baseline) optimises a **lossless DC** model:
-line flow is taken as (theta_or - theta_ex)/x, with no resistance, no losses, no reactive power and no
-voltage magnitudes. It carries two distinct errors, and the larger one is usually overlooked:
+The OptimCVXPY baseline optimizes a lossless DC model: both the sensitivity of flows to injections and
+the base flows come from that model. Grid2Op computes the observation with an AC power flow, so the
+observed flows are exact. This program takes the base flows from the observation and uses distribution
+factors only for the change that the controls cause.
 
-  1. the SENSITIVITY is DC -- how flows respond to an injection change; and
-  2. the BASE FLOWS are computed from that same DC model, so the starting point is already wrong.
+OptimCVXPY also decides per bus and then splits each decision across the generators of that bus, so
+individual ramp limits are respected only approximately. Here:
 
-Grid2Op itself runs a full AC power flow, and the observation therefore already contains the true AC flows.
-Anchoring on those and using a distribution-factor model only for the *increment* removes the second and
-larger error for essentially nothing: the factor matrix costs 0.3 ms to build, and on this grid the
-resulting prediction of a redispatch's effect on line flows is accurate to a fraction of a megawatt.
-
-It also optimises **per bus**, not per device: it decides "+18 MW at this bus" and afterwards splits that
-across the generators there, pro rata to their remaining margins. Generator ramp limits, cost heterogeneity
-and proximity to pmin are invisible to it and only approximately respected. That is not a cosmetic loss --
-measured over 764 scenarios, dispatch infeasibility was the second-largest cause of episode failure, and it
-is precisely the failure mode that bus-level aggregation cannot see.
-
-WHAT THIS DOES INSTEAD
-----------------------
-  * base flows taken from the observation (exact AC), increments from distribution factors;
-  * one decision variable **per generator**, with that generator's own ramp limits as hard bounds;
-  * the fleet's aggregate downward capability as an explicit constraint, so the optimiser cannot ask for a
-    dispatch the environment will reject as infeasible;
-  * curtailment and storage alongside redispatch in the same problem, so the trade-off is made once rather
-    than in sequence;
-  * every proposal verified by an exact AC forecast before it is played, and re-anchored and re-solved if
-    the linear model mispredicted -- i.e. sequential programming with exact evaluations, not a single
-    linear solve trusted blindly.
-
-Solved with the convex stack already present in the evaluation environment. No new dependency.
+  * base flows come from the observation, and their changes from distribution factors;
+  * each generator has its own decision variable, bounded by its own ramp margins, which also keeps the
+    fleet's total downward movement within its downward room;
+  * curtailment and storage are decided in the same program as redispatch;
+  * the solution is converted to one action, which the agent plays only if a forecast confirms a lower
+    peak loading.
 """
 from typing import Optional, List
 import os
@@ -61,92 +42,25 @@ class ACAnchoredDispatch:
         self.c_redisp = float(redisp_cost)
         self.c_curtail = float(curtail_cost)
         self.c_storage = float(storage_cost)
-        # Three-actuator formulation (EXP_ACT3).
-        #
-        # This class has always documented three actuators and has always accepted `curtail_cost`
-        # and `storage_cost`, but only redispatch was ever given a decision variable: the other two
-        # costs were stored and never read again, so the program that actually got solved had one
-        # lever where the interface promised three. Measured over 235 solves of the companion convex
-        # optimiser on the same states, its proposals reach for curtailment on 100 % of solves and
-        # storage on 98 % -- so this is not an unused corner case, it is a lever the problem wants
-        # almost every time it is posed.
-        #
-        # Solving the three together is not the same as generating three candidates and comparing
-        # them. Relieving a line by curtailing 5 MW and by redispatching 5 MW produce different flows
-        # on every OTHER line, and a scalar afterstate score computed per candidate cannot represent
-        # that trade-off; inside one program it is priced once, in the constraint set.
-        #
-        # Default OFF so the solved program is unchanged until the flag is set.
-        # 0 = redispatch only (the original one-variable program)
-        # 1 = redispatch + curtailment + storage
-        # 2 = redispatch + storage ONLY -- the free half
-        # 3 = redispatch + curtailment only
-        #
-        # The split exists because the two added actuators are not priced alike by the competition.
-        # Storage moves energy in time and costs the score nothing; curtailment DESTROYS renewable
-        # output and is charged directly against the low-carbon term. Measured over 16 episodes, the
-        # three-actuator program gained a completion and +321 steps -- and doubled the renewable
-        # energy given up, from 12974 to 25760 MWh. A gain bought entirely with curtailment and a
-        # gain that comes free from storage are different results wearing the same number, and only
-        # an ablation that can switch one off tells them apart.
-        #
-        # The price of curtailment is the unexamined quantity here. `curtail_cost` defaulted to 50.0
-        # for as long as this class has existed, but it was accepted and discarded rather than used,
-        # so that number has never been exercised against anything. It became load-bearing the moment
-        # the variable became live.
-        # Default 1 -- all three actuators. Measured on the FULL 764 against the one-actuator
-        # program: +0.3369 alone, and +0.6324 when combined with the delivery-factor balance
-        # (EXP_MLF), which is the only arm of six whose 95 %% CI excludes zero. An earlier
-        # 16-episode read suggested each actuator alone beat the pair and that enabling all three
-        # doubled curtailment; neither survived the full set -- the low-carbon delta is -0.0036,
-        # i.e. neutral. The small sample was measuring noise.
-        # Measured on the full 764 on THIS lineage: all three actuators give +2.7037 over the
-        # incumbent reference with 690 completions and a breadth statistic of 4.20, against +2.4756
-        # for redispatch+storage alone -- so curtailment contributes and, unlike a sibling lineage's
-        # dispatch module, does not pay for it in low-carbon score (nres delta -0.085). The shipped
-        # default is therefore all three; the ablation sets EXP_ACT3=0 explicitly to recover the
-        # one-variable program.
+        # Actuators of the program (EXP_ACT3): 0 = redispatch only; 1 = redispatch, curtailment and storage
+        # (default); 2 = redispatch and storage; 3 = redispatch and curtailment. Deciding them in one program
+        # prices their different effects on every line at once, which separate candidates cannot do.
         _a3 = int(os.environ.get("EXP_ACT3", "1"))
         self._act3 = _a3 > 0
         self._act3_curt = _a3 in (1, 3)
         self._act3_stor = _a3 in (1, 2)
 
-        # --- Security against the outage that is ACTUALLY COMING (EXP_SECN1) -----------------------
-        #
-        # A first attempt constrained the dispatch against every line the opponent may attack. It cost
-        # 2.37 composite and made separations WORSE, and the post-mortem found two reasons, both of
-        # which this formulation removes.
-        #
-        # FIRST, the contingency set was wrong. One held line per area vetoes that area's ENTIRE
-        # attack -- not one target among six -- and the posture holds one in each of the three areas,
-        # which is why 88 of 95 remaining deaths involve no attack at all. Defending against attackable
-        # lines is therefore insurance against events the agent has already made impossible. What
-        # remains genuinely unavoidable is SCHEDULED MAINTENANCE: the environment publishes it through
-        # `time_next_maintenance`, the agent cannot veto it, and exactly one line at a time is usually
-        # pending. So the contingency set here is not a fixed list of 23 -- it is whichever line is
-        # about to go out, and it is usually empty, which is also why this costs almost nothing to run.
-        #
-        # SECOND, and decisively, the premium was paid in the wrong currency. The objective charges
-        # curtailment at 50 per MW LINEARLY, while the old security slack was penalised at 50
-        # QUADRATICALLY -- so as soon as a security violation grew, meeting it was worth more than
-        # curtailing to do so, and the program dutifully curtailed. The low-carbon term is scored
-        # directly against us, so that premium came straight off the result.
-        #
-        # Here the slack is LINEAR and priced BELOW `curtail_cost`. That single relation is the whole
-        # design: relaxing a post-contingency limit by 1 MW is cheaper than curtailing 1 MW to meet it,
-        # so the optimiser will never spend renewable output on security, while redispatch (0.03) and
-        # storage (0.1) remain so cheap that it will use them freely. Security is then bought only
-        # where it is FREE -- the property that separates the flexibility floor, which works, from a
-        # security-constrained program that pays a real premium every step, which does not.
-        # Measured on the full 764: +0.1818 composite over this agent's own parent with 693
-        # completions -- the most reached in this record -- `BackendError` 67 -> 62, nres +0.024 and
-        # no runtime cost. The gain is below the detection floor and is NOT a demonstrated
-        # improvement; it is shipped ON because it is free and directionally correct, and the
-        # ablation sets EXP_SECN1=0 explicitly to recover the parent exactly.
+        # --- Security against scheduled outages (EXP_SECN1) ---
+        # Withholding already keeps the opponent's attempts from landing, so the outages the agent cannot prevent
+        # are the scheduled ones, published through `time_next_maintenance`. For a line whose outage starts within
+        # the lead window, the post-outage flows of the lines it would overload are kept within their ratings
+        # through a slack (at most EXP_SECN1_MAX pairs). The slack is linear and priced below the curtailment cost,
+        # so relaxing a security limit is always cheaper than curtailing to meet it, while redispatch and storage
+        # remain cheaper still.
         self._secn1 = int(os.environ.get("EXP_SECN1", "1"))
         self._secn1_lead = int(os.environ.get("EXP_SECN1_LEAD", "48"))     # steps of warning to act on
         self._secn1_margin = float(os.environ.get("EXP_SECN1_MARGIN", "1.0"))
-        self._secn1_w = float(os.environ.get("EXP_SECN1_W", "5.0"))        # MUST stay below curtail_cost
+        self._secn1_w = float(os.environ.get("EXP_SECN1_W", "5.0"))  # must stay below curtail_cost
         self._secn1_max = int(os.environ.get("EXP_SECN1_MAX", "40"))
         self._secn1_armed = 0      # solves with a pending outage in the window
         self._secn1_cons = 0       # monitored lines constrained across those solves
@@ -158,9 +72,9 @@ class ACAnchoredDispatch:
 
     # ------------------------------------------------------------------
     def _ptdf(self, env):
-        """Distribution factors for the CURRENT topology. Cheap enough to rebuild every call (~0.3 ms),
-        which matters because the agent changes topology constantly and a cached matrix would silently
-        describe a grid that no longer exists."""
+        """Distribution factors for the current topology of ``env``, rebuilt at every call (about 0.3 ms) so
+        that they follow topology changes of that environment.
+        """
         try:
             return np.asarray(env.backend._grid.get_ptdf(), dtype=float)
         except Exception:
@@ -178,7 +92,7 @@ class ACAnchoredDispatch:
 
         rho = np.asarray(obs.rho, dtype=float)
         lim = np.asarray(obs.thermal_limit, dtype=float)
-        base = np.asarray(obs.p_or, dtype=float)          # EXACT AC, straight from the observation
+        base = np.asarray(obs.p_or, dtype=float)  # AC flows from the observation
         status = np.asarray(obs.line_status, dtype=bool)
         # a flow limit expressed in MW at the observed operating point; rho is |S|/limit, so scaling the
         # observed active flow by rho recovers the MW value the limit corresponds to
@@ -237,7 +151,7 @@ class ACAnchoredDispatch:
             for k, g in enumerate(curt_ids):
                 b = int(self.gen_to_subid[g])
                 if 0 <= b < nb:
-                    Ac[b, k] = -1.0                       # curtailment REMOVES injection at that bus
+                    Ac[b, k] = -1.0  # curtailment removes injection at that bus
             inj = inj + Ac @ curt
         if stor is not None:
             As = np.zeros((nb, ns))
@@ -287,8 +201,8 @@ class ACAnchoredDispatch:
                 pairs = pairs[: max(0, self._secn1_max)]
                 if pairs:
                     sl = cp.Variable(len(pairs), nonneg=True)
-                    # LINEAR, and below curtail_cost: relaxing the limit is always cheaper than
-                    # curtailing to meet it, so security is never bought with renewable output.
+                    # linear and priced below curtail_cost: relaxing the limit is always cheaper than curtailing to meet
+                    # it, so security is never bought with renewable output
                     obj = obj + self._secn1_w * cp.sum(sl)
                     for j, (_r, m, k) in enumerate(pairs):
                         fpost = (base[m] + dflow[m]) + float(L[m, k]) * (base[k] + dflow[k])
@@ -297,7 +211,7 @@ class ACAnchoredDispatch:
                     self._secn1_armed += 1
                     self._secn1_cons += len(pairs)
             except Exception:
-                pass          # security is an ENHANCEMENT; never let it cost the relief solve
+                pass  # if the security block fails, solve without it
 
         prob = cp.Problem(cp.Minimize(obj), cons)
         try:
@@ -324,8 +238,8 @@ class ACAnchoredDispatch:
                 act_dict["redispatch"] = entries
             if curt is not None and curt.value is not None:
                 cv = np.asarray(curt.value, dtype=float)
-                # grid2op takes curtailment as a RATIO of the generator's maximum output, so the
-                # solved megawatts are converted here rather than passed through.
+                # grid2op takes curtailment as a ratio of the generator's maximum output, so the solved megawatts
+                # are converted here
                 ce = [(int(g), float(max(0.0, min(1.0, (p_ren[k] - cv[k]) / float(self.gen_pmax[g])))))
                       for k, g in enumerate(curt_ids) if cv[k] > 1e-3 and self.gen_pmax[g] > 1e-6]
                 if ce:

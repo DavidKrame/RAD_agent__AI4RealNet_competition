@@ -1,10 +1,8 @@
 # How the agent works
 
-This document explains the agent from the whole system down to individual rules. Section 0 shows the
-system at a glance, Section 1 follows one call to `act()`, and the later sections open one stage at a
-time, in the order in which `act()` consults them. Every figure after the first carries a strip at its top
-that shows, in orange, which part of the overview it opens. Thresholds are those of the released
-configuration; the functions that implement each rule are listed in [`code_map.md`](code_map.md).
+Thresholds are those of the released configuration, and [`code_map.md`](code_map.md) gives the function
+that implements each rule. The strip at the top of each figure marks, in orange, the part of the overview
+that the figure details.
 
 Notation: $o$ is the current observation, $\rho_\ell$ the loading of line $\ell$ (flow over thermal
 limit), $\rho_{\max}=\max_\ell \rho_\ell$, and $k_\ell$ the number of consecutive steps line $\ell$ has
@@ -44,7 +42,7 @@ library of single-substation busbar assignments that relieved stressed states, a
 configurations that survived the scheduled outage of line 175, and a set of withheld lines with one
 alternative. Once before the scenarios are scored, `train()` tests whether the alternative should
 replace the default set. At every five-minute step, `act()` consults four stages in a fixed order, and
-every stage that compares candidates uses the same forward simulation (Section 2).
+every stage that compares candidates uses the same forward simulation ([§2](#2-how-every-candidate-is-scored)).
 
 ## 1. One step of `act()`
 
@@ -93,8 +91,7 @@ both equal to $+\infty$ if any simulated step ends the episode. The state term i
 
 where $K$ is the number of overloaded steps the environment tolerates before disconnecting a line. $c$ is
 the fraction of renewable potential curtailed, and $d$ is the cost-weighted magnitude of redispatch,
-counted only when the current state is comfortable ($\rho_{\max}\le 0.90$) so that it never competes
-with survival. Lower $J_H$ is better.
+counted only when the current peak loading is below 0.90, so that it never competes with survival. Lower $J_H$ is better.
 
 <p align="center">
 <picture>
@@ -171,17 +168,17 @@ clears, and then reverted. Recoverable lines are reconnected one at a time when 
 reconnection no worse than doing nothing.
 
 The controller then classifies the state by its current loading and by the forecast of the do-nothing
-action, as in the map of Section 1:
+action, as in the map of [§1](#1-one-step-of-act):
 
 | regime | condition | action |
 |---|---|---|
-| comfortable | $\rho_{\max}\le 0.90$ | restore curtailed renewables, charge storage, restore downward ramping capacity (Section 5.1), then return redispatch toward its economic set point, each guarded by a forecast |
-| preventive | $\rho_{\max}>0.90$ and $F_2(o,\text{do-nothing})<1.30$ | DC optimal power flow when a line exceeds its limit, an anticipatory dispatch against the most severe likely attack, or the same program again when an overload counter is running; each must improve on do-nothing, otherwise do nothing (Section 5.2) |
-| danger | $F_2(o,\text{do-nothing})\ge 1.30$ | full candidate search (Section 5.3) |
+| comfortable | $\rho_{\max}\le 0.90$ | restore curtailed renewables, charge storage, restore downward ramping capacity ([§5.1](#51-comfortable-regime-and-margin-preservation)), then return redispatch toward its economic set point, each guarded by a forecast |
+| preventive | $\rho_{\max}>0.90$ and $F_2(o,\text{do-nothing})<1.30$ | DC optimal power flow when a line exceeds its limit, an anticipatory dispatch against the most severe likely attack, or the same program again when an overload counter is running; each must improve on do-nothing, otherwise do nothing ([§5.2](#52-preventive-regime)) |
+| danger | $F_2(o,\text{do-nothing})\ge 1.30$ | full candidate search ([§5.3](#53-danger-regime-candidate-search)) |
 
 If a scheduled outage falls within the forecast horizon, the do-nothing action is forecast even in a
 comfortable state, and a predicted end of episode sends the step to the danger search instead of to
-housekeeping. Whenever a line is loaded above 0.95, the AC-anchored dispatch of Section 5.5 replaces
+housekeeping. Whenever a line is loaded above 0.95, the AC-anchored dispatch of [§5.5](#55-ac-anchored-dispatch) replaces
 the relief action chosen by these rules if its $F_H$ is lower. When both a reconnection and a relief
 action are available, each alone and their sum are compared on $J_H$.
 
@@ -312,7 +309,7 @@ confirms a lower peak loading $F_H$ than do-nothing.
 
 ## 6. Stage 4: extended-horizon safeguard
 
-The two-step forecast of Section 2 can miss an overload that ends the episode a few steps later. When a
+The two-step forecast of [§2](#2-how-every-candidate-is-scored) can miss an overload that ends the episode a few steps later. When a
 line is overloaded, its counter is running, and the action chosen by reactive control is forecast to end
 the episode within $H'=8$ steps, up to 20 alternatives are simulated over the same eight steps and ranked
 by how long they survive, with ties broken by lower peak loading. The best one replaces the action only if

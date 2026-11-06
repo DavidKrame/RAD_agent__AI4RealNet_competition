@@ -28,22 +28,29 @@
   \definecolor{yes}{HTML}{56D364}
   \definecolor{no}{HTML}{F47067}
 \else
-  \definecolor{ink}{HTML}{17202A}
-  \definecolor{edge}{HTML}{5D6670}
-  \definecolor{blue}{HTML}{DDEBF7}
-  \definecolor{teal}{HTML}{DDF2EF}
-  \definecolor{green}{HTML}{E4F2E5}
-  \definecolor{amber}{HTML}{FFF0CC}
-  \definecolor{red}{HTML}{F8DDDD}
-  \definecolor{purple}{HTML}{EAE2F5}
-  \definecolor{grey}{HTML}{ECEFF1}
-  \definecolor{yes}{HTML}{236B3B}
-  \definecolor{no}{HTML}{A33636}
+  \definecolor{ink}{HTML}{111820}
+  \definecolor{edge}{HTML}{3F4A56}
+  \definecolor{blue}{HTML}{CCDFF5}
+  \definecolor{teal}{HTML}{C8E9E3}
+  \definecolor{green}{HTML}{D2EBD4}
+  \definecolor{amber}{HTML}{FBE3A2}
+  \definecolor{red}{HTML}{F3CCCC}
+  \definecolor{purple}{HTML}{DDD0F2}
+  \definecolor{grey}{HTML}{DFE4E9}
+  \definecolor{yes}{HTML}{1C6332}
+  \definecolor{no}{HTML}{9C2B2B}
+\fi
+% Border and arrow widths per theme: thin light lines read well on a dark page, while a white page
+% needs slightly heavier dark lines for the same contrast.
+\ifdefined\darktheme
+  \def\lwbox{0.4pt}\def\lwask{0.6pt}\def\lwstage{0.8pt}\def\lwarr{0.6pt}
+\else
+  \def\lwbox{0.7pt}\def\lwask{0.9pt}\def\lwstage{1.1pt}\def\lwarr{0.85pt}
 \fi
 
 \tikzset{
   every picture/.style={color=ink, font=\small},
-  box/.style={draw=edge, rounded corners=3pt, align=center, inner sep=6pt,
+  box/.style={draw=edge, line width=\lwbox, rounded corners=3pt, align=center, inner sep=6pt,
               text width=#1, minimum height=13mm, text=ink},
   box/.default=2.7cm,
   proc/.style={box=#1, fill=blue},   proc/.default=2.7cm,
@@ -53,14 +60,14 @@
   bad/.style={box=#1, fill=red},     bad/.default=2.7cm,
   rule/.style={box=#1, fill=amber},  rule/.default=2.7cm,
   ask/.style={box=#1, fill=amber, chamfered rectangle, chamfered rectangle xsep=2pt,
-              rounded corners=0pt, line width=0.6pt},
+              rounded corners=0pt, line width=\lwask},
   ask/.default=2.7cm,
-  arr/.style={-{Latex[length=2mm]}, semithick, draw=edge},
+  arr/.style={-{Latex[length=2mm]}, line width=\lwarr, draw=edge},
   darr/.style={arr, dashed},
   lab/.style={font=\scriptsize\bfseries, inner sep=1.5pt},
   ylab/.style={lab, text=yes}, nlab/.style={lab, text=no},
   note/.style={font=\scriptsize, text=ink, align=center},
-  stage/.style={box=#1, fill=blue, line width=0.8pt},  stage/.default=3.0cm,
+  stage/.style={box=#1, fill=blue, line width=\lwstage},  stage/.default=3.0cm,
   band/.style={draw=none, fill=grey, rounded corners=4pt},
   lanelab/.style={font=\scriptsize\itshape, text=ink, anchor=north west, inner sep=3pt},
 }
@@ -76,38 +83,37 @@
   \definecolor{okc}{HTML}{56D364}
 \else
   \definecolor{paper}{HTML}{FFFFFF}
-  \definecolor{hl}{HTML}{FDE2C4}
-  \definecolor{hledge}{HTML}{C2620E}
-  \definecolor{flowc}{HTML}{1F6FEB}
-  \definecolor{overc}{HTML}{C93C37}
-  \definecolor{okc}{HTML}{2DA44E}
+  \definecolor{hl}{HTML}{FAD0A0}
+  \definecolor{hledge}{HTML}{B0520A}
+  \definecolor{flowc}{HTML}{1959C8}
+  \definecolor{overc}{HTML}{B42B26}
+  \definecolor{okc}{HTML}{1E7F3A}
 \fi
 
 % Numbered badge of a stage of act(): the same numbers are used in every figure.
 \newcommand{\stg}[1]{\tikz[baseline=(b.base)]\node[circle, fill=ink, text=paper, inner sep=0pt,
   minimum size=3.8mm, font=\scriptsize\bfseries] (b) {#1};}
 
-% Locator strip placed at the top of a zoomed figure: the four stages of act() with the zoomed
-% stage highlighted, followed by the path inside that stage.  Usage: \stagemap{x,y}{k}{path}.
-\newcommand{\stagemap}[3]{%
-  \begin{scope}[shift={(#1)}]
-  \foreach \i/\n in {1/look-ahead,2/withholding,3/reactive control,4/safeguard}{%
-    \ifnum\i=#2\relax\def\lf{hl}\def\ld{hledge}\def\lw{1.1pt}\else\def\lf{grey}\def\ld{edge}\def\lw{0.4pt}\fi
-    \node[draw=\ld, fill=\lf, line width=\lw, rounded corners=1.5pt, minimum width=22mm,
-          minimum height=5mm, inner sep=1pt, font=\scriptsize, text=ink] (loc\i)
-          at ({(\i-1)*2.65},0) {\textbf{\i}\ \n};}
-  \foreach \i/\j in {1/2,2/3,3/4}{\draw[-{Latex[length=1.2mm]}, draw=edge, thin] (loc\i)--(loc\j);}
-  \node[anchor=west, font=\scriptsize\bfseries, text=hledge] at ($(loc4.east)+(3mm,0)$) {#3};
-  \end{scope}}
+% Locator strip centered above a zoomed figure: the four stages of act() with the zoomed stage
+% highlighted, followed by the path inside that stage. It is drawn last, so it is centered on everything
+% the figure contains.  Usage: \stagemap{k}{path}.
+\newcommand{\stagemap}[2]{%
+  \node[anchor=south, inner sep=0pt] at ($(current bounding box.north)+(0,6mm)$) {\tikz{%
+    \foreach \i/\n in {1/look-ahead,2/withholding,3/reactive control,4/safeguard}{%
+      \ifnum\i=#1\relax\def\lf{hl}\def\ld{hledge}\def\lw{1.1pt}\else\def\lf{grey}\def\ld{edge}\def\lw{\lwbox}\fi
+      \node[draw=\ld, fill=\lf, line width=\lw, rounded corners=1.5pt, minimum width=22mm,
+            minimum height=5mm, inner sep=1pt, font=\scriptsize, text=ink] (loc\i)
+            at ({(\i-1)*2.65},0) {\textbf{\i}\ \n};}
+    \foreach \i/\j in {1/2,2/3,3/4}{\draw[-{Latex[length=1.2mm]}, draw=edge, thin] (loc\i)--(loc\j);}
+    \node[anchor=west, font=\scriptsize\bfseries, text=hledge] at ($(loc4.east)+(3mm,0)$) {#2};}};}
 
-% Same strip for the three time scales of the overview.  Usage: \lanemap{x,y}{k}{path}.
-\newcommand{\lanemap}[3]{%
-  \begin{scope}[shift={(#1)}]
-  \foreach \i/\n in {1/offline,2/train(),3/act()}{%
-    \ifnum\i=#2\relax\def\lf{hl}\def\ld{hledge}\def\lw{1.1pt}\else\def\lf{grey}\def\ld{edge}\def\lw{0.4pt}\fi
-    \node[draw=\ld, fill=\lf, line width=\lw, rounded corners=1.5pt, minimum width=19mm,
-          minimum height=5mm, inner sep=1pt, font=\scriptsize, text=ink] (lan\i)
-          at ({(\i-1)*2.5},0) {\n};}
-  \foreach \i/\j in {1/2,2/3}{\draw[-{Latex[length=1.2mm]}, draw=edge, thin] (lan\i)--(lan\j);}
-  \node[anchor=west, font=\scriptsize\bfseries, text=hledge] at ($(lan3.east)+(3mm,0)$) {#3};
-  \end{scope}}
+% Same strip for the three time scales of the overview.  Usage: \lanemap{k}{path}.
+\newcommand{\lanemap}[2]{%
+  \node[anchor=south, inner sep=0pt] at ($(current bounding box.north)+(0,6mm)$) {\tikz{%
+    \foreach \i/\n in {1/offline,2/train(),3/act()}{%
+      \ifnum\i=#1\relax\def\lf{hl}\def\ld{hledge}\def\lw{1.1pt}\else\def\lf{grey}\def\ld{edge}\def\lw{\lwbox}\fi
+      \node[draw=\ld, fill=\lf, line width=\lw, rounded corners=1.5pt, minimum width=19mm,
+            minimum height=5mm, inner sep=1pt, font=\scriptsize, text=ink] (lan\i)
+            at ({(\i-1)*2.5},0) {\n};}
+    \foreach \i/\j in {1/2,2/3}{\draw[-{Latex[length=1.2mm]}, draw=edge, thin] (lan\i)--(lan\j);}
+    \node[anchor=west, font=\scriptsize\bfseries, text=hledge] at ($(lan3.east)+(3mm,0)$) {#2};}};}
