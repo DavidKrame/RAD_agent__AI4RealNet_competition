@@ -1,14 +1,40 @@
 \input{style}
 \begin{document}
-\begin{tikzpicture}[node distance=7mm and 11mm]
-\node[proc] (t) {An attack falls due in region $j$};
-\node[ask=3.0cm, right=of t] (q) {Every attackable line of region $j$ in service?};
-\node[bad=3.3cm, right=16mm of q, yshift=11.5mm] (x) {Attack proceeds: a loaded line of the region is disconnected};
-\node[out=3.3cm, right=16mm of q, yshift=-11.5mm] (y) {Attempt canceled and consumed, not rescheduled};
-\node[rule=3.0cm, below=10mm of q] (k) {Agent keeps one line per region out of service};
-\draw[arr] (t)--(q);
-\draw[arr] (q.east) -- ++(6mm,0) |- node[ylab,above,pos=0.75]{yes} (x.west);
-\draw[arr] (q.east) -- ++(6mm,0) |- node[nlab,below,pos=0.75]{no} (y.west);
-\draw[darr] (k)--(q);
+% The three attack regions of l2rpn_idf_2023 with their attackable lines (identifiers from the
+% environment configuration). The line drawn with an open switch is the one the agent holds out
+% of service; an attack falls due in one region at a time and proceeds only if all of that
+% region's attackable lines are in service.
+\begin{tikzpicture}
+\newcommand{\region}[4]{% #1 x of the first line, #2 region label, #3 list of lines, #4 held line
+  \foreach \l [count=\i from 0] in {#3}{%
+    \pgfmathsetmacro{\x}{#1+0.62*\i}
+    \fill[edge] (\x,0) circle (1.4pt); \fill[edge] (\x,1.1) circle (1.4pt);
+    \ifnum\l=#4\relax
+      \draw[hledge, line width=1.6pt] (\x,0)--(\x,0.38) (\x,0.38)--++(0.24,0.33) (\x,0.74)--(\x,1.1);
+      \node[font=\tiny\bfseries, text=hledge] at (\x,-0.28) {\l};
+    \else
+      \draw[draw=ink, line width=1.2pt] (\x,0)--(\x,1.1);
+      \node[font=\tiny, text=ink] at (\x,-0.28) {\l};
+    \fi}}
+\draw[draw=edge, rounded corners=4pt] (-0.45,-0.6) rectangle (3.55,1.75);
+\node[font=\scriptsize\bfseries, text=ink, anchor=north west] at (-0.45,1.75) {region 0};
+\region{0}{0}{106,93,88,162,68,117}{106}
+\draw[draw=edge, rounded corners=4pt] (4.05,-0.6) rectangle (10.55,1.75);
+\node[font=\scriptsize\bfseries, text=ink, anchor=north west] at (4.05,1.75) {region 1};
+\region{4.5}{1}{180,160,136,141,131,121,125,126,110,154}{131}
+\draw[draw=edge, rounded corners=4pt] (11.05,-0.6) rectangle (15.05,1.75);
+\node[font=\scriptsize\bfseries, text=ink, anchor=north west] at (11.05,1.75) {region 2};
+\region{11.5}{2}{81,43,33,37,62,61}{33}
+\node[note, anchor=north west] at (-0.45,-0.75) {attackable lines of each region; the line with the open switch is held out of service by the agent, $W=(106,131,33)$};
+% the rule
+\node[proc=3.0cm] (due) at (0.9,-3.05) {An attack falls due in one region};
+\node[ask=3.6cm, right=9mm of due] (all) {All attackable lines of that region in service?};
+\node[bad=3.9cm, right=16mm of all, yshift=10mm] (yes) {The attack disconnects one of them, more likely a loaded one};
+\node[out=3.9cm, right=16mm of all, yshift=-10mm] (no) {The attempt is canceled and consumed; nothing is disconnected};
+\draw[arr] (due)--(all);
+\draw[arr] (all.east)--++(6mm,0) |- node[ylab,above,pos=0.75]{yes}(yes.west);
+\draw[arr] (all.east)--++(6mm,0) |- node[nlab,below,pos=0.75]{no}(no.west);
+\node[note, anchor=north west, text width=15.3cm, align=left] at (-0.45,-4.75) {With one line held out in every region, every attempt is canceled. Over the 764 local scenarios, 2,468 attacks are realized without withholding and 62 with it.};
+\stagemap{0.5,2.55}{2}{zoom: why withholding cancels attacks}
 \end{tikzpicture}
 \end{document}

@@ -1,20 +1,24 @@
 \input{style}
 \begin{document}
-\begin{tikzpicture}[node distance=7mm and 11mm]
-\node[out=2.7cm] (d) {Nearest line with a scheduled outage within 12 steps};
-\node[sim, right=of d] (s) {Simulate the outage from the current state};
-\node[ask=2.8cm, right=of s] (q) {Survives with $\rho_{\max}<1.30$?};
-\node[out=2.7cm, above=9mm of q] (h) {Mark the line as handled; no action};
-\node[ask=2.4cm, right=of q] (r) {Recorded postures for this line?};
-\node[rule=3.2cm, right=16mm of r, yshift=11.5mm] (t) {Best-recorded posture not forecast as fatal};
-\node[opt=3.2cm, right=16mm of r, yshift=-11.5mm] (g) {Generated bus-bar and dispatch candidates; best on $J_H$};
-\node[out=2.0cm, right=16mm of t, yshift=-11.5mm] (a) {Apply};
-\draw[arr] (d)--(s); \draw[arr] (s)--(q);
-\draw[arr] (q)--node[ylab,right]{yes}(h);
-\draw[arr] (q)--node[nlab,above]{no}(r);
-\draw[arr] (r.east) -- ++(6mm,0) |- node[ylab,above,pos=0.75]{yes} (t.west);
-\draw[arr] (r.east) -- ++(6mm,0) |- node[nlab,below,pos=0.75]{no} (g.west);
-\draw[arr] (t.east) -- ++(6mm,0) |- (a.west);
-\draw[arr] (g.east) -- ++(6mm,0) |- (a.west);
+% Stage 1 on a time line: an outage published for step t+tau is probed once, and a posture is applied
+% before it starts if the probe predicts a severe overload.
+\begin{tikzpicture}
+\draw[arr, line width=1pt] (0,0)--(14.8,0) node[right, font=\scriptsize, text=ink]{time};
+\foreach \x/\t in {0/{$t$},9.6/{$t+\tau$}}{\draw[draw=edge, thick] (\x,-0.15)--(\x,0.15) node[above, font=\small, text=ink]{\t};}
+\draw[draw=hledge, line width=3pt] (9.6,0)--(13.9,0);
+\node[font=\scriptsize, text=hledge, anchor=north] at (11.75,-0.15) {line $e$ out of service};
+\draw[decorate, decoration={brace, amplitude=4pt, mirror}, draw=edge] (0,-0.5)--(9.6,-0.5) node[midway, below=4pt, font=\scriptsize, text=ink]{$\tau\le12$ steps, published in the observation};
+\node[sim=3.3cm, anchor=south] (probe) at (0.2,1.6) {Probe, once per line: simulate the outage from the current state};
+\node[ask=2.9cm, right=9mm of probe] (sev) {Survives with $\rho_{\max}<1.30$?};
+\node[out=2.6cm, right=14mm of sev, yshift=9mm] (ok) {No action needed};
+\node[rule=3.4cm, right=14mm of sev, yshift=-9mm] (post) {Apply a posture now, before the outage starts};
+\draw[arr] (probe)--(sev);
+\draw[arr] (sev.east)--++(5mm,0) |- node[ylab,above,pos=0.75]{yes}(ok.west);
+\draw[arr] (sev.east)--++(5mm,0) |- node[nlab,below,pos=0.75]{no}(post.west);
+% sources of the posture
+\node[out=6.2cm, anchor=north west] (rec) at (0,-1.55) {\textbf{record}, for line 175: 246 configurations of substation 79, ranked by how often each survived the outage offline; the first that the forecast does not show as fatal is applied};
+\node[opt=6.2cm, anchor=north west] (gen) at (7.4,-1.55) {\textbf{no record}: up to 120 generated busbar and dispatch candidates; the best on $J_H$ is applied};
+\node[note, anchor=north west, text width=14cm, align=left] at ($(rec.south west)+(0,-0.3)$) {The record is preferred because survival depends on the steps after the outage, which a one-step forecast does not see. Over the 764 local scenarios, the stage acts in 68; without it, completions fall from 706 to 689.};
+\stagemap{0.55,4.15}{1}{zoom: scheduled-outage look-ahead}
 \end{tikzpicture}
 \end{document}

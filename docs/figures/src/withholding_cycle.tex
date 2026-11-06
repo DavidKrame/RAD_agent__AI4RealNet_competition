@@ -1,24 +1,26 @@
 \input{style}
 \begin{document}
-\begin{tikzpicture}[node distance=7mm and 11mm]
-\node[out=1.8cm] (s) {Each step};
-\node[ask=3.3cm, right=of s] (a) {$\rho_{\max}\le0.95$, and a withheld line in service and off cooldown?};
-\node[rule, right=of a] (o) {Open every such line in one action};
-\node[ask=3.5cm, right=of o] (r) {Relief without line-status change, and opening + relief no worse on $J_H$?};
-\node[out=2.6cm, right=16mm of r, yshift=11mm] (p) {Return opening + relief};
-\node[out=2.6cm, right=16mm of r, yshift=-11mm] (b) {Return opening alone};
-\node[proc, below=19mm of a] (n) {Reactive controller};
-\node[ask=3.5cm, right=of n] (q) {Would a reconnection bring a region fully back in service?};
-\node[out=3.0cm, right=16mm of q, yshift=11mm] (k) {Yes, and $\rho_{\max}\le1.0$: reconnection withheld};
-\node[sim=3.0cm, right=16mm of q, yshift=-11mm] (f) {Otherwise: reconnect if the forecast rates it no worse};
-\draw[arr] (s)--(a);
-\draw[arr] (a)--node[ylab,above]{yes}(o);
-\draw[arr] (o)--(r);
-\draw[arr] (r.east) -- ++(6mm,0) |- node[ylab,above,pos=0.75]{yes} (p.west);
-\draw[arr] (r.east) -- ++(6mm,0) |- node[nlab,below,pos=0.75]{no} (b.west);
-\draw[arr] (a)--node[nlab,right]{no}(n);
-\draw[arr] (n)--(q);
-\draw[arr] (q.east) -- ++(6mm,0) |- (k.west);
-\draw[arr] (q.east) -- ++(6mm,0) |- (f.west);
+% What stage 2 does to a withheld line in each loading band. The three bands are drawn with equal
+% widths; the thresholds 0.95 and 1.00 separate them.
+\begin{tikzpicture}
+\newcommand{\linesym}[2]{% #1 x, #2 1 if the line is open
+  \fill[edge] (#1,0) circle (1.4pt); \fill[edge] (#1,1.0) circle (1.4pt);
+  \ifnum#2=1\relax
+    \draw[hledge, line width=1.6pt] (#1,0)--(#1,0.34) (#1,0.34)--++(0.22,0.30) (#1,0.66)--(#1,1.0);
+  \else
+    \draw[draw=ink, line width=1.2pt] (#1,0)--(#1,1.0);
+  \fi}
+\node[out=4.6cm, minimum height=27mm, anchor=north] (a) at (2.5,-0.3) {\textbf{open}\\[2pt]\scriptsize every withheld line that is in service and off cooldown is opened in one action; relief is added if it changes no line status and is no worse on $J_H$};
+\node[rule=4.6cm, minimum height=27mm, anchor=north] (b) at (7.7,-0.3) {\textbf{hold}\\[2pt]\scriptsize no new opening; a region's only disconnected attackable line is not reconnected};
+\node[proc=4.6cm, minimum height=27mm, anchor=north] (c) at (12.9,-0.3) {\textbf{release}\\[2pt]\scriptsize the ordinary reconnection rule may reconnect the line, if the forecast rates it no worse than do-nothing};
+\linesym{2.5}{1}\linesym{7.7}{1}\linesym{12.9}{0}
+\node[note] at (2.5,1.35) {opened};
+\node[note] at (7.7,1.35) {kept out};
+\node[note] at (12.9,1.35) {given back};
+\draw[draw=edge] (-0.2,2.0)--(15.6,2.0);
+\foreach \x/\t in {5.1/0.95,10.3/1.00}{\draw[draw=edge] (\x,1.85)--(\x,2.15) node[above, font=\scriptsize, text=ink]{\t};}
+\node[note, anchor=west] at (-0.2,2.3) {current peak loading $\rho_{\max}$};
+\node[note, text width=15.6cm, align=left, anchor=north west] at (-0.2,-3.35) {The bands form a hysteresis: the lines are opened only in a clearly comfortable state, kept out while every line is within its limit, and given back once a line is overloaded, because an open line also weakens the network. Stage 2 keeps no state of its own; the status of the withheld lines is its memory.};
+\stagemap{0.55,3.25}{2}{zoom: opening, holding and releasing}
 \end{tikzpicture}
 \end{document}

@@ -2,9 +2,26 @@
 
 This repository contains the agent developed by team RAD for the L2RPN AI4RealNet 2026 competition. The agent
 controls the 118-bus transmission network of the Grid2Op environment `l2rpn_idf_2023` under adversarial line
-outages, acting through bus-bar splitting, line switching, redispatch, curtailment, and storage. It contains
-no neural network and no learned policy: at every decision step, a bounded set of candidate actions is
-simulated a few steps ahead, and the candidate with the smallest constraint violation is applied.
+outages, acting through busbar splitting, line switching, redispatch, curtailment, and storage. It contains
+no neural network and no learned policy: when the network is stressed, a bounded set of candidate actions is
+simulated a few steps ahead, and the candidate with the lowest predicted cost, which penalizes overload,
+curtailment, and redispatch, is applied.
+
+## How the agent works
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/architecture_dark.png">
+  <img alt="Architecture: offline inputs (posture record, withheld lines, topology library), revalidation in train(), and the four stages of act(), which all score candidates by forward simulation." src="docs/figures/architecture_light.png" width="920">
+</picture>
+</p>
+
+The agent works on three time scales. Offline, before the competition, it was given a library of busbar
+assignments, a record of postures that survived one scheduled outage, and a set of lines to withhold. Once
+before scoring, `train()` checks whether an alternative set of withheld lines should replace the default.
+At every five-minute step, `act()` consults four stages in a fixed order, and each stage that compares
+candidates scores them by the same forward simulation. The step-by-step description opens each part of this
+picture in turn, down to the individual rules.
 
 <p align="center">
   <a href="docs/how_the_agent_works.md"><img src="docs/figures/button_how_it_works.svg" alt="How the agent works, step by step" height="48"></a>
@@ -20,7 +37,7 @@ The controller combines six components, each of which can be studied or reused o
    62.
 2. *AC-anchored dispatch.* A convex quadratic program sets redispatch, curtailment, and storage jointly. It is
    anchored on the observed AC flows, uses the power-transfer distribution factors (PTDF) only for the flow
-   change it induces, and keeps the total downward redispatch within the ramping capacity of the fleet.
+   change it induces, and bounds each generator's request by its own ramp margin.
 3. *Line-opening screen.* The loading of every line after a candidate opening is estimated with line-outage
    distribution factors (LODF), at the cost of one matrix-vector product per candidate.
 4. *Scheduled-outage look-ahead.* Before an announced outage, the agent applies a configuration recorded
@@ -36,24 +53,12 @@ The controller combines six components, each of which can be studied or reused o
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/withholding_rule_dark.png">
-  <img alt="Withholding: an attack proceeds only if every attackable line of its region is in service; the agent keeps one line per region out of service, so the attempt is canceled." src="docs/figures/withholding_rule_light.png" width="523">
+  <img alt="The three regions with their attackable lines; one line per region is held open, so an attack that falls due finds a line out of service and is canceled." src="docs/figures/withholding_rule_light.png" width="840">
 </picture>
 </p>
 
-The withheld line of each region is selected offline so that the network remains secure without it.
-
-### Decision cycle
-
-The environment advances in five-minute steps. At each step, the agent proceeds as follows:
-
-<p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/decision_cycle_dark.png">
-  <img alt="Decision cycle: scheduled-outage check, withholding, reactive controller, and extended-horizon check, each able to return an action." src="docs/figures/decision_cycle_light.png" width="920">
-</picture>
-</p>
-
-The function implementing each step, and the environment variable that disables it, are listed in
+The withheld line of each region is selected offline so that the network remains secure without it. The
+function implementing each mechanism, and the environment variable that disables it, are listed in
 [`docs/code_map.md`](docs/code_map.md).
 
 ## Results

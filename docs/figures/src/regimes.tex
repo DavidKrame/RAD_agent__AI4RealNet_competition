@@ -1,0 +1,38 @@
+\input{style}
+\begin{document}
+% Map of the rules over the two loadings the controller reads: the current peak loading (x) and the
+% peak loading forecast for do-nothing over the next two steps (y). Scales: x 15 cm per unit from
+% 0.70, y 7 cm per unit from 0.80.
+\begin{tikzpicture}
+\def\X#1{(#1-0.70)*15}
+\def\Y#1{(#1-0.80)*7}
+% regimes of the reactive controller
+\fill[green] (0,0) rectangle ({\X{0.90}},{\Y{1.60}});
+\fill[amber] ({\X{0.90}},0) rectangle ({\X{1.40}},{\Y{1.30}});
+\fill[red] ({\X{0.90}},{\Y{1.30}}) rectangle ({\X{1.40}},{\Y{1.60}});
+\draw[draw=edge] (0,0) rectangle ({\X{1.40}},{\Y{1.60}});
+\foreach \r in {0.95,1.00}{\draw[draw=edge, dashed] ({\X{\r}},0)--({\X{\r}},{\Y{1.60}});}
+\node[note, text width=2.7cm] at ({\X{0.80}},{\Y{1.20}}) {\textbf{comfortable}\\$\rho_{\max}\le0.90$\\[4pt]lift curtailment, charge storage, preserve ramp margin, return redispatch toward its economic set point};
+\node[note, text width=5.6cm] at ({\X{1.17}},{\Y{1.03}}) {\textbf{preventive}\\[2pt]DC optimal power flow if a line exceeds its limit; anticipatory dispatch against the likeliest outage; the same program again while an overflow counter runs; otherwise do nothing};
+\node[note, text width=5.6cm] at ({\X{1.17}},{\Y{1.45}}) {\textbf{danger}: candidate search\\(also entered when an announced outage makes the do-nothing forecast end the episode)};
+% axes
+\foreach \r in {0.70,0.80,0.90,0.95,1.00,1.10,1.20,1.30,1.40}{\draw[draw=edge] ({\X{\r}},0)--++(0,-0.12) node[below, font=\scriptsize, text=ink]{\r};}
+\foreach \f in {0.80,1.00,1.30,1.60}{\draw[draw=edge] (0,{\Y{\f}})--++(-0.12,0) node[left, font=\scriptsize, text=ink]{\f};}
+\node[note, font=\small] at ({\X{1.05}},-0.95) {current peak loading $\rho_{\max}(o_t)$};
+\node[note, font=\small, rotate=90] at (-1.25,{\Y{1.20}}) {forecast peak loading of do-nothing, $F_2$};
+\node[note, anchor=south east] at ({\X{1.40}},{\Y{1.60}}) {$F_2=+\infty$ when the forecast ends the episode};
+% where the other rules act, on the same horizontal scale
+\def\rulebar#1#2#3{\draw[draw=hledge, fill=hl, rounded corners=1pt] ({\X{#1}},#3) rectangle ({\X{#2}},{#3+0.3});}
+\rulebar{0.70}{0.95}{6.10}
+\node[anchor=west, font=\scriptsize, text=ink] at ({\X{0.70}},6.25) {\textbf{2} reopens withheld lines};
+\rulebar{0.70}{1.00}{6.55}
+\node[anchor=west, font=\scriptsize, text=ink] at ({\X{1.00}+0.1},6.70) {\textbf{2} does not reconnect a region's only disconnected attackable line};
+\rulebar{0.92}{1.00}{7.00}
+\node[anchor=west, font=\scriptsize, text=ink] at ({\X{1.00}+0.1},7.15) {\textbf{3} guarded-line rule, for two lines};
+\rulebar{0.95}{1.40}{7.45}
+\node[anchor=west, font=\scriptsize, text=ink] at ({\X{0.95}+0.1},7.60) {\textbf{3} AC-anchored dispatch competes with the relief action};
+\rulebar{1.00}{1.40}{7.90}
+\node[anchor=west, font=\scriptsize, text=ink] at ({\X{1.00}+0.1},8.05) {\textbf{4} may replace the action of \textbf{3} (a line is overloaded)};
+\lanemap{0.95,9.0}{3}{which rule acts at which loading}
+\end{tikzpicture}
+\end{document}

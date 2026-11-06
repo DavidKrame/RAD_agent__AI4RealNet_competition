@@ -1,0 +1,33 @@
+\input{style}
+\begin{document}
+% Margin preservation on four generators with a 10 MW ramp limit (illustrative values). Each bar is
+% the output above minimum, p - p_min; the darker part is the downward room min(p - p_min, R), which
+% is all a generator can give in one step. Moving 17 MW from the two units far above minimum to the
+% two units near minimum keeps the net output unchanged and raises the room from 23 to 40 MW.
+\begin{tikzpicture}[y=0.085cm]
+\newcommand{\gens}[5]{% #1 x shift, then p - p_min of g1..g4
+  \begin{scope}[shift={(#1,0)}]
+  \foreach \v [count=\i] in {#2,#3,#4,#5}{%
+    \pgfmathsetmacro{\x}{(\i-1)*1.25}
+    \pgfmathsetmacro{\r}{min(\v,10)}
+    \fill[grey, draw=edge] (\x,0) rectangle (\x+0.8,\v);
+    \fill[teal, draw=edge] (\x,0) rectangle (\x+0.8,\r);
+    \node[font=\scriptsize, text=ink, below] at (\x+0.4,0) {$g_{\i}$};
+    \node[font=\scriptsize, text=ink, above] at (\x+0.4,\v) {\v};}
+  \draw[draw=hledge, dashed, thick] (-0.2,10)--(4.85,10);
+  \end{scope}}
+\gens{0}{0}{3}{25}{40}
+\gens{7.2}{10}{10}{16.5}{31.5}
+\node[font=\scriptsize, text=hledge, anchor=west] at (4.75,10) {ramp limit $R^\downarrow=10$};
+\node[note, font=\small] at (2.3,52) {before};
+\node[note, font=\small] at (9.5,52) {after the shift};
+\node[note] at (2.3,-11) {downward room: $0+3+10+10=23$ MW};
+\node[note] at (9.5,-11) {downward room: $10+10+10+10=40$ MW};
+\draw[arr, line width=1pt] (5.4,28)--node[note,above]{17 MW moved}node[note,below]{net change 0}(6.9,28);
+% legend
+\fill[grey, draw=edge] (12.6,40) rectangle (12.95,44); \node[font=\scriptsize, text=ink, anchor=west] at (13.0,42) {output above minimum, $p_g-p_g^{\min}$ (MW)};
+\fill[teal, draw=edge] (12.6,32) rectangle (12.95,36); \node[font=\scriptsize, text=ink, anchor=west] at (13.0,34) {downward room $\min(p_g-p_g^{\min},R_g^\downarrow)$};
+\node[note, anchor=north west, text width=6.4cm, align=left] at (12.6,26) {$g_3$ and $g_4$ are far above their minimum, so giving output costs them no room; $g_1$ and $g_2$ gain room. The shift is played in a comfortable state when it restores at least 5 MW and the forecast stays comfortable. Illustrative values.};
+\stagemap{0.6,63}{3}{zoom: comfortable regime, margin preservation}
+\end{tikzpicture}
+\end{document}

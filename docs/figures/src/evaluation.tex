@@ -1,17 +1,40 @@
 \input{style}
 \begin{document}
-\begin{tikzpicture}[node distance=7mm and 11mm]
-\node[proc=2.2cm] (a) {Candidate action $a$};
-\node[sim, right=of a] (s1) {Simulate $a$ for one step};
-\node[sim, right=of s1] (s2) {Simulate do-nothing for $H-1$ steps ($H=2$)};
-\node[rule=4.6cm, right=18mm of s2, yshift=11mm] (f) {$F_H$: worst $\rho_{\max}$ over the horizon\\\scriptsize clearance tests};
-\node[opt=4.6cm, right=18mm of s2, yshift=-11mm] (j) {$J_H$: worst $\Psi$ + curtailment + redispatch cost\\\scriptsize ranking and acceptance of candidates};
-\node[bad=2.4cm, below=8mm of s1] (d) {Predicted end of episode: $F_H=J_H=+\infty$};
-\draw[arr] (a)--(s1);
-\draw[arr] (s1)--(s2);
-\draw[arr] (s2.east) -- ++(7mm,0) |- (f.west);
-\draw[arr] (s2.east) -- ++(7mm,0) |- (j.west);
-\draw[darr] (s1)--(d);
-\draw[darr] (s2.south) |- (d.east);
+% How every candidate is scored. Left: the two-step rollout behind F_H and J_H. Right: the
+% contribution of one line to the state term Psi, for an overflow counter at zero and at K.
+\begin{tikzpicture}
+% rollout
+\node[circle, draw=edge, fill=green, minimum size=11mm, font=\small] (o0) at (0,0) {$o_t$};
+\node[circle, draw=edge, fill=teal, minimum size=11mm, font=\small] (o1) at (3.4,0) {$o_1$};
+\node[circle, draw=edge, fill=teal, minimum size=11mm, font=\small] (o2) at (6.8,0) {$o_2$};
+\draw[arr] (o0)--node[note,above]{candidate $a$}(o1);
+\draw[arr] (o1)--node[note,above]{do-nothing}(o2);
+\node[note, below=1mm of o0] {observed};
+\node[note, below=1mm of o1] {simulated};
+\node[note, below=1mm of o2] {simulated};
+\node[rule=6.6cm, anchor=north west] (fh) at (-0.55,-1.45) {$F_H=\max_{h}\rho_{\max}(o_h)$\\[1pt]\scriptsize peak loading: is a line still overloaded?};
+\node[opt=6.6cm, anchor=north west] (jh) at (-0.55,-3.0) {$J_H=\max_{h}\Psi(o_h)+0.05\,c(o_1)+0.1\,d(o_1)$\\[1pt]\scriptsize cost: which candidate is best ($c$ curtailed share, $d$ redispatch cost when comfortable)};
+\node[bad=6.6cm, anchor=north west] (end) at (-0.55,-4.75) {$F_H=J_H=+\infty$ if a simulated step ends the episode};
+% Psi, one line
+\begin{scope}[shift={(9.4,-4.4)}, x=9cm, y=1.55cm]
+\def\Z{0.45}
+\draw[draw=edge] (0,0)--(1.15-\Z,0);
+\draw[draw=edge] (0,-0.35)--(0,2.6);
+\draw[draw=edge, dashed] (1-\Z,-0.35)--(1-\Z,2.6);
+\node[note, anchor=south] at (1-\Z,2.6) {thermal limit};
+\foreach \r in {0.5,0.7,0.9,1.0,1.1}{\draw[draw=edge] (\r-\Z,-0.35)--++(0,-0.06) node[below, font=\scriptsize, text=ink]{\r};}
+\draw[draw=edge] (0,-0.35)--(1.15-\Z,-0.35);
+\foreach \v in {1,2}{\draw[draw=edge] (0,\v)--++(-0.012,0) node[left, font=\scriptsize, text=ink]{\v};}
+\draw[flowc, very thick, domain=0.5:1, samples=40, variable=\r] plot ({\r-\Z},{-1*(1-\r)*(1-\r)});
+\draw[flowc, very thick, domain=1:1.114, samples=40, variable=\r] plot ({\r-\Z},{200*(\r-1)*(\r-1)});
+\draw[overc, very thick, domain=1:1.057, samples=40, variable=\r] plot ({\r-\Z},{800*(\r-1)*(\r-1)});
+\node[note, text=overc, anchor=east] at (1.045-\Z,2.25) {$k_\ell=K$: about to trip};
+\node[note, text=flowc, anchor=west] at (1.085-\Z,1.35) {$k_\ell=0$};
+\node[note, anchor=north, text width=4.4cm] at (0.74-\Z,-0.62) {below the limit, $-(1-\rho_\ell)^2$: spare capacity on every line lowers $\Psi$};
+\node[note, anchor=south west, text width=3.6cm] at (0.505-\Z,0.65) {above the limit, $200\,(1+3k_\ell/K)\,(\rho_\ell-1)^2$: overloads dominate, and more so as the line's counter $k_\ell$ approaches the allowance $K$};
+\node[note, font=\small] at (0.80-\Z,-1.55) {loading $\rho_\ell$ of one line};
+\node[note, font=\small, rotate=90] at (-0.07,1.1) {contribution to $\Psi$};
+\end{scope}
+\lanemap{0.35,1.7}{3}{zoom: how every candidate is scored}
 \end{tikzpicture}
 \end{document}

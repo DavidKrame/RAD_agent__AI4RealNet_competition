@@ -1,15 +1,34 @@
 \input{style}
 \begin{document}
-\begin{tikzpicture}[node distance=7mm and 11mm]
-\node[out=3.0cm] (r) {Observed AC flows, ramp margins, renewable output, storage limits};
-\node[opt=3.1cm, right=of r] (q) {Solve the QP: AC base point, PTDF for the change};
-\node[proc, right=of q] (t) {Translate into one action; clamp set points};
-\node[sim, right=of t] (s) {Exact one-step-ahead forecast};
-\node[ask=2.5cm, right=of s] (k) {Peak loading lower than do-nothing?};
-\node[out=2.4cm, right=16mm of k, yshift=11mm] (y) {Offer as a candidate};
-\node[bad=2.4cm, right=16mm of k, yshift=-11mm] (n) {Discard};
-\draw[arr] (r)--(q); \draw[arr] (q)--(t); \draw[arr] (t)--(s); \draw[arr] (s)--(k);
-\draw[arr] (k.east) -- ++(6mm,0) |- node[ylab,above,pos=0.75]{yes} (y.west);
-\draw[arr] (k.east) -- ++(6mm,0) |- node[nlab,below,pos=0.75]{no} (n.west);
+% How the dispatch program predicts the flow on a monitored line: the observed AC flow is the base
+% point and the PTDF matrix predicts only the change caused by the controls. Illustrative values;
+% the cheapest controls are used first, and curtailment only when they cannot reach the target.
+\begin{tikzpicture}
+\def\P#1{(#1-80)*0.32}
+\def\rowh{0.55}
+\foreach \v in {80,85,90,95,100,105,110}{\draw[draw=edge] ({\P{\v}},-0.15)--++(0,-0.1) node[below, font=\scriptsize, text=ink]{\v\%};}
+\draw[draw=edge] (0,-0.15)--({\P{110}},-0.15);
+\draw[draw=okc, dashed, thick] ({\P{95}},-0.15)--({\P{95}},4.9) node[above, font=\scriptsize, text=okc]{target 95\%};
+\draw[draw=overc, dashed, thick] ({\P{100}},-0.15)--({\P{100}},4.9) node[above, font=\scriptsize, text=overc]{rating};
+% waterfall: rows from top to bottom
+\foreach \y/\a/\b/\c/\t in {
+  4.1/80/108/blue/{observed AC flow $f^{\mathrm{AC}}_\ell$},
+  3.2/99/108/purple/{redispatch, through the PTDF},
+  2.3/95/99/purple/{storage, through the PTDF},
+  0.5/80/95/green/{predicted flow $\hat f_\ell$}}{
+  \fill[\c, draw=edge] ({\P{\a}},\y) rectangle ({\P{\b}},\y+\rowh);
+  \node[anchor=east, font=\scriptsize, text=ink] at (-0.2,\y+0.5*\rowh) {\t};}
+\fill[red, draw=edge] ({\P{100}},4.1) rectangle ({\P{108}},4.1+\rowh);
+\node[anchor=east, font=\scriptsize, text=ink] at (-0.2,1.4+0.5*\rowh) {curtailment};
+\node[anchor=west, font=\scriptsize\itshape, text=ink] at ({\P{80}+0.1},1.4+0.5*\rowh) {not needed here: it costs more than redispatch and storage};
+\node[font=\scriptsize, text=ink] at ({\P{103.5}},3.2+0.5*\rowh) {$-9$};
+\node[font=\scriptsize, text=ink] at ({\P{97}},2.3+0.5*\rowh) {$-4$};
+\node[note, font=\small, anchor=north] at ({\P{95}},-0.75) {flow on one monitored line, in \% of its rating (illustrative values)};
+% the program and its check
+\node[opt=5.4cm, anchor=north west] (qp) at (11.6,4.95) {$\hat f=f^{\mathrm{AC}}+\mathrm{PTDF}\,\Delta i$\\[2pt]\scriptsize the AC solution is the base point; the linear model predicts only the change $\Delta i$ that redispatch, curtailment and storage cause};
+\node[rule=5.4cm, anchor=north] (cons) at ([yshift=-4mm]qp.south) {\scriptsize each generator moves within its own ramp margin; overloads cost most, then curtailment, then relaxing a security limit; redispatch and storage are cheap};
+\node[sim=5.4cm, anchor=north] (chk) at ([yshift=-4mm]cons.south) {\scriptsize the solution becomes one action, offered only if the forecast lowers the peak loading $F_H$ below that of do-nothing};
+\draw[arr] (qp)--(cons); \draw[arr] (cons)--(chk);
+\stagemap{0.6,6.3}{3}{zoom: AC-anchored dispatch}
 \end{tikzpicture}
 \end{document}
