@@ -10,12 +10,20 @@
   \definecolor{actband}{HTML}{0F1B2B}\definecolor{actedge}{HTML}{4C8EDA}
   \definecolor{simfill}{HTML}{0F2420}\definecolor{simedge}{HTML}{4FB3A0}
   \definecolor{envfill}{HTML}{151B23}\definecolor{envedge}{HTML}{8B949E}
+  % On a dark page the tinted bands stand out by themselves, so they carry no outline.
+  \newcommand{\bandframe}[3]{\fill[#1, rounded corners=5pt] #3;}
+  \newcommand{\lanetag}[2]{\textcolor{#1}{\textbf{#2}},}
 \else
-  \definecolor{offband}{HTML}{E6EBF1}\definecolor{offedge}{HTML}{50627A}
-  \definecolor{trband}{HTML}{FBEBC6}\definecolor{tredge}{HTML}{8F6505}
-  \definecolor{actband}{HTML}{DCE8F6}\definecolor{actedge}{HTML}{1F5596}
+  \definecolor{offband}{HTML}{EBEFF4}\definecolor{offedge}{HTML}{50627A}
+  \definecolor{trband}{HTML}{FCF1D6}\definecolor{tredge}{HTML}{8F6505}
+  \definecolor{actband}{HTML}{E2ECF8}\definecolor{actedge}{HTML}{1F5596}
   \definecolor{simfill}{HTML}{D3EDE5}\definecolor{simedge}{HTML}{2A7364}
   \definecolor{envfill}{HTML}{E6EBF1}\definecolor{envedge}{HTML}{3F4A56}
+  % On a white page a pale tint alone does not delimit a band: each band gets an outline in its lane
+  % color, and each lane name is set as a solid tag in that color.
+  \newcommand{\bandframe}[3]{\filldraw[fill=#1, draw=#2, line width=1.1pt, rounded corners=5pt] #3;}
+  \newcommand{\lanetag}[2]{\tikz[baseline=(t.base)]\node[fill=#1, text=white, rounded corners=2pt,
+    inner sep=2.5pt, font=\footnotesize\bfseries] (t) {#2};}
 \fi
 \tikzset{
   abox/.style={draw=#1, fill=paper, rounded corners=3pt, line width=\lwstage, align=center,
@@ -27,12 +35,12 @@
   minimum size=4.2mm, font=\footnotesize\bfseries] (b) {#1};}
 \begin{tikzpicture}
 % bands
-\fill[offband, rounded corners=5pt] (-2.45,6.15) rectangle (18.35,9.15);
-\fill[trband, rounded corners=5pt] (-2.45,2.95) rectangle (18.35,5.65);
-\fill[actband, rounded corners=5pt] (-2.45,-4.75) rectangle (18.35,2.45);
-\node[bandlab] at (18.35,9.15) {\textcolor{offedge}{\textbf{Prepared offline}}, before the competition};
-\node[bandlab] at (18.35,5.65) {\textcolor{tredge}{\textbf{\texttt{train()}}}, once, before the scenarios are scored};
-\node[bandlab] at (18.35,2.45) {\textcolor{actedge}{\textbf{\texttt{act()}}}, at every five-minute step};
+\bandframe{offband}{offedge}{(-2.45,6.15) rectangle (18.35,9.45)}
+\bandframe{trband}{tredge}{(-2.45,2.95) rectangle (18.35,5.65)}
+\bandframe{actband}{actedge}{(-2.45,-4.75) rectangle (18.35,2.45)}
+\node[bandlab] at (18.35,9.45) {\lanetag{offedge}{Prepared offline}\ before the competition};
+\node[bandlab] at (18.35,5.65) {\lanetag{tredge}{\texttt{train()}}\ once, before the scenarios are scored};
+\node[bandlab] at (18.35,2.45) {\lanetag{actedge}{\texttt{act()}}\ at every five-minute step};
 % offline inputs
 \node[abox=offedge, minimum height=24mm] (rec) at (2.65,7.45) {\textbf{Posture record}\\[2pt]\footnotesize configurations of substation 79 that survived the outage of line 175};
 \node[abox=offedge, minimum height=24mm] (wset) at (7.95,7.45) {\textbf{Withheld lines}\\[2pt]\footnotesize default\\$W=(106,131,33)$\\[1pt]alternative\\$W'=(162,110,61)$};
