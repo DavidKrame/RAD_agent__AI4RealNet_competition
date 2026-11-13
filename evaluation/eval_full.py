@@ -313,6 +313,11 @@ def run(args):
         ep_cost = 0.0                        # the competition's operating cost, summed over played steps
         end_cause, end_detail, end_illegal, end_ambiguous = "completed", "", False, False
         attacks, first_overload = [], None
+        # Attack onsets, counted per line: a line is counted when it is attacked at this step and was not
+        # attacked at the previous step. `attacks` (above) records changes of the whole attacked set, which
+        # counts an overlap of two attacks more than once ([A], [A,B], [B]) and misses a second attack on
+        # the same line after a quiet gap; the onset list counts each attack once.
+        attack_onsets, prev_attacked = [], set()
         tr_rho, tr_down, tr_act = [], [], []
         dn_act = env.action_space({})
         prev = obs  # the last state before termination
@@ -357,6 +362,11 @@ def run(args):
                     hit = [int(i) for i in np.where(np.asarray(atk).astype(bool))[0]]
                     if hit and (not attacks or attacks[-1]["lines"] != hit):
                         attacks.append({"step": played, "lines": hit})
+                cur_attacked = set(int(i) for i in np.where(np.asarray(atk).astype(bool))[0]) \
+                    if atk is not None else set()
+                for line in sorted(cur_attacked - prev_attacked):
+                    attack_onsets.append({"step": played, "line": line})
+                prev_attacked = cur_attacked
             except Exception:
                 pass
             rmax = float(np.nanmax(obs.rho))
@@ -410,6 +420,8 @@ def run(args):
             # completions, so exposure was systematically undercounted among survivors and every
             # attack-conditioned odds ratio was inflated.
             "attacks": attacks,
+            "n_attack_onsets": len(attack_onsets),
+            "attack_onsets": attack_onsets,
             # The low-carbon term, reconstructed exactly, recorded per episode.
             "nres_score": round(nres_from(nres_num, nres_den), 6),
             "nres_ratio": round(100.0 * nres_num / nres_den, 4) if nres_den > 1e-6 else None,

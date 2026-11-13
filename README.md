@@ -26,8 +26,9 @@ The controller combines six components, each of which can be studied or reused o
 
 1. *Preventive withholding.* In this environment, an outage attempt in a region proceeds only if every
    attackable line of that region is in service. Keeping one line per region out of service therefore
-   cancels these attempts, which are consumed rather than postponed. Over the 764 local scenarios, realized
-   outages fall from 2,468 to 62.
+   cancels these attempts, which are consumed rather than postponed. Over the 764 local scenarios, switching off
+   the opening of the withheld lines, with the reconnection hold kept, raises the realized outages from 62 to
+   2,378.
 2. *AC-anchored dispatch.* A convex quadratic program sets redispatch, curtailment, and storage jointly. It is
    anchored on the observed AC flows, uses the power-transfer distribution factors (PTDF) only for the flow
    change it induces, and bounds each generator's request by its own ramp margin.
@@ -55,20 +56,32 @@ competition also scores each agent without its training step. On the validation 
 replaced the withheld lines and raised the score from 72.15 to 72.93; on the final test set, it kept the
 default and the two scores coincide. On the local evaluation set of 764 scenarios, the agent completes 706.
 
-The contribution of each mechanism was measured by switching it off, one at a time, and running the agent
+The contribution of each component was measured by switching it off, one at a time, and running the agent
 again on the same 764 scenarios with the same seeds:
 
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/mechanisms_dark.png">
-  <img alt="Scenarios completed out of 764 without and with each mechanism: preventive withholding 679 to 706, scheduled-outage look-ahead 689 to 706, margin preservation 697 to 706." src="docs/figures/mechanisms_light.png" width="760">
+  <img alt="Scenarios completed out of 764 without and with each component: AC-anchored dispatch program 682 to 706, OptimCVXPY 631 to 706, secured outages 700 to 706, local pool 689 to 706, LODF line openings 702 to 706, opening of the withheld lines 679 to 706, scheduled-outage look-ahead 689 to 706, margin preservation 697 to 706, extended-horizon safeguard 688 to 706." src="docs/figures/mechanisms_light.png" width="760">
 </picture>
 </p>
 
-Withholding and the look-ahead change completions significantly (exact McNemar test on the scenarios whose
-outcome differs, p = 0.007 and p = 0.002). The effect of margin preservation on completions is within the
-noise of this comparison (p = 0.30); its measurable effect is on infeasible-redispatch failures, which fall
-from 13 to 7. All reported values are recomputed from the records in [`results/`](results/) by
+Six components change completions significantly (exact McNemar test on the scenarios whose completion
+differs): the AC-anchored dispatch program (p = 0.003), OptimCVXPY in all its uses (p < 1e-13), the local pool
+(p = 0.050), the opening of the withheld lines (p = 0.007), the scheduled-outage look-ahead (p = 0.002), and
+the extended-horizon safeguard (p = 0.015). The secured outages (p = 0.21), the LODF line openings (p = 0.39),
+and margin preservation (p = 0.30) have no detectable effect on completions. In the run without the opening
+of the withheld lines, the reconnection hold stays active. Three reference controllers ran on the same
+scenarios (code in `agent/reference_*/`):
+
+| controller | completed | backend failure | infeasible redispatch |
+|---|---|---|---|
+| this agent | 706 | 51 | 7 |
+| no-op | 152 | 612 | 0 |
+| reconnection only | 92 | 672 | 0 |
+| OptimCVXPY alone, published settings | 70 | 209 | 485 |
+
+All reported values are recomputed from the records in [`results/`](results/) by
 `python analysis/reproduce_results.py`.
 
 ## Installation and usage
@@ -98,13 +111,14 @@ instructions are given in [`evaluation/README.md`](evaluation/README.md).
 ```
 .
 ├── agent/
+│   ├── reference_*/            the three reference controllers of the local comparison
 │   └── xdp_agent/              the agent package, exposing make_agent(env, path)
 │       ├── my_agent.py         control cycle, candidate search, safeguards and train()
 │       ├── ac_dispatch.py      AC-anchored dispatch program
 │       └── ...                 OptimCVXPY baseline, offline libraries and the scripts that build them
 ├── analysis/
 │   ├── reproduce_results.py    recomputes the reported results from results/
-│   └── make_figures.py         draws the results figure
+│   └── make_figures.py         draws the figure of completions with and without each component
 ├── data/                       scenario lists of the 764 / 34 / 34 split
 ├── docs/
 │   ├── how_the_agent_works.md  step-by-step description

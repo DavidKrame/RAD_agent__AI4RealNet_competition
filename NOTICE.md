@@ -1,6 +1,6 @@
 # Third-party code
 
-* `agent/xdp_agent/optim_cvxpy_vendor.py` is a copy of `OptimCVXPY` from RTE's
+* `agent/xdp_agent/optim_cvxpy_vendor.py`, and the identical file in `agent/reference_optimcvxpy/`, are copies of `OptimCVXPY` from RTE's
   [L2RPN Baselines](https://github.com/Grid2op/l2rpn-baselines) (v0.8.0), distributed under the Mozilla
   Public License 2.0, with its original header kept. `optim_cvxpy_compat.py` adapts it to the CVXPY version
   pinned in `requirements.txt`.

@@ -1,9 +1,9 @@
-"""Draw the README figure from the stored records: completed scenarios with and without each mechanism.
+"""Draw the README figure from the stored records: completed scenarios with and without each component.
 
     python analysis/make_figures.py
 
 Writes `docs/figures/mechanisms_light.png` and `docs/figures/mechanisms_dark.png`. Each row compares the agent
-(`results/local_764/xdp_agent.json`) with the same agent with one mechanism switched off
+(`results/local_764/xdp_agent.json`) with the same agent with one component switched off
 (`results/local_764/without_*.json`).
 """
 import json
@@ -17,10 +17,16 @@ import matplotlib.pyplot as plt  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "docs", "figures")
 
-PAIRS = (  # label, run without the mechanism, run with it
-    ("Preventive withholding", "without_withholding", "xdp_agent"),
+PAIRS = (  # label, run without the component, run with it; in the order of Table 1 of the paper
+    ("AC-anchored dispatch program", "without_dispatch_program", "xdp_agent"),
+    ("OptimCVXPY, all uses", "without_optimcvxpy", "xdp_agent"),
+    ("Secured outages in the dispatch program", "without_secured_outages", "xdp_agent"),
+    ("Local pool", "without_local_pool", "xdp_agent"),
+    ("LODF line openings", "without_lodf_openings", "xdp_agent"),
+    ("Opening of the withheld lines", "without_withholding", "xdp_agent"),
     ("Scheduled-outage look-ahead", "without_lookahead", "xdp_agent"),
     ("Margin preservation", "without_margin_preservation", "xdp_agent"),
+    ("Extended-horizon safeguard", "without_safeguard", "xdp_agent"),
 )
 
 THEMES = {
@@ -38,7 +44,7 @@ def completed(name):
 
 def draw(theme, data):
     t = THEMES[theme]
-    fig, ax = plt.subplots(figsize=(8.0, 3.0), dpi=200)
+    fig, ax = plt.subplots(figsize=(8.0, 1.2 + 0.42 * len(data)), dpi=200)
     fig.patch.set_facecolor(t["surface"])
     ax.set_facecolor(t["surface"])
     ys = list(range(len(data)))[::-1]
@@ -53,7 +59,7 @@ def draw(theme, data):
     ax.set_yticklabels([d[0] for d in data], fontsize=10, color=t["ink"])
     lo = min(min(off, on) for _, off, on in data)
     hi = max(max(off, on) for _, off, on in data)
-    ax.set_xlim(lo - 12, hi + 12)
+    ax.set_xlim(lo - 12, hi + 20)
     ax.set_ylim(-0.7, len(data) - 0.3)
     ax.set_xlabel("Scenarios completed, out of 764 (local evaluation set)", fontsize=9, color=t["ink2"])
     ax.tick_params(axis="x", colors=t["muted"], labelsize=8, length=0)
@@ -63,8 +69,8 @@ def draw(theme, data):
     for side in ("top", "right", "left"):
         ax.spines[side].set_visible(False)
     ax.spines["bottom"].set_color(t["axis"])
-    handles = [plt.Line2D([], [], marker="o", linestyle="", markersize=8, color=t["without"], label="without the mechanism"),
-               plt.Line2D([], [], marker="o", linestyle="", markersize=8, color=t["with_"], label="with the mechanism")]
+    handles = [plt.Line2D([], [], marker="o", linestyle="", markersize=8, color=t["without"], label="without the component"),
+               plt.Line2D([], [], marker="o", linestyle="", markersize=8, color=t["with_"], label="with the component")]
     leg = ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=2, frameon=False,
                     fontsize=9, handletextpad=0.3, columnspacing=1.6)
     for text in leg.get_texts():

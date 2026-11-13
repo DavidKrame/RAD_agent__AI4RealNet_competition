@@ -156,8 +156,9 @@ network needs it:
 </picture>
 </p>
 
-Over the 764 local scenarios, switching withholding off raises the number of realized attacks from 62 to
-2,468 and lowers the number of completed scenarios from 706 to 679.
+Over the 764 local scenarios, switching off the opening of the withheld lines, with the reconnection hold
+kept, raises the number of realized attacks from 62 to 2,378 and lowers the number of completed scenarios from
+706 to 679.
 
 ## 5. Stage 3: reactive control
 

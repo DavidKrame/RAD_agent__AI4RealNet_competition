@@ -1,5 +1,5 @@
 {
-"description": "the agent without preventive withholding",
+"description": "the agent without the opening of the withheld lines (the reconnection hold stays active)",
 "environment": "l2rpn_idf_2023_train",
 "grid2op": "1.12.5",
 "flags": {
@@ -96,6 +96,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 14,
+"line": 106
+},
+{
+"step": 99,
+"line": 62
+},
+{
+"step": 519,
+"line": 180
+},
+{
+"step": 529,
+"line": 93
+},
+{
+"step": 629,
+"line": 162
+},
+{
+"step": 1712,
+"line": 81
+}
+],
 "nres_score": 95.034474,
 "nres_ratio": 99.0251,
 "episode_score": 82.846895,
@@ -168,6 +195,13 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 63,
+"line": 43
 }
 ],
 "nres_score": 98.837055,
@@ -263,6 +297,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 15,
+"line": 125
+},
+{
+"step": 39,
+"line": 37
+},
+{
+"step": 64,
+"line": 68
+},
+{
+"step": 1209,
+"line": 121
+}
+],
 "nres_score": 97.463929,
 "nres_ratio": 99.5023,
 "episode_score": 83.332786,
@@ -347,6 +400,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 88,
+"line": 68
+},
+{
+"step": 583,
+"line": 37
+}
+],
 "nres_score": 95.565249,
 "nres_ratio": 99.1294,
 "episode_score": 59.531334,
@@ -429,6 +493,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 571,
+"line": 180
+},
+{
+"step": 815,
+"line": 81
 }
 ],
 "nres_score": 95.674469,
@@ -520,6 +595,21 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 197,
+"line": 126
+},
+{
+"step": 240,
+"line": 61
+},
+{
+"step": 665,
+"line": 126
 }
 ],
 "nres_score": 93.21767,
@@ -614,6 +704,25 @@
 "lines": [
 121
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 4,
+"line": 81
+},
+{
+"step": 58,
+"line": 43
+},
+{
+"step": 126,
+"line": 88
+},
+{
+"step": 629,
+"line": 121
 }
 ],
 "nres_score": 93.328451,
@@ -739,6 +848,45 @@
 ]
 }
 ],
+"n_attack_onsets": 9,
+"attack_onsets": [
+{
+"step": 210,
+"line": 33
+},
+{
+"step": 227,
+"line": 154
+},
+{
+"step": 357,
+"line": 33
+},
+{
+"step": 435,
+"line": 81
+},
+{
+"step": 482,
+"line": 154
+},
+{
+"step": 652,
+"line": 33
+},
+{
+"step": 972,
+"line": 125
+},
+{
+"step": 1435,
+"line": 33
+},
+{
+"step": 1676,
+"line": 62
+}
+],
 "nres_score": 87.443855,
 "nres_ratio": 97.5314,
 "episode_score": 81.328771,
@@ -836,6 +984,29 @@
 "lines": [
 180
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 427,
+"line": 117
+},
+{
+"step": 541,
+"line": 93
+},
+{
+"step": 562,
+"line": 62
+},
+{
+"step": 1384,
+"line": 131
+},
+{
+"step": 1903,
+"line": 180
 }
 ],
 "nres_score": 89.681679,
@@ -937,6 +1108,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 30,
+"line": 162
+},
+{
+"step": 55,
+"line": 81
+},
+{
+"step": 95,
+"line": 154
+},
+{
+"step": 280,
+"line": 33
+},
+{
+"step": 340,
+"line": 162
+}
+],
 "nres_score": 99.978536,
 "nres_ratio": 99.9958,
 "episode_score": 83.835707,
@@ -1019,6 +1213,25 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 116,
+"line": 33
+},
+{
+"step": 429,
+"line": 88
+},
+{
+"step": 597,
+"line": 88
+},
+{
+"step": 731,
+"line": 62
 }
 ],
 "nres_score": 96.9661,
@@ -1113,6 +1326,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 86,
+"line": 33
+},
+{
+"step": 206,
+"line": 162
+},
+{
+"step": 231,
+"line": 136
+},
+{
+"step": 365,
+"line": 93
+}
+],
 "nres_score": 93.101026,
 "nres_ratio": 98.645,
 "episode_score": 35.047057,
@@ -1196,6 +1428,21 @@
 "lines": [
 160
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 52,
+"line": 141
+},
+{
+"step": 243,
+"line": 37
+},
+{
+"step": 1412,
+"line": 160
 }
 ],
 "nres_score": 96.118831,
@@ -1282,6 +1529,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 179,
+"line": 117
+},
+{
+"step": 758,
+"line": 33
+},
+{
+"step": 1117,
+"line": 162
 }
 ],
 "nres_score": 98.700639,
@@ -1377,6 +1639,25 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 54,
+"line": 162
+},
+{
+"step": 211,
+"line": 37
+},
+{
+"step": 439,
+"line": 154
+},
+{
+"step": 984,
+"line": 125
 }
 ],
 "nres_score": 97.426412,
@@ -1485,6 +1766,37 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 7,
+"attack_onsets": [
+{
+"step": 119,
+"line": 125
+},
+{
+"step": 268,
+"line": 93
+},
+{
+"step": 370,
+"line": 81
+},
+{
+"step": 547,
+"line": 106
+},
+{
+"step": 1012,
+"line": 93
+},
+{
+"step": 1164,
+"line": 62
+},
+{
+"step": 1839,
+"line": 43
 }
 ],
 "nres_score": 87.865669,
@@ -1605,6 +1917,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 85,
+"line": 61
+},
+{
+"step": 91,
+"line": 93
+},
+{
+"step": 717,
+"line": 81
+},
+{
+"step": 832,
+"line": 43
+},
+{
+"step": 866,
+"line": 68
+},
+{
+"step": 1351,
+"line": 37
+}
+],
 "nres_score": 97.468434,
 "nres_ratio": 99.5032,
 "episode_score": 83.333687,
@@ -1708,6 +2047,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 29,
+"line": 81
+},
+{
+"step": 66,
+"line": 162
+},
+{
+"step": 173,
+"line": 180
+},
+{
+"step": 358,
+"line": 154
+},
+{
+"step": 375,
+"line": 81
+}
+],
 "nres_score": 93.621292,
 "nres_ratio": 98.7473,
 "episode_score": 82.564258,
@@ -1784,6 +2146,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 89,
+"line": 117
+},
+{
+"step": 128,
+"line": 33
+}
+],
 "nres_score": 97.025365,
 "nres_ratio": 99.4162,
 "episode_score": 83.245073,
@@ -1851,6 +2224,13 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 156,
+"line": 37
 }
 ],
 "nres_score": 97.470267,
@@ -1926,6 +2306,13 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 373,
+"line": 37
 }
 ],
 "nres_score": 98.610347,
@@ -2026,6 +2413,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 39,
+"line": 162
+},
+{
+"step": 152,
+"line": 43
+},
+{
+"step": 163,
+"line": 131
+},
+{
+"step": 300,
+"line": 37
+}
+],
 "nres_score": 96.258368,
 "nres_ratio": 99.2655,
 "episode_score": 83.091674,
@@ -2114,6 +2520,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 109,
+"line": 136
+},
+{
+"step": 226,
+"line": 88
+},
+{
+"step": 1155,
+"line": 81
+}
+],
 "nres_score": 97.863531,
 "nres_ratio": 99.5807,
 "episode_score": 56.224526,
@@ -2191,6 +2612,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 35,
+"line": 93
+},
+{
+"step": 394,
+"line": 62
 }
 ],
 "nres_score": 97.89398,
@@ -2291,6 +2723,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 170,
+"line": 110
+},
+{
+"step": 237,
+"line": 62
+},
+{
+"step": 311,
+"line": 88
+},
+{
+"step": 995,
+"line": 43
+},
+{
+"step": 1751,
+"line": 81
+}
+],
 "nres_score": 97.367193,
 "nres_ratio": 99.4833,
 "episode_score": 83.313439,
@@ -2385,6 +2840,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 13,
+"line": 43
+},
+{
+"step": 21,
+"line": 141
+},
+{
+"step": 173,
+"line": 88
+}
+],
 "nres_score": 93.36114,
 "nres_ratio": 98.6962,
 "episode_score": 82.512228,
@@ -2463,6 +2933,17 @@
 "lines": [
 131
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 263,
+"line": 37
+},
+{
+"step": 455,
+"line": 131
 }
 ],
 "nres_score": 93.621611,
@@ -2547,6 +3028,21 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 8,
+"line": 93
+},
+{
+"step": 44,
+"line": 37
+},
+{
+"step": 430,
+"line": 125
 }
 ],
 "nres_score": 92.713963,
@@ -2638,6 +3134,25 @@
 "lines": [
 160
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 234,
+"line": 106
+},
+{
+"step": 457,
+"line": 37
+},
+{
+"step": 526,
+"line": 62
+},
+{
+"step": 680,
+"line": 160
 }
 ],
 "nres_score": 98.353428,
@@ -2743,6 +3258,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 58,
+"line": 106
+},
+{
+"step": 94,
+"line": 61
+},
+{
+"step": 382,
+"line": 37
+},
+{
+"step": 1122,
+"line": 180
+},
+{
+"step": 1417,
+"line": 136
+},
+{
+"step": 1668,
+"line": 154
+}
+],
 "nres_score": 89.721025,
 "nres_ratio": 97.9799,
 "episode_score": 81.784205,
@@ -2825,6 +3367,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 15,
+"line": 106
+},
+{
+"step": 140,
+"line": 160
+},
+{
+"step": 812,
+"line": 37
 }
 ],
 "nres_score": 89.022613,
@@ -2913,6 +3470,21 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 32,
+"line": 61
+},
+{
+"step": 488,
+"line": 160
+},
+{
+"step": 621,
+"line": 136
 }
 ],
 "nres_score": 93.802693,
@@ -3012,6 +3584,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 31,
+"line": 162
+},
+{
+"step": 338,
+"line": 126
+},
+{
+"step": 625,
+"line": 61
+},
+{
+"step": 1291,
+"line": 33
+}
+],
 "nres_score": 98.964979,
 "nres_ratio": 99.7969,
 "episode_score": 83.632996,
@@ -3100,6 +3691,29 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 9,
+"line": 131
+},
+{
+"step": 157,
+"line": 131
+},
+{
+"step": 391,
+"line": 43
+},
+{
+"step": 474,
+"line": 126
+},
+{
+"step": 687,
+"line": 88
 }
 ],
 "nres_score": 93.598793,
@@ -3194,6 +3808,25 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 186,
+"line": 106
+},
+{
+"step": 306,
+"line": 33
+},
+{
+"step": 970,
+"line": 121
+},
+{
+"step": 1349,
+"line": 81
 }
 ],
 "nres_score": 90.904202,
@@ -3293,6 +3926,29 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 2,
+"line": 180
+},
+{
+"step": 217,
+"line": 141
+},
+{
+"step": 366,
+"line": 33
+},
+{
+"step": 742,
+"line": 61
+},
+{
+"step": 810,
+"line": 162
 }
 ],
 "nres_score": 98.648149,
@@ -3397,6 +4053,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 53,
+"line": 154
+},
+{
+"step": 107,
+"line": 81
+},
+{
+"step": 282,
+"line": 62
+},
+{
+"step": 300,
+"line": 162
+},
+{
+"step": 992,
+"line": 33
+}
+],
 "nres_score": 95.426208,
 "nres_ratio": 99.1021,
 "episode_score": 82.925242,
@@ -3469,6 +4148,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 134,
+"line": 81
+},
+{
+"step": 678,
+"line": 81
 }
 ],
 "nres_score": 98.01684,
@@ -3558,6 +4248,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 7,
+"line": 162
+},
+{
+"step": 77,
+"line": 125
+},
+{
+"step": 289,
+"line": 43
+}
+],
 "nres_score": 98.482057,
 "nres_ratio": 99.7022,
 "episode_score": 83.536411,
@@ -3634,6 +4339,17 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 336,
+"line": 110
+},
+{
+"step": 530,
+"line": 33
 }
 ],
 "nres_score": 97.627244,
@@ -3727,6 +4443,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 21,
+"line": 33
+},
+{
+"step": 55,
+"line": 154
+},
+{
+"step": 224,
+"line": 88
+}
+],
 "nres_score": 95.611297,
 "nres_ratio": 99.1384,
 "episode_score": 75.017867,
@@ -3804,6 +4535,17 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 181,
+"line": 106
+},
+{
+"step": 522,
+"line": 33
 }
 ],
 "nres_score": 99.284828,
@@ -3885,6 +4627,13 @@
 ]
 }
 ],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 22,
+"line": 93
+}
+],
 "nres_score": 95.178892,
 "nres_ratio": 99.0535,
 "episode_score": 25.809085,
@@ -3961,6 +4710,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 312,
+"line": 106
+},
+{
+"step": 402,
+"line": 43
 }
 ],
 "nres_score": 97.939269,
@@ -4048,6 +4808,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 237,
+"line": 37
+},
+{
+"step": 344,
+"line": 180
+},
+{
+"step": 1119,
+"line": 162
 }
 ],
 "nres_score": 95.530159,
@@ -4139,6 +4914,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 4,
+"line": 37
+},
+{
+"step": 136,
+"line": 125
+},
+{
+"step": 293,
+"line": 162
 }
 ],
 "nres_score": 98.900636,
@@ -4247,6 +5037,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 43,
+"line": 117
+},
+{
+"step": 70,
+"line": 125
+},
+{
+"step": 401,
+"line": 106
+},
+{
+"step": 452,
+"line": 37
+},
+{
+"step": 752,
+"line": 131
+},
+{
+"step": 1344,
+"line": 81
+}
+],
 "nres_score": 96.113983,
 "nres_ratio": 99.2372,
 "episode_score": 62.331413,
@@ -4327,6 +5144,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 20,
+"line": 154
+},
+{
+"step": 69,
+"line": 43
+}
+],
 "nres_score": 96.350449,
 "nres_ratio": 99.2836,
 "episode_score": 83.11009,
@@ -4397,6 +5225,13 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 65,
+"line": 106
 }
 ],
 "nres_score": 97.551028,
@@ -4475,6 +5310,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 149,
+"line": 162
+},
+{
+"step": 261,
+"line": 37
 }
 ],
 "nres_score": 95.198108,
@@ -4575,6 +5421,29 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 128,
+"line": 81
+},
+{
+"step": 223,
+"line": 117
+},
+{
+"step": 286,
+"line": 162
+},
+{
+"step": 620,
+"line": 93
+},
+{
+"step": 651,
+"line": 81
 }
 ],
 "nres_score": 89.02681,
@@ -4679,6 +5548,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 2,
+"line": 88
+},
+{
+"step": 232,
+"line": 154
+},
+{
+"step": 418,
+"line": 62
+},
+{
+"step": 1175,
+"line": 162
+},
+{
+"step": 1263,
+"line": 37
+}
+],
 "nres_score": 87.918203,
 "nres_ratio": 97.6249,
 "episode_score": 81.423641,
@@ -4760,6 +5652,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 62,
+"line": 162
+},
+{
+"step": 296,
+"line": 62
+}
+],
 "nres_score": 99.607841,
 "nres_ratio": 99.9231,
 "episode_score": 83.761568,
@@ -4836,6 +5739,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 5,
+"line": 106
+},
+{
+"step": 131,
+"line": 37
 }
 ],
 "nres_score": 94.847074,
@@ -4924,6 +5838,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 185,
+"line": 33
+},
+{
+"step": 475,
+"line": 117
+},
+{
+"step": 507,
+"line": 141
+}
+],
 "nres_score": 98.795157,
 "nres_ratio": 99.7636,
 "episode_score": 83.599031,
@@ -5004,6 +5933,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 82,
+"line": 154
+},
+{
+"step": 362,
+"line": 62
 }
 ],
 "nres_score": 94.409957,
@@ -5097,6 +6037,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 46,
+"line": 33
+},
+{
+"step": 69,
+"line": 106
+},
+{
+"step": 97,
+"line": 125
+}
+],
 "nres_score": 94.655563,
 "nres_ratio": 98.9506,
 "episode_score": 82.771113,
@@ -5180,6 +6135,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 246,
+"line": 88
+},
+{
+"step": 360,
+"line": 43
+}
+],
 "nres_score": 95.646475,
 "nres_ratio": 99.1453,
 "episode_score": 82.969295,
@@ -5259,6 +6225,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 174,
+"line": 136
+},
+{
+"step": 653,
+"line": 61
 }
 ],
 "nres_score": 99.427854,
@@ -5352,6 +6329,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 136,
+"line": 43
+},
+{
+"step": 142,
+"line": 68
+}
+],
 "nres_score": 95.762704,
 "nres_ratio": 99.1682,
 "episode_score": 82.992541,
@@ -5438,6 +6426,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 191,
+"line": 81
+},
+{
+"step": 304,
+"line": 106
+},
+{
+"step": 747,
+"line": 37
 }
 ],
 "nres_score": 97.834535,
@@ -5543,6 +6546,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 26,
+"line": 43
+},
+{
+"step": 94,
+"line": 154
+},
+{
+"step": 318,
+"line": 88
+},
+{
+"step": 1132,
+"line": 154
+},
+{
+"step": 1239,
+"line": 180
+},
+{
+"step": 1993,
+"line": 154
+}
+],
 "nres_score": 94.511575,
 "nres_ratio": 98.9223,
 "episode_score": 82.742315,
@@ -5620,6 +6650,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 35,
+"line": 126
+},
+{
+"step": 474,
+"line": 43
 }
 ],
 "nres_score": 98.78864,
@@ -5703,6 +6744,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 175,
+"line": 37
+},
+{
+"step": 377,
+"line": 61
 }
 ],
 "nres_score": 98.812271,
@@ -5793,6 +6845,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 144,
+"line": 121
+},
+{
+"step": 198,
+"line": 37
+},
+{
+"step": 447,
+"line": 162
 }
 ],
 "nres_score": 98.786408,
@@ -5895,6 +6962,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 587,
+"line": 37
+},
+{
+"step": 755,
+"line": 136
+},
+{
+"step": 1052,
+"line": 180
+},
+{
+"step": 1504,
+"line": 141
+},
+{
+"step": 1560,
+"line": 106
+}
+],
 "nres_score": 96.402886,
 "nres_ratio": 99.2939,
 "episode_score": 83.120577,
@@ -5994,6 +7084,25 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 107,
+"line": 68
+},
+{
+"step": 678,
+"line": 106
+},
+{
+"step": 722,
+"line": 141
+},
+{
+"step": 724,
+"line": 62
 }
 ],
 "nres_score": 97.629866,
@@ -6100,6 +7209,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 169,
+"line": 81
+},
+{
+"step": 170,
+"line": 136
+},
+{
+"step": 401,
+"line": 43
+},
+{
+"step": 696,
+"line": 136
+},
+{
+"step": 862,
+"line": 88
+}
+],
 "nres_score": 95.190881,
 "nres_ratio": 99.0558,
 "episode_score": 82.878176,
@@ -6195,6 +7327,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 397,
+"line": 162
+},
+{
+"step": 408,
+"line": 121
+},
+{
+"step": 446,
+"line": 37
+}
+],
 "nres_score": 98.67318,
 "nres_ratio": 99.7397,
 "episode_score": 83.574636,
@@ -6274,6 +7421,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 52,
+"line": 43
+},
+{
+"step": 107,
+"line": 162
+}
+],
 "nres_score": 98.286544,
 "nres_ratio": 99.6638,
 "episode_score": 83.497309,
@@ -6350,6 +7508,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 43,
+"line": 61
+},
+{
+"step": 90,
+"line": 88
 }
 ],
 "nres_score": 93.928254,
@@ -6432,6 +7601,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 82,
+"line": 162
+},
+{
+"step": 1218,
+"line": 37
 }
 ],
 "nres_score": 98.55279,
@@ -6521,6 +7701,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 198,
+"line": 154
+},
+{
+"step": 465,
+"line": 141
+},
+{
+"step": 608,
+"line": 136
+}
+],
 "nres_score": 76.310685,
 "nres_ratio": 95.3332,
 "episode_score": 34.66418,
@@ -6603,6 +7798,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 690,
+"line": 106
+},
+{
+"step": 1303,
+"line": 43
+}
+],
 "nres_score": 98.168341,
 "nres_ratio": 99.6406,
 "episode_score": 83.473668,
@@ -6675,6 +7881,13 @@
 "lines": [
 121
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 823,
+"line": 121
 }
 ],
 "nres_score": 92.760575,
@@ -6761,6 +7974,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 236,
+"line": 126
+},
+{
+"step": 1631,
+"line": 81
 }
 ],
 "nres_score": 96.720045,
@@ -6876,6 +8100,37 @@
 ]
 }
 ],
+"n_attack_onsets": 7,
+"attack_onsets": [
+{
+"step": 180,
+"line": 131
+},
+{
+"step": 184,
+"line": 117
+},
+{
+"step": 385,
+"line": 61
+},
+{
+"step": 706,
+"line": 61
+},
+{
+"step": 866,
+"line": 33
+},
+{
+"step": 956,
+"line": 43
+},
+{
+"step": 1072,
+"line": 93
+}
+],
 "nres_score": 95.896365,
 "nres_ratio": 99.1944,
 "episode_score": 83.019273,
@@ -6967,6 +8222,25 @@
 "lines": [
 180
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 94,
+"line": 68
+},
+{
+"step": 190,
+"line": 33
+},
+{
+"step": 459,
+"line": 37
+},
+{
+"step": 1011,
+"line": 180
 }
 ],
 "nres_score": 97.247586,
@@ -7068,6 +8342,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 61,
+"line": 106
+},
+{
+"step": 140,
+"line": 154
+},
+{
+"step": 532,
+"line": 62
+},
+{
+"step": 628,
+"line": 154
+},
+{
+"step": 1091,
+"line": 43
+}
+],
 "nres_score": 98.649294,
 "nres_ratio": 99.735,
 "episode_score": 83.569859,
@@ -7153,6 +8450,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 107,
+"line": 106
+},
+{
+"step": 220,
+"line": 125
+},
+{
+"step": 541,
+"line": 33
+}
+],
 "nres_score": 97.360315,
 "nres_ratio": 99.4819,
 "episode_score": 83.312063,
@@ -7232,6 +8544,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 60,
+"line": 37
+},
+{
+"step": 482,
+"line": 162
 }
 ],
 "nres_score": 99.177276,
@@ -7327,6 +8650,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 38,
+"line": 93
+},
+{
+"step": 189,
+"line": 62
+},
+{
+"step": 346,
+"line": 88
+},
+{
+"step": 489,
+"line": 81
+}
+],
 "nres_score": 95.267769,
 "nres_ratio": 99.0709,
 "episode_score": 34.97399,
@@ -7408,6 +8750,25 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 30,
+"line": 33
+},
+{
+"step": 153,
+"line": 68
+},
+{
+"step": 944,
+"line": 154
+},
+{
+"step": 1379,
+"line": 154
 }
 ],
 "nres_score": 95.842372,
@@ -7497,6 +8858,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 7,
+"line": 126
+},
+{
+"step": 140,
+"line": 162
+},
+{
+"step": 229,
+"line": 61
+}
+],
 "nres_score": 97.921452,
 "nres_ratio": 99.5921,
 "episode_score": 83.42429,
@@ -7584,6 +8960,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 166,
+"line": 141
+},
+{
+"step": 554,
+"line": 131
+},
+{
+"step": 1272,
+"line": 88
+}
+],
 "nres_score": 97.756412,
 "nres_ratio": 99.5597,
 "episode_score": 83.391282,
@@ -7658,6 +9049,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 3,
+"line": 43
+},
+{
+"step": 161,
+"line": 106
 }
 ],
 "nres_score": 95.745464,
@@ -7747,6 +9149,21 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 121,
+"line": 93
+},
+{
+"step": 500,
+"line": 37
+},
+{
+"step": 1121,
+"line": 81
 }
 ],
 "nres_score": 96.837149,
@@ -7844,6 +9261,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 2,
+"line": 154
+},
+{
+"step": 56,
+"line": 33
+},
+{
+"step": 402,
+"line": 121
+},
+{
+"step": 607,
+"line": 180
+},
+{
+"step": 628,
+"line": 37
+}
+],
 "nres_score": 95.161883,
 "nres_ratio": 99.0501,
 "episode_score": 82.872377,
@@ -7932,6 +9372,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 103,
+"line": 160
+},
+{
+"step": 162,
+"line": 62
+},
+{
+"step": 1309,
+"line": 106
+}
+],
 "nres_score": 99.134987,
 "nres_ratio": 99.8303,
 "episode_score": 83.666997,
@@ -8010,6 +9465,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 81,
+"line": 88
+},
+{
+"step": 1241,
+"line": 37
 }
 ],
 "nres_score": 99.348891,
@@ -8094,6 +9560,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 230,
+"line": 88
+},
+{
+"step": 599,
+"line": 61
+},
+{
+"step": 1292,
+"line": 37
 }
 ],
 "nres_score": 98.423427,
@@ -8193,6 +9674,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 18,
+"line": 61
+},
+{
+"step": 113,
+"line": 131
+},
+{
+"step": 344,
+"line": 93
+},
+{
+"step": 954,
+"line": 136
+},
+{
+"step": 1177,
+"line": 121
+}
+],
 "nres_score": 97.960852,
 "nres_ratio": 99.5998,
 "episode_score": 83.43217,
@@ -8283,6 +9787,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 110,
+"line": 43
+},
+{
+"step": 240,
+"line": 93
+},
+{
+"step": 608,
+"line": 88
+}
+],
 "nres_score": 95.746567,
 "nres_ratio": 99.165,
 "episode_score": 82.989313,
@@ -8364,6 +9883,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 43,
+"line": 61
+},
+{
+"step": 559,
+"line": 81
 }
 ],
 "nres_score": 96.737443,
@@ -8458,6 +9988,25 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 8,
+"line": 43
+},
+{
+"step": 34,
+"line": 88
+},
+{
+"step": 87,
+"line": 162
+},
+{
+"step": 402,
+"line": 125
 }
 ],
 "nres_score": 98.750987,
@@ -8560,6 +10109,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 62,
+"line": 160
+},
+{
+"step": 64,
+"line": 61
+},
+{
+"step": 288,
+"line": 106
+},
+{
+"step": 932,
+"line": 37
+}
+],
 "nres_score": 96.234201,
 "nres_ratio": 99.2608,
 "episode_score": 83.08684,
@@ -8636,6 +10204,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 564,
+"line": 106
+},
+{
+"step": 864,
+"line": 62
 }
 ],
 "nres_score": 99.378615,
@@ -8721,6 +10300,21 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 147,
+"line": 106
+},
+{
+"step": 184,
+"line": 61
+},
+{
+"step": 802,
+"line": 81
 }
 ],
 "nres_score": 98.277702,
@@ -8815,6 +10409,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 9,
+"line": 106
+},
+{
+"step": 18,
+"line": 43
+},
+{
+"step": 703,
+"line": 37
+}
+],
 "nres_score": 97.368914,
 "nres_ratio": 99.4836,
 "episode_score": 83.313783,
@@ -8890,6 +10499,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 18,
+"line": 62
+},
+{
+"step": 193,
+"line": 88
 }
 ],
 "nres_score": 97.924245,
@@ -8991,6 +10611,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 19,
+"line": 154
+},
+{
+"step": 190,
+"line": 93
+},
+{
+"step": 327,
+"line": 37
+},
+{
+"step": 538,
+"line": 180
+},
+{
+"step": 611,
+"line": 117
+}
+],
 "nres_score": 98.0188,
 "nres_ratio": 99.6112,
 "episode_score": 83.44376,
@@ -9070,6 +10713,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 45,
+"line": 162
+},
+{
+"step": 574,
+"line": 37
 }
 ],
 "nres_score": 99.697243,
@@ -9159,6 +10813,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 329,
+"line": 88
+},
+{
+"step": 400,
+"line": 43
+},
+{
+"step": 1023,
+"line": 81
+}
+],
 "nres_score": 93.591483,
 "nres_ratio": 98.7414,
 "episode_score": 53.122898,
@@ -9245,6 +10914,21 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 37,
+"line": 106
+},
+{
+"step": 112,
+"line": 154
+},
+{
+"step": 276,
+"line": 33
 }
 ],
 "nres_score": 98.820874,
@@ -9341,6 +11025,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 318,
+"line": 141
+},
+{
+"step": 401,
+"line": 88
+},
+{
+"step": 635,
+"line": 33
+},
+{
+"step": 1247,
+"line": 136
+}
+],
 "nres_score": 90.535394,
 "nres_ratio": 98.1403,
 "episode_score": 57.76574,
@@ -9419,6 +11122,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 467,
+"line": 106
+},
+{
+"step": 669,
+"line": 37
 }
 ],
 "nres_score": 95.495025,
@@ -9501,6 +11215,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 409,
+"line": 81
+},
+{
+"step": 1257,
+"line": 43
 }
 ],
 "nres_score": 98.74211,
@@ -9589,6 +11314,21 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 2,
+"line": 180
+},
+{
+"step": 197,
+"line": 106
+},
+{
+"step": 243,
+"line": 81
 }
 ],
 "nres_score": 92.559537,
@@ -9690,6 +11430,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 435,
+"line": 61
+},
+{
+"step": 707,
+"line": 180
+},
+{
+"step": 875,
+"line": 88
+},
+{
+"step": 1161,
+"line": 93
+},
+{
+"step": 1643,
+"line": 68
+}
+],
 "nres_score": 98.014106,
 "nres_ratio": 99.6103,
 "episode_score": 83.442821,
@@ -9778,6 +11541,21 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 28,
+"line": 61
+},
+{
+"step": 344,
+"line": 125
+},
+{
+"step": 572,
+"line": 61
 }
 ],
 "nres_score": 99.288314,
@@ -9876,6 +11654,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 68,
+"line": 160
+},
+{
+"step": 172,
+"line": 88
+},
+{
+"step": 940,
+"line": 43
+},
+{
+"step": 1269,
+"line": 62
+},
+{
+"step": 1772,
+"line": 37
+}
+],
 "nres_score": 99.614704,
 "nres_ratio": 99.9244,
 "episode_score": 83.762941,
@@ -9972,6 +11773,25 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 90,
+"line": 81
+},
+{
+"step": 99,
+"line": 141
+},
+{
+"step": 509,
+"line": 117
+},
+{
+"step": 1153,
+"line": 37
 }
 ],
 "nres_score": 98.705417,
@@ -10074,6 +11894,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 44,
+"line": 37
+},
+{
+"step": 170,
+"line": 136
+},
+{
+"step": 246,
+"line": 68
+},
+{
+"step": 464,
+"line": 93
+},
+{
+"step": 1279,
+"line": 180
+}
+],
 "nres_score": 98.183596,
 "nres_ratio": 99.6436,
 "episode_score": 83.476719,
@@ -10164,6 +12007,21 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 30,
+"line": 154
+},
+{
+"step": 56,
+"line": 81
+},
+{
+"step": 136,
+"line": 68
 }
 ],
 "nres_score": 96.392983,
@@ -10258,6 +12116,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 19,
+"line": 61
+},
+{
+"step": 145,
+"line": 106
+},
+{
+"step": 715,
+"line": 81
+},
+{
+"step": 1004,
+"line": 61
+}
+],
 "nres_score": 94.849603,
 "nres_ratio": 98.9887,
 "episode_score": 82.809921,
@@ -10339,6 +12216,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 77,
+"line": 117
+},
+{
+"step": 212,
+"line": 81
 }
 ],
 "nres_score": 95.700561,
@@ -10425,6 +12313,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 65,
+"line": 37
+},
+{
+"step": 128,
+"line": 106
+},
+{
+"step": 782,
+"line": 131
+}
+],
 "nres_score": 99.196152,
 "nres_ratio": 99.8423,
 "episode_score": 83.67923,
@@ -10506,6 +12409,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 36,
+"line": 33
+},
+{
+"step": 146,
+"line": 121
+},
+{
+"step": 284,
+"line": 93
 }
 ],
 "nres_score": 97.081635,
@@ -10594,6 +12512,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 252,
+"line": 88
+},
+{
+"step": 388,
+"line": 81
+},
+{
+"step": 1060,
+"line": 37
+}
+],
 "nres_score": 98.014754,
 "nres_ratio": 99.6104,
 "episode_score": 83.442951,
@@ -10674,6 +12607,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 505,
+"line": 37
+},
+{
+"step": 878,
+"line": 106
+}
+],
 "nres_score": 98.063315,
 "nres_ratio": 99.62,
 "episode_score": 83.452663,
@@ -10747,6 +12691,13 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 93,
+"line": 136
 }
 ],
 "nres_score": 85.272411,
@@ -10832,6 +12783,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 33,
+"line": 162
+},
+{
+"step": 627,
+"line": 81
+},
+{
+"step": 1000,
+"line": 37
 }
 ],
 "nres_score": 98.126842,
@@ -10939,6 +12905,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 286,
+"line": 88
+},
+{
+"step": 330,
+"line": 136
+},
+{
+"step": 412,
+"line": 154
+},
+{
+"step": 599,
+"line": 37
+},
+{
+"step": 661,
+"line": 93
+},
+{
+"step": 1575,
+"line": 117
+}
+],
 "nres_score": 98.948636,
 "nres_ratio": 99.7937,
 "episode_score": 83.629727,
@@ -11016,6 +13009,13 @@
 ]
 }
 ],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 1231,
+"line": 106
+}
+],
 "nres_score": 98.337238,
 "nres_ratio": 99.6737,
 "episode_score": 83.507448,
@@ -11091,6 +13091,13 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 60,
+"line": 81
 }
 ],
 "nres_score": 94.318452,
@@ -11173,6 +13180,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 20,
+"line": 88
+},
+{
+"step": 120,
+"line": 43
+},
+{
+"step": 575,
+"line": 154
 }
 ],
 "nres_score": 98.546417,
@@ -11259,6 +13281,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 194,
+"line": 37
+},
+{
+"step": 355,
+"line": 180
+},
+{
+"step": 588,
+"line": 37
 }
 ],
 "nres_score": 95.356627,
@@ -11351,6 +13388,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 213,
+"line": 33
+},
+{
+"step": 467,
+"line": 43
+},
+{
+"step": 815,
+"line": 162
+}
+],
 "nres_score": 93.626011,
 "nres_ratio": 98.7482,
 "episode_score": 82.565202,
@@ -11433,6 +13485,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 16,
+"line": 43
+},
+{
+"step": 1201,
+"line": 162
+}
+],
 "nres_score": 97.188142,
 "nres_ratio": 99.4481,
 "episode_score": 83.277628,
@@ -11510,6 +13573,17 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 287,
+"line": 37
+},
+{
+"step": 433,
+"line": 93
 }
 ],
 "nres_score": 99.756697,
@@ -11602,6 +13676,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 16,
+"line": 37
+},
+{
+"step": 342,
+"line": 162
+},
+{
+"step": 1007,
+"line": 93
+},
+{
+"step": 1090,
+"line": 33
+}
+],
 "nres_score": 95.610603,
 "nres_ratio": 99.1383,
 "episode_score": 82.962121,
@@ -11689,6 +13782,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 343,
+"line": 93
+},
+{
+"step": 650,
+"line": 37
+},
+{
+"step": 902,
+"line": 125
+}
+],
 "nres_score": 99.363118,
 "nres_ratio": 99.8751,
 "episode_score": 83.712624,
@@ -11774,6 +13882,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 409,
+"line": 136
+},
+{
+"step": 925,
+"line": 37
+},
+{
+"step": 1306,
+"line": 93
+}
+],
 "nres_score": 93.376496,
 "nres_ratio": 98.6992,
 "episode_score": 82.515299,
@@ -11855,6 +13978,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 10,
+"line": 121
+},
+{
+"step": 379,
+"line": 61
 }
 ],
 "nres_score": 96.598156,
@@ -11975,6 +14109,41 @@
 ]
 }
 ],
+"n_attack_onsets": 8,
+"attack_onsets": [
+{
+"step": 50,
+"line": 162
+},
+{
+"step": 218,
+"line": 110
+},
+{
+"step": 382,
+"line": 93
+},
+{
+"step": 421,
+"line": 61
+},
+{
+"step": 693,
+"line": 43
+},
+{
+"step": 778,
+"line": 93
+},
+{
+"step": 845,
+"line": 33
+},
+{
+"step": 1067,
+"line": 81
+}
+],
 "nres_score": 97.774878,
 "nres_ratio": 99.5633,
 "episode_score": 53.991227,
@@ -12052,6 +14221,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 342,
+"line": 33
+},
+{
+"step": 503,
+"line": 88
 }
 ],
 "nres_score": 99.779326,
@@ -12133,6 +14313,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 68,
+"line": 62
+},
+{
+"step": 120,
+"line": 88
 }
 ],
 "nres_score": 96.559667,
@@ -12217,6 +14408,21 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 45,
+"line": 117
+},
+{
+"step": 291,
+"line": 37
+},
+{
+"step": 396,
+"line": 88
 }
 ],
 "nres_score": 90.080282,
@@ -12309,6 +14515,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 101,
+"line": 125
+},
+{
+"step": 265,
+"line": 68
+},
+{
+"step": 378,
+"line": 37
+},
+{
+"step": 1067,
+"line": 141
+}
+],
 "nres_score": 99.676431,
 "nres_ratio": 99.9365,
 "episode_score": 83.775286,
@@ -12389,6 +14614,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 159,
+"line": 37
+},
+{
+"step": 364,
+"line": 162
 }
 ],
 "nres_score": 98.319439,
@@ -12472,6 +14708,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 67,
+"line": 33
+},
+{
+"step": 144,
+"line": 162
 }
 ],
 "nres_score": 98.120218,
@@ -12572,6 +14819,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 309,
+"line": 162
+},
+{
+"step": 488,
+"line": 62
+},
+{
+"step": 507,
+"line": 141
+},
+{
+"step": 820,
+"line": 154
+}
+],
 "nres_score": 92.524606,
 "nres_ratio": 98.5316,
 "episode_score": 82.344921,
@@ -12666,6 +14932,29 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 155,
+"line": 81
+},
+{
+"step": 273,
+"line": 81
+},
+{
+"step": 573,
+"line": 43
+},
+{
+"step": 720,
+"line": 117
+},
+{
+"step": 946,
+"line": 68
 }
 ],
 "nres_score": 94.004862,
@@ -12772,6 +15061,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 16,
+"line": 162
+},
+{
+"step": 165,
+"line": 136
+},
+{
+"step": 361,
+"line": 81
+},
+{
+"step": 487,
+"line": 106
+},
+{
+"step": 1286,
+"line": 126
+}
+],
 "nres_score": 89.890976,
 "nres_ratio": 98.0134,
 "episode_score": 61.086812,
@@ -12864,6 +15176,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 273,
+"line": 88
+},
+{
+"step": 541,
+"line": 106
+},
+{
+"step": 806,
+"line": 81
+}
+],
 "nres_score": 98.332934,
 "nres_ratio": 99.6729,
 "episode_score": 45.272219,
@@ -12949,6 +15276,21 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 334,
+"line": 162
+},
+{
+"step": 407,
+"line": 37
+},
+{
+"step": 741,
+"line": 88
 }
 ],
 "nres_score": 99.497661,
@@ -13047,6 +15389,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 303,
+"line": 33
+},
+{
+"step": 382,
+"line": 81
+},
+{
+"step": 1326,
+"line": 106
+},
+{
+"step": 1362,
+"line": 81
+},
+{
+"step": 1850,
+"line": 37
+}
+],
 "nres_score": 98.32123,
 "nres_ratio": 99.6706,
 "episode_score": 83.504246,
@@ -13132,6 +15497,21 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 195,
+"line": 106
+},
+{
+"step": 447,
+"line": 81
+},
+{
+"step": 1231,
+"line": 43
 }
 ],
 "nres_score": 99.763614,
@@ -13221,6 +15601,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 31,
+"line": 37
+},
+{
+"step": 574,
+"line": 62
+},
+{
+"step": 681,
+"line": 162
+}
+],
 "nres_score": 99.33131,
 "nres_ratio": 99.8688,
 "episode_score": 83.706262,
@@ -13296,6 +15691,13 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 53,
+"line": 136
 }
 ],
 "nres_score": 96.459538,
@@ -13387,6 +15789,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 113,
+"line": 81
+},
+{
+"step": 363,
+"line": 93
+},
+{
+"step": 502,
+"line": 125
+},
+{
+"step": 1800,
+"line": 43
+}
+],
 "nres_score": 99.870449,
 "nres_ratio": 99.9746,
 "episode_score": 83.81409,
@@ -13465,6 +15886,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 14,
+"line": 93
+},
+{
+"step": 469,
+"line": 62
+}
+],
 "nres_score": 99.622831,
 "nres_ratio": 99.926,
 "episode_score": 83.764566,
@@ -13532,6 +15964,13 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 123,
+"line": 37
 }
 ],
 "nres_score": 99.079382,
@@ -13632,6 +16071,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 11,
+"line": 33
+},
+{
+"step": 107,
+"line": 160
+},
+{
+"step": 198,
+"line": 43
+},
+{
+"step": 444,
+"line": 106
+},
+{
+"step": 550,
+"line": 125
+}
+],
 "nres_score": 99.797422,
 "nres_ratio": 99.9603,
 "episode_score": 83.799484,
@@ -13705,6 +16167,21 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 40,
+"line": 88
+},
+{
+"step": 890,
+"line": 81
+},
+{
+"step": 1310,
+"line": 81
 }
 ],
 "nres_score": 98.763655,
@@ -13787,6 +16264,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 38,
+"line": 162
+},
+{
+"step": 525,
+"line": 37
 }
 ],
 "nres_score": 98.852214,
@@ -13882,6 +16370,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 65,
+"line": 93
+},
+{
+"step": 75,
+"line": 136
+},
+{
+"step": 1257,
+"line": 61
+}
+],
 "nres_score": 99.521582,
 "nres_ratio": 99.9061,
 "episode_score": 83.744316,
@@ -13955,6 +16458,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 90,
+"line": 162
+},
+{
+"step": 432,
+"line": 61
 }
 ],
 "nres_score": 99.636429,
@@ -14037,6 +16551,21 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 88,
+"line": 81
+},
+{
+"step": 311,
+"line": 88
+},
+{
+"step": 893,
+"line": 43
 }
 ],
 "nres_score": 94.744178,
@@ -14123,6 +16652,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 79,
+"line": 33
+},
+{
+"step": 85,
+"line": 136
+}
+],
 "nres_score": 99.990977,
 "nres_ratio": 99.9982,
 "episode_score": 23.289896,
@@ -14196,6 +16736,13 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 213,
+"line": 136
 }
 ],
 "nres_score": 99.875534,
@@ -14274,6 +16821,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 144,
+"line": 93
+},
+{
+"step": 274,
+"line": 81
 }
 ],
 "nres_score": 99.977544,
@@ -14367,6 +16925,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 53,
+"line": 136
+},
+{
+"step": 120,
+"line": 121
+},
+{
+"step": 369,
+"line": 88
+},
+{
+"step": 463,
+"line": 43
+}
+],
 "nres_score": 96.076472,
 "nres_ratio": 99.2298,
 "episode_score": 83.055294,
@@ -14456,6 +17033,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 99,
+"line": 68
+},
+{
+"step": 326,
+"line": 61
+},
+{
+"step": 1196,
+"line": 33
+}
+],
 "nres_score": 99.231122,
 "nres_ratio": 99.8492,
 "episode_score": 83.686224,
@@ -14539,6 +17131,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 61,
+"line": 33
+},
+{
+"step": 145,
+"line": 162
+},
+{
+"step": 1690,
+"line": 88
+}
+],
 "nres_score": 98.05511,
 "nres_ratio": 99.6183,
 "episode_score": 83.451022,
@@ -14611,6 +17218,13 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 182,
+"line": 43
 }
 ],
 "nres_score": 97.291716,
@@ -14693,6 +17307,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 27,
+"line": 162
+},
+{
+"step": 530,
+"line": 61
+}
+],
 "nres_score": 99.894912,
 "nres_ratio": 99.9794,
 "episode_score": 83.818982,
@@ -14772,6 +17397,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 49,
+"line": 61
+},
+{
+"step": 508,
+"line": 88
+}
+],
 "nres_score": 98.413924,
 "nres_ratio": 99.6888,
 "episode_score": 83.522785,
@@ -14848,6 +17484,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 194,
+"line": 43
+},
+{
+"step": 1131,
+"line": 162
 }
 ],
 "nres_score": 96.35833,
@@ -14944,6 +17591,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 86,
+"line": 81
+},
+{
+"step": 414,
+"line": 136
+},
+{
+"step": 632,
+"line": 33
+},
+{
+"step": 1218,
+"line": 93
+}
+],
 "nres_score": 85.810476,
 "nres_ratio": 97.2095,
 "episode_score": 81.002095,
@@ -15029,6 +17695,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 127,
+"line": 162
+},
+{
+"step": 226,
+"line": 61
+}
+],
 "nres_score": 99.860571,
 "nres_ratio": 99.9726,
 "episode_score": 83.812114,
@@ -15100,6 +17777,17 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 131,
+"line": 62
+},
+{
+"step": 554,
+"line": 68
 }
 ],
 "nres_score": 98.23481,
@@ -15191,6 +17879,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 21,
+"line": 33
+},
+{
+"step": 307,
+"line": 162
+},
+{
+"step": 449,
+"line": 81
+}
+],
 "nres_score": 99.78429,
 "nres_ratio": 99.9577,
 "episode_score": 36.415361,
@@ -15271,6 +17974,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 191,
+"line": 180
+},
+{
+"step": 786,
+"line": 106
+},
+{
+"step": 1087,
+"line": 37
 }
 ],
 "nres_score": 99.709384,
@@ -15359,6 +18077,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 263,
+"line": 37
+},
+{
+"step": 403,
+"line": 117
+},
+{
+"step": 681,
+"line": 68
+}
+],
 "nres_score": 99.535247,
 "nres_ratio": 99.9088,
 "episode_score": 83.747049,
@@ -15432,6 +18165,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 376,
+"line": 162
+},
+{
+"step": 711,
+"line": 37
 }
 ],
 "nres_score": 99.857463,
@@ -15536,6 +18280,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 164,
+"line": 37
+},
+{
+"step": 487,
+"line": 126
+},
+{
+"step": 922,
+"line": 93
+},
+{
+"step": 1156,
+"line": 136
+},
+{
+"step": 1399,
+"line": 88
+},
+{
+"step": 1637,
+"line": 121
+}
+],
 "nres_score": 97.293132,
 "nres_ratio": 99.4687,
 "episode_score": 83.298626,
@@ -15632,6 +18403,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 187,
+"line": 110
+},
+{
+"step": 213,
+"line": 106
+},
+{
+"step": 864,
+"line": 81
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 47.441388,
@@ -15722,6 +18508,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 7,
+"line": 37
+},
+{
+"step": 128,
+"line": 88
+},
+{
+"step": 207,
+"line": 126
+},
+{
+"step": 512,
+"line": 37
+}
+],
 "nres_score": 99.260604,
 "nres_ratio": 99.8549,
 "episode_score": 83.692121,
@@ -15799,6 +18604,17 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 42,
+"line": 37
+},
+{
+"step": 1558,
+"line": 68
 }
 ],
 "nres_score": 93.564467,
@@ -15897,6 +18713,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 6,
+"line": 62
+},
+{
+"step": 154,
+"line": 93
+},
+{
+"step": 262,
+"line": 117
+}
+],
 "nres_score": 99.416788,
 "nres_ratio": 99.8856,
 "episode_score": 28.365817,
@@ -15986,6 +18817,25 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 35,
+"line": 37
+},
+{
+"step": 164,
+"line": 136
+},
+{
+"step": 252,
+"line": 88
+},
+{
+"step": 1134,
+"line": 162
 }
 ],
 "nres_score": 99.71854,
@@ -16104,6 +18954,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 10,
+"line": 106
+},
+{
+"step": 255,
+"line": 33
+},
+{
+"step": 309,
+"line": 126
+},
+{
+"step": 335,
+"line": 162
+},
+{
+"step": 400,
+"line": 162
+},
+{
+"step": 421,
+"line": 136
+}
+],
 "nres_score": 99.248188,
 "nres_ratio": 99.8525,
 "episode_score": 33.332949,
@@ -16183,6 +19060,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 230,
+"line": 62
+},
+{
+"step": 626,
+"line": 106
 }
 ],
 "nres_score": 98.894059,
@@ -16283,6 +19171,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 249,
+"line": 33
+},
+{
+"step": 262,
+"line": 162
+},
+{
+"step": 1395,
+"line": 180
+},
+{
+"step": 1815,
+"line": 131
+}
+],
 "nres_score": 99.42446,
 "nres_ratio": 99.8871,
 "episode_score": 83.724892,
@@ -16361,6 +19268,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 346,
+"line": 117
+},
+{
+"step": 1319,
+"line": 43
 }
 ],
 "nres_score": 99.436627,
@@ -16442,6 +19360,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 147,
+"line": 43
+},
+{
+"step": 582,
+"line": 88
 }
 ],
 "nres_score": 99.19767,
@@ -16542,6 +19471,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 40,
+"line": 154
+},
+{
+"step": 111,
+"line": 106
+},
+{
+"step": 325,
+"line": 33
+},
+{
+"step": 671,
+"line": 93
+},
+{
+"step": 1072,
+"line": 61
+}
+],
 "nres_score": 95.189812,
 "nres_ratio": 99.0556,
 "episode_score": 82.877962,
@@ -16631,6 +19583,21 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 390,
+"line": 88
+},
+{
+"step": 846,
+"line": 93
+},
+{
+"step": 884,
+"line": 81
 }
 ],
 "nres_score": 97.080093,
@@ -16723,6 +19690,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 13,
+"line": 162
+},
+{
+"step": 130,
+"line": 160
+},
+{
+"step": 207,
+"line": 33
+},
+{
+"step": 353,
+"line": 126
+}
+],
 "nres_score": 98.285569,
 "nres_ratio": 99.6636,
 "episode_score": 83.497114,
@@ -16801,6 +19787,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 19,
+"line": 106
+},
+{
+"step": 488,
+"line": 43
 }
 ],
 "nres_score": 99.583567,
@@ -16895,6 +19892,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 139,
+"line": 106
+},
+{
+"step": 450,
+"line": 43
+},
+{
+"step": 791,
+"line": 125
+},
+{
+"step": 892,
+"line": 62
+}
+],
 "nres_score": 99.997063,
 "nres_ratio": 99.9994,
 "episode_score": 83.839413,
@@ -16979,6 +19995,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 216,
+"line": 33
+},
+{
+"step": 658,
+"line": 106
+}
+],
 "nres_score": 99.430277,
 "nres_ratio": 99.8882,
 "episode_score": 83.726055,
@@ -17059,6 +20086,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 29,
+"line": 43
+},
+{
+"step": 182,
+"line": 162
 }
 ],
 "nres_score": 99.795495,
@@ -17155,6 +20193,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 73,
+"line": 37
+},
+{
+"step": 80,
+"line": 160
+},
+{
+"step": 257,
+"line": 93
 }
 ],
 "nres_score": 97.063161,
@@ -17264,6 +20317,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 54,
+"line": 62
+},
+{
+"step": 244,
+"line": 136
+},
+{
+"step": 502,
+"line": 37
+},
+{
+"step": 665,
+"line": 93
+},
+{
+"step": 1063,
+"line": 81
+},
+{
+"step": 1671,
+"line": 62
+}
+],
 "nres_score": 98.283917,
 "nres_ratio": 99.6633,
 "episode_score": 83.496783,
@@ -17343,6 +20423,13 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 325,
+"line": 162
 }
 ],
 "nres_score": 100.0,
@@ -17433,6 +20520,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 23,
+"line": 125
+},
+{
+"step": 232,
+"line": 93
+},
+{
+"step": 922,
+"line": 37
+}
+],
 "nres_score": 99.955295,
 "nres_ratio": 99.9912,
 "episode_score": 83.831059,
@@ -17518,6 +20620,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 85,
+"line": 88
+},
+{
+"step": 113,
+"line": 37
+},
+{
+"step": 1202,
+"line": 37
+}
+],
 "nres_score": 99.999001,
 "nres_ratio": 99.9998,
 "episode_score": 83.8398,
@@ -17598,6 +20715,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 95,
+"line": 106
+},
+{
+"step": 1665,
+"line": 37
 }
 ],
 "nres_score": 100.0,
@@ -17689,6 +20817,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 304,
+"line": 81
+},
+{
+"step": 685,
+"line": 61
+},
+{
+"step": 818,
+"line": 93
+}
+],
 "nres_score": 99.988822,
 "nres_ratio": 99.9978,
 "episode_score": 83.837764,
@@ -17762,6 +20905,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 126,
+"line": 162
+},
+{
+"step": 219,
+"line": 61
 }
 ],
 "nres_score": 98.942562,
@@ -17854,6 +21008,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 161,
+"line": 43
+},
+{
+"step": 639,
+"line": 37
+},
+{
+"step": 1067,
+"line": 88
+}
+],
 "nres_score": 99.823022,
 "nres_ratio": 99.9653,
 "episode_score": 83.804604,
@@ -17940,6 +21109,21 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 43,
+"line": 37
+},
+{
+"step": 212,
+"line": 125
+},
+{
+"step": 371,
+"line": 106
 }
 ],
 "nres_score": 99.992476,
@@ -18033,6 +21217,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 103,
+"line": 180
+},
+{
+"step": 226,
+"line": 88
+},
+{
+"step": 410,
+"line": 37
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 69.185602,
@@ -18119,6 +21318,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 180,
+"line": 154
+},
+{
+"step": 180,
+"line": 162
+},
+{
+"step": 460,
+"line": 37
 }
 ],
 "nres_score": 99.315509,
@@ -18210,6 +21424,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 87,
+"line": 62
+},
+{
+"step": 154,
+"line": 68
+},
+{
+"step": 1474,
+"line": 162
 }
 ],
 "nres_score": 99.478211,
@@ -18317,6 +21546,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 6,
+"line": 88
+},
+{
+"step": 67,
+"line": 62
+},
+{
+"step": 334,
+"line": 37
+}
+],
 "nres_score": 98.007591,
 "nres_ratio": 99.609,
 "episode_score": 32.325207,
@@ -18401,6 +21645,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 38,
+"line": 162
+},
+{
+"step": 438,
+"line": 61
 }
 ],
 "nres_score": 99.955605,
@@ -18496,6 +21751,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 53,
+"line": 37
+},
+{
+"step": 550,
+"line": 37
+},
+{
+"step": 558,
+"line": 88
+},
+{
+"step": 781,
+"line": 162
+}
+],
 "nres_score": 99.860786,
 "nres_ratio": 99.9727,
 "episode_score": 83.812157,
@@ -18582,6 +21856,17 @@
 "lines": [
 117
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 81,
+"line": 110
+},
+{
+"step": 168,
+"line": 117
 }
 ],
 "nres_score": 95.334832,
@@ -18698,6 +21983,37 @@
 ]
 }
 ],
+"n_attack_onsets": 7,
+"attack_onsets": [
+{
+"step": 33,
+"line": 88
+},
+{
+"step": 107,
+"line": 33
+},
+{
+"step": 240,
+"line": 61
+},
+{
+"step": 602,
+"line": 81
+},
+{
+"step": 643,
+"line": 131
+},
+{
+"step": 685,
+"line": 162
+},
+{
+"step": 920,
+"line": 125
+}
+],
 "nres_score": 98.742402,
 "nres_ratio": 99.7532,
 "episode_score": 83.58848,
@@ -18791,6 +22107,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 5,
+"line": 141
+},
+{
+"step": 106,
+"line": 68
+},
+{
+"step": 213,
+"line": 117
+}
+],
 "nres_score": 99.940963,
 "nres_ratio": 99.9884,
 "episode_score": 26.919754,
@@ -18869,6 +22200,17 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 105,
+"line": 106
+},
+{
+"step": 314,
+"line": 33
 }
 ],
 "nres_score": 99.368022,
@@ -18962,6 +22304,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 30,
+"line": 43
+},
+{
+"step": 226,
+"line": 154
+},
+{
+"step": 917,
+"line": 93
+}
+],
 "nres_score": 99.86579,
 "nres_ratio": 99.9737,
 "episode_score": 83.813158,
@@ -19040,6 +22397,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 166,
+"line": 117
+},
+{
+"step": 227,
+"line": 37
 }
 ],
 "nres_score": 99.456474,
@@ -19121,6 +22489,17 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 358,
+"line": 61
+},
+{
+"step": 382,
+"line": 126
 }
 ],
 "nres_score": 99.917061,
@@ -19207,6 +22586,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 231,
+"line": 37
+},
+{
+"step": 865,
+"line": 106
+}
+],
 "nres_score": 98.78758,
 "nres_ratio": 99.7621,
 "episode_score": 83.597516,
@@ -19288,6 +22678,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 82,
+"line": 37
+},
+{
+"step": 346,
+"line": 106
 }
 ],
 "nres_score": 99.330464,
@@ -19382,6 +22783,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 63,
+"line": 81
+},
+{
+"step": 153,
+"line": 162
+},
+{
+"step": 236,
+"line": 154
+},
+{
+"step": 412,
+"line": 37
+}
+],
 "nres_score": 97.584286,
 "nres_ratio": 99.5259,
 "episode_score": 83.356857,
@@ -19454,6 +22874,13 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 17,
+"line": 37
 }
 ],
 "nres_score": 99.706356,
@@ -19556,6 +22983,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 2,
+"line": 125
+},
+{
+"step": 14,
+"line": 62
+},
+{
+"step": 356,
+"line": 68
+}
+],
 "nres_score": 99.206511,
 "nres_ratio": 99.8443,
 "episode_score": 83.681302,
@@ -19637,6 +23079,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 136,
+"line": 37
+},
+{
+"step": 235,
+"line": 93
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -19706,6 +23159,13 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 1534,
+"line": 162
 }
 ],
 "nres_score": 99.942925,
@@ -19784,6 +23244,17 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 126,
+"line": 33
+},
+{
+"step": 159,
+"line": 68
 }
 ],
 "nres_score": 99.927335,
@@ -19873,6 +23344,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 28,
+"line": 33
+},
+{
+"step": 212,
+"line": 121
+},
+{
+"step": 381,
+"line": 88
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 54.309648,
@@ -19959,6 +23445,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 172,
+"line": 81
+},
+{
+"step": 275,
+"line": 162
+},
+{
+"step": 834,
+"line": 154
 }
 ],
 "nres_score": 99.70633,
@@ -20050,6 +23551,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 15,
+"line": 141
+},
+{
+"step": 755,
+"line": 62
+},
+{
+"step": 985,
+"line": 106
+}
+],
 "nres_score": 99.348876,
 "nres_ratio": 99.8723,
 "episode_score": 83.709775,
@@ -20137,6 +23653,21 @@
 "lines": [
 160
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 14,
+"line": 37
+},
+{
+"step": 63,
+"line": 117
+},
+{
+"step": 222,
+"line": 160
 }
 ],
 "nres_score": 99.478104,
@@ -20237,6 +23768,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 266,
+"line": 117
+},
+{
+"step": 316,
+"line": 141
+},
+{
+"step": 908,
+"line": 33
+},
+{
+"step": 1232,
+"line": 106
+}
+],
 "nres_score": 98.624581,
 "nres_ratio": 99.7301,
 "episode_score": 83.564916,
@@ -20316,6 +23866,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 101,
+"line": 62
+},
+{
+"step": 209,
+"line": 88
 }
 ],
 "nres_score": 99.573691,
@@ -20403,6 +23964,21 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 13,
+"line": 93
+},
+{
+"step": 222,
+"line": 43
+},
+{
+"step": 520,
+"line": 106
 }
 ],
 "nres_score": 99.679568,
@@ -20496,6 +24072,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 53,
+"line": 93
+},
+{
+"step": 129,
+"line": 131
+},
+{
+"step": 572,
+"line": 37
+}
+],
 "nres_score": 99.816895,
 "nres_ratio": 99.9641,
 "episode_score": 69.180632,
@@ -20584,6 +24175,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 44,
+"line": 106
+},
+{
+"step": 507,
+"line": 81
+},
+{
+"step": 813,
+"line": 37
+}
+],
 "nres_score": 99.751095,
 "nres_ratio": 99.9512,
 "episode_score": 83.790219,
@@ -20660,6 +24266,13 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 275,
+"line": 136
 }
 ],
 "nres_score": 99.977162,
@@ -20742,6 +24355,21 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 58,
+"line": 180
+},
+{
+"step": 140,
+"line": 93
+},
+{
+"step": 347,
+"line": 81
 }
 ],
 "nres_score": 97.672847,
@@ -20840,6 +24468,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 90,
+"line": 61
+},
+{
+"step": 93,
+"line": 126
+},
+{
+"step": 125,
+"line": 106
+}
+],
 "nres_score": 99.838349,
 "nres_ratio": 99.9683,
 "episode_score": 83.80767,
@@ -20932,6 +24575,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 237,
+"line": 125
+},
+{
+"step": 311,
+"line": 33
+},
+{
+"step": 970,
+"line": 93
+},
+{
+"step": 1047,
+"line": 37
+}
+],
 "nres_score": 99.812964,
 "nres_ratio": 99.9633,
 "episode_score": 83.802593,
@@ -21010,6 +24672,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 82,
+"line": 106
+},
+{
+"step": 245,
+"line": 62
 }
 ],
 "nres_score": 100.0,
@@ -21095,6 +24768,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 148,
+"line": 106
+},
+{
+"step": 150,
+"line": 62
 }
 ],
 "nres_score": 99.68519,
@@ -21187,6 +24871,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 273,
+"line": 33
+},
+{
+"step": 344,
+"line": 106
+},
+{
+"step": 411,
+"line": 154
+}
+],
 "nres_score": 99.990967,
 "nres_ratio": 99.9982,
 "episode_score": 83.838193,
@@ -21264,6 +24963,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 395,
+"line": 43
+},
+{
+"step": 801,
+"line": 106
 }
 ],
 "nres_score": 99.179905,
@@ -21360,6 +25070,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 28,
+"line": 33
+},
+{
+"step": 257,
+"line": 93
+},
+{
+"step": 762,
+"line": 126
+},
+{
+"step": 868,
+"line": 106
+}
+],
 "nres_score": 99.928583,
 "nres_ratio": 99.986,
 "episode_score": 83.825717,
@@ -21448,6 +25177,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 137,
+"line": 126
+},
+{
+"step": 383,
+"line": 88
+},
+{
+"step": 1052,
+"line": 61
+}
+],
 "nres_score": 98.316923,
 "nres_ratio": 99.6697,
 "episode_score": 83.503385,
@@ -21531,6 +25275,21 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 9,
+"line": 131
+},
+{
+"step": 87,
+"line": 106
+},
+{
+"step": 541,
+"line": 81
 }
 ],
 "nres_score": 99.979032,
@@ -21635,6 +25394,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 2,
+"line": 141
+},
+{
+"step": 211,
+"line": 180
+},
+{
+"step": 248,
+"line": 37
+},
+{
+"step": 579,
+"line": 160
+},
+{
+"step": 1274,
+"line": 141
+}
+],
 "nres_score": 97.729851,
 "nres_ratio": 99.5545,
 "episode_score": 83.38597,
@@ -21717,6 +25499,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 150,
+"line": 33
+},
+{
+"step": 507,
+"line": 106
 }
 ],
 "nres_score": 99.159981,
@@ -21806,6 +25599,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 73,
+"line": 136
+},
+{
+"step": 312,
+"line": 37
+},
+{
+"step": 716,
+"line": 93
 }
 ],
 "nres_score": 99.998723,
@@ -21899,6 +25707,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 255,
+"line": 88
+},
+{
+"step": 256,
+"line": 33
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -21984,6 +25803,21 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 146,
+"line": 43
+},
+{
+"step": 1315,
+"line": 61
+},
+{
+"step": 1635,
+"line": 62
 }
 ],
 "nres_score": 98.021428,
@@ -22088,6 +25922,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 127,
+"line": 117
+},
+{
+"step": 146,
+"line": 136
+},
+{
+"step": 220,
+"line": 88
+},
+{
+"step": 273,
+"line": 125
+},
+{
+"step": 358,
+"line": 62
+}
+],
 "nres_score": 99.060084,
 "nres_ratio": 99.8156,
 "episode_score": 83.652017,
@@ -22178,6 +26035,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 59,
+"line": 88
+},
+{
+"step": 266,
+"line": 160
+},
+{
+"step": 316,
+"line": 43
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -22261,6 +26133,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 54,
+"line": 154
+},
+{
+"step": 324,
+"line": 43
+}
+],
 "nres_score": 99.669041,
 "nres_ratio": 99.9351,
 "episode_score": 83.773808,
@@ -22334,6 +26217,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 54,
+"line": 162
+},
+{
+"step": 820,
+"line": 61
 }
 ],
 "nres_score": 94.687063,
@@ -22420,6 +26314,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 159,
+"line": 43
+},
+{
+"step": 342,
+"line": 162
+},
+{
+"step": 578,
+"line": 162
 }
 ],
 "nres_score": 99.995363,
@@ -22518,6 +26427,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 264,
+"line": 33
+},
+{
+"step": 644,
+"line": 180
+},
+{
+"step": 1024,
+"line": 126
+},
+{
+"step": 1268,
+"line": 106
+}
+],
 "nres_score": 97.927716,
 "nres_ratio": 99.5933,
 "episode_score": 83.425543,
@@ -22596,6 +26524,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 145,
+"line": 37
+},
+{
+"step": 194,
+"line": 162
 }
 ],
 "nres_score": 97.007892,
@@ -22692,6 +26631,25 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 35,
+"line": 106
+},
+{
+"step": 131,
+"line": 121
+},
+{
+"step": 185,
+"line": 117
+},
+{
+"step": 867,
+"line": 33
 }
 ],
 "nres_score": 94.161475,
@@ -22798,6 +26756,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 33,
+"line": 88
+},
+{
+"step": 159,
+"line": 62
+},
+{
+"step": 170,
+"line": 126
+},
+{
+"step": 606,
+"line": 117
+}
+],
 "nres_score": 96.303993,
 "nres_ratio": 99.2745,
 "episode_score": 83.100799,
@@ -22882,6 +26859,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 203,
+"line": 81
+},
+{
+"step": 1236,
+"line": 162
 }
 ],
 "nres_score": 99.210402,
@@ -22977,6 +26965,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 52,
+"line": 33
+},
+{
+"step": 424,
+"line": 68
+},
+{
+"step": 697,
+"line": 106
+}
+],
 "nres_score": 99.667134,
 "nres_ratio": 99.9347,
 "episode_score": 83.773427,
@@ -23070,6 +27073,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 98,
+"line": 106
+},
+{
+"step": 275,
+"line": 33
+},
+{
+"step": 479,
+"line": 61
+},
+{
+"step": 1614,
+"line": 154
+}
+],
 "nres_score": 99.97868,
 "nres_ratio": 99.9958,
 "episode_score": 83.835736,
@@ -23154,6 +27176,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 420,
+"line": 61
+},
+{
+"step": 561,
+"line": 93
+},
+{
+"step": 1319,
+"line": 162
 }
 ],
 "nres_score": 99.610428,
@@ -23248,6 +27285,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 17,
+"line": 88
+},
+{
+"step": 543,
+"line": 37
+},
+{
+"step": 605,
+"line": 125
+},
+{
+"step": 1599,
+"line": 126
+}
+],
 "nres_score": 96.528599,
 "nres_ratio": 99.3186,
 "episode_score": 83.14572,
@@ -23332,6 +27388,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 610,
+"line": 33
+},
+{
+"step": 664,
+"line": 162
+}
+],
 "nres_score": 99.995494,
 "nres_ratio": 99.9991,
 "episode_score": 83.839099,
@@ -23414,6 +27481,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 29,
+"line": 131
+},
+{
+"step": 127,
+"line": 37
+}
+],
 "nres_score": 99.884436,
 "nres_ratio": 99.9773,
 "episode_score": 83.816887,
@@ -23493,6 +27571,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 25,
+"line": 136
+},
+{
+"step": 150,
+"line": 88
 }
 ],
 "nres_score": 97.357754,
@@ -23586,6 +27675,21 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 20,
+"line": 37
+},
+{
+"step": 250,
+"line": 125
+},
+{
+"step": 482,
+"line": 68
 }
 ],
 "nres_score": 88.13087,
@@ -23707,6 +27811,37 @@
 ]
 }
 ],
+"n_attack_onsets": 7,
+"attack_onsets": [
+{
+"step": 61,
+"line": 33
+},
+{
+"step": 254,
+"line": 93
+},
+{
+"step": 296,
+"line": 37
+},
+{
+"step": 491,
+"line": 106
+},
+{
+"step": 565,
+"line": 180
+},
+{
+"step": 881,
+"line": 136
+},
+{
+"step": 1637,
+"line": 126
+}
+],
 "nres_score": 89.128414,
 "nres_ratio": 97.8633,
 "episode_score": 81.665683,
@@ -23792,6 +27927,21 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 105,
+"line": 160
+},
+{
+"step": 149,
+"line": 43
+},
+{
+"step": 185,
+"line": 68
 }
 ],
 "nres_score": 98.582288,
@@ -23895,6 +28045,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 58,
+"line": 93
+},
+{
+"step": 63,
+"line": 131
+},
+{
+"step": 122,
+"line": 62
+}
+],
 "nres_score": 99.654458,
 "nres_ratio": 99.9322,
 "episode_score": 41.675106,
@@ -23994,6 +28159,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 125,
+"line": 131
+},
+{
+"step": 397,
+"line": 62
+},
+{
+"step": 575,
+"line": 93
+},
+{
+"step": 864,
+"line": 62
+}
+],
 "nres_score": 99.918343,
 "nres_ratio": 99.984,
 "episode_score": 83.823669,
@@ -24091,6 +28275,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 135,
+"line": 136
+},
+{
+"step": 152,
+"line": 93
+},
+{
+"step": 153,
+"line": 37
+}
+],
 "nres_score": 95.603109,
 "nres_ratio": 99.1368,
 "episode_score": 82.960622,
@@ -24185,6 +28384,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 10,
+"line": 88
+},
+{
+"step": 128,
+"line": 33
+},
+{
+"step": 250,
+"line": 154
+}
+],
 "nres_score": 99.928252,
 "nres_ratio": 99.9859,
 "episode_score": 83.82565,
@@ -24264,6 +28478,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 99,
+"line": 162
+},
+{
+"step": 197,
+"line": 37
 }
 ],
 "nres_score": 100.0,
@@ -24350,6 +28575,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 97,
+"line": 43
+},
+{
+"step": 310,
+"line": 125
+},
+{
+"step": 849,
+"line": 162
 }
 ],
 "nres_score": 100.0,
@@ -24439,6 +28679,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 8,
+"line": 131
+},
+{
+"step": 215,
+"line": 61
+},
+{
+"step": 383,
+"line": 93
+},
+{
+"step": 831,
+"line": 141
+}
+],
 "nres_score": 97.05743,
 "nres_ratio": 99.4225,
 "episode_score": 83.251486,
@@ -24520,6 +28779,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 158,
+"line": 88
+},
+{
+"step": 1087,
+"line": 37
 }
 ],
 "nres_score": 99.706866,
@@ -24610,6 +28880,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 14,
+"line": 126
+},
+{
+"step": 60,
+"line": 37
+},
+{
+"step": 314,
+"line": 162
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -24696,6 +28981,25 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 30,
+"line": 37
+},
+{
+"step": 56,
+"line": 88
+},
+{
+"step": 272,
+"line": 126
+},
+{
+"step": 964,
+"line": 126
 }
 ],
 "nres_score": 95.893168,
@@ -24788,6 +29092,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 103,
+"line": 61
+},
+{
+"step": 142,
+"line": 162
+},
+{
+"step": 220,
+"line": 131
+}
+],
 "nres_score": 99.260012,
 "nres_ratio": 99.8548,
 "episode_score": 83.692002,
@@ -24865,6 +29184,17 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 172,
+"line": 37
+},
+{
+"step": 349,
+"line": 93
 }
 ],
 "nres_score": 99.873441,
@@ -24949,6 +29279,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 22,
+"line": 126
+},
+{
+"step": 133,
+"line": 81
+},
+{
+"step": 395,
+"line": 162
 }
 ],
 "nres_score": 98.342157,
@@ -25036,6 +29381,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 50,
+"line": 62
+},
+{
+"step": 186,
+"line": 110
+},
+{
+"step": 278,
+"line": 162
 }
 ],
 "nres_score": 99.954878,
@@ -25128,6 +29488,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 64,
+"line": 33
+},
+{
+"step": 196,
+"line": 180
+},
+{
+"step": 472,
+"line": 162
+},
+{
+"step": 494,
+"line": 110
+}
+],
 "nres_score": 99.640023,
 "nres_ratio": 99.9294,
 "episode_score": 83.768005,
@@ -25208,6 +29587,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 35,
+"line": 81
+},
+{
+"step": 82,
+"line": 88
 }
 ],
 "nres_score": 99.970858,
@@ -25291,6 +29681,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 459,
+"line": 88
+},
+{
+"step": 644,
+"line": 43
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -25368,6 +29769,21 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 237,
+"line": 61
+},
+{
+"step": 253,
+"line": 162
+},
+{
+"step": 893,
+"line": 125
 }
 ],
 "nres_score": 100.0,
@@ -25462,6 +29878,29 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 27,
+"line": 81
+},
+{
+"step": 124,
+"line": 126
+},
+{
+"step": 460,
+"line": 162
+},
+{
+"step": 1505,
+"line": 117
+},
+{
+"step": 1926,
+"line": 93
 }
 ],
 "nres_score": 97.541723,
@@ -25569,6 +30008,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 69,
+"line": 162
+},
+{
+"step": 187,
+"line": 93
+},
+{
+"step": 280,
+"line": 62
+},
+{
+"step": 568,
+"line": 162
+},
+{
+"step": 1282,
+"line": 37
+},
+{
+"step": 1603,
+"line": 106
+}
+],
 "nres_score": 92.295201,
 "nres_ratio": 98.4865,
 "episode_score": 70.809739,
@@ -25663,6 +30129,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 346,
+"line": 33
+},
+{
+"step": 396,
+"line": 110
+},
+{
+"step": 1217,
+"line": 68
+}
+],
 "nres_score": 98.983495,
 "nres_ratio": 99.8006,
 "episode_score": 83.636699,
@@ -25743,6 +30224,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 29,
+"line": 88
+},
+{
+"step": 237,
+"line": 37
 }
 ],
 "nres_score": 99.737997,
@@ -25826,6 +30318,21 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 104,
+"line": 110
+},
+{
+"step": 257,
+"line": 61
+},
+{
+"step": 810,
+"line": 106
 }
 ],
 "nres_score": 94.56386,
@@ -25915,6 +30422,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 25,
+"line": 37
+},
+{
+"step": 183,
+"line": 126
+},
+{
+"step": 575,
+"line": 93
+}
+],
 "nres_score": 98.453181,
 "nres_ratio": 99.6965,
 "episode_score": 83.530636,
@@ -25997,6 +30519,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 39,
+"line": 62
+},
+{
+"step": 102,
+"line": 126
+},
+{
+"step": 607,
+"line": 93
 }
 ],
 "nres_score": 99.522927,
@@ -26082,6 +30619,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 253,
+"line": 160
+},
+{
+"step": 457,
+"line": 117
+},
+{
+"step": 552,
+"line": 93
 }
 ],
 "nres_score": 99.253731,
@@ -26173,6 +30725,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 80,
+"line": 154
+},
+{
+"step": 682,
+"line": 68
+},
+{
+"step": 713,
+"line": 61
+}
+],
 "nres_score": 99.786695,
 "nres_ratio": 99.9582,
 "episode_score": 83.797339,
@@ -26249,6 +30816,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 89,
+"line": 162
+},
+{
+"step": 272,
+"line": 37
 }
 ],
 "nres_score": 97.589364,
@@ -26336,6 +30914,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 8,
+"line": 81
+},
+{
+"step": 205,
+"line": 106
 }
 ],
 "nres_score": 99.030414,
@@ -26426,6 +31015,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 116,
+"line": 61
+},
+{
+"step": 427,
+"line": 106
+}
+],
 "nres_score": 99.944826,
 "nres_ratio": 99.9892,
 "episode_score": 50.848658,
@@ -26507,6 +31107,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 80,
+"line": 154
+},
+{
+"step": 689,
+"line": 162
 }
 ],
 "nres_score": 99.137246,
@@ -26593,6 +31204,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 47,
+"line": 68
+},
+{
+"step": 401,
+"line": 117
+},
+{
+"step": 621,
+"line": 37
 }
 ],
 "nres_score": 96.947777,
@@ -26691,6 +31317,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 157,
+"line": 131
+},
+{
+"step": 245,
+"line": 162
+},
+{
+"step": 400,
+"line": 126
+},
+{
+"step": 859,
+"line": 43
+}
+],
 "nres_score": 99.286221,
 "nres_ratio": 99.86,
 "episode_score": 83.697244,
@@ -26762,6 +31407,13 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 26,
+"line": 162
 }
 ],
 "nres_score": 95.313147,
@@ -26844,6 +31496,17 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 127,
+"line": 37
+},
+{
+"step": 530,
+"line": 68
 }
 ],
 "nres_score": 83.126176,
@@ -26931,6 +31594,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 261,
+"line": 117
+},
+{
+"step": 544,
+"line": 81
+}
+],
 "nres_score": 99.726442,
 "nres_ratio": 99.9463,
 "episode_score": 83.785288,
@@ -27005,6 +31679,13 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 38,
+"line": 43
 }
 ],
 "nres_score": 98.56919,
@@ -27105,6 +31786,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 27,
+"line": 180
+},
+{
+"step": 243,
+"line": 93
+},
+{
+"step": 250,
+"line": 37
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -27188,6 +31884,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 53,
+"line": 93
+},
+{
+"step": 635,
+"line": 81
+},
+{
+"step": 777,
+"line": 154
 }
 ],
 "nres_score": 100.0,
@@ -27284,6 +31995,21 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 110,
+"line": 160
+},
+{
+"step": 112,
+"line": 81
+},
+{
+"step": 303,
+"line": 88
 }
 ],
 "nres_score": 99.328619,
@@ -27389,6 +32115,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 108,
+"line": 136
+},
+{
+"step": 160,
+"line": 117
+},
+{
+"step": 325,
+"line": 81
+},
+{
+"step": 1165,
+"line": 81
+},
+{
+"step": 1642,
+"line": 43
+},
+{
+"step": 1725,
+"line": 61
+}
+],
 "nres_score": 87.745459,
 "nres_ratio": 97.5908,
 "episode_score": 81.389092,
@@ -27486,6 +32239,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 57,
+"line": 37
+},
+{
+"step": 261,
+"line": 154
+},
+{
+"step": 1629,
+"line": 68
+}
+],
 "nres_score": 99.518334,
 "nres_ratio": 99.9055,
 "episode_score": 83.743667,
@@ -27565,6 +32333,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 107,
+"line": 125
+},
+{
+"step": 392,
+"line": 106
+},
+{
+"step": 856,
+"line": 37
 }
 ],
 "nres_score": 98.231948,
@@ -27650,6 +32433,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 69,
+"line": 136
+},
+{
+"step": 154,
+"line": 106
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 36.458503,
@@ -27721,6 +32515,13 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 259,
+"line": 81
 }
 ],
 "nres_score": 96.280422,
@@ -27814,6 +32615,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 20,
+"line": 43
+},
+{
+"step": 270,
+"line": 117
+},
+{
+"step": 527,
+"line": 126
+}
+],
 "nres_score": 99.602234,
 "nres_ratio": 99.922,
 "episode_score": 83.760447,
@@ -27899,6 +32715,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 4,
+"line": 125
+},
+{
+"step": 123,
+"line": 106
+},
+{
+"step": 841,
+"line": 37
+}
+],
 "nres_score": 99.500329,
 "nres_ratio": 99.902,
 "episode_score": 83.740066,
@@ -27973,6 +32804,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 59,
+"line": 81
+},
+{
+"step": 339,
+"line": 162
+},
+{
+"step": 1003,
+"line": 162
 }
 ],
 "nres_score": 99.848007,
@@ -28054,6 +32900,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 166,
+"line": 43
+},
+{
+"step": 583,
+"line": 162
+}
+],
 "nres_score": 95.386619,
 "nres_ratio": 99.0943,
 "episode_score": 82.917324,
@@ -28133,6 +32990,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 127,
+"line": 162
+},
+{
+"step": 364,
+"line": 62
 }
 ],
 "nres_score": 99.283364,
@@ -28218,6 +33086,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 13,
+"line": 125
+},
+{
+"step": 96,
+"line": 43
+},
+{
+"step": 289,
+"line": 68
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -28291,6 +33174,17 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 27,
+"line": 81
+},
+{
+"step": 573,
+"line": 93
 }
 ],
 "nres_score": 98.743082,
@@ -28375,6 +33269,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 78,
+"line": 162
+},
+{
+"step": 330,
+"line": 68
+},
+{
+"step": 399,
+"line": 37
 }
 ],
 "nres_score": 91.680104,
@@ -28465,6 +33374,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 136,
+"line": 136
+},
+{
+"step": 140,
+"line": 106
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 24.526088,
@@ -28543,6 +33463,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 17,
+"line": 162
+},
+{
+"step": 53,
+"line": 43
+},
+{
+"step": 204,
+"line": 154
 }
 ],
 "nres_score": 99.14392,
@@ -28624,6 +33559,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 57,
+"line": 37
+},
+{
+"step": 99,
+"line": 110
+},
+{
+"step": 140,
+"line": 93
 }
 ],
 "nres_score": 100.0,
@@ -28712,6 +33662,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 60,
+"line": 106
+},
+{
+"step": 484,
+"line": 61
+},
+{
+"step": 1234,
+"line": 68
+}
+],
 "nres_score": 97.224725,
 "nres_ratio": 99.4553,
 "episode_score": 83.284945,
@@ -28794,6 +33759,21 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 72,
+"line": 121
+},
+{
+"step": 844,
+"line": 93
+},
+{
+"step": 994,
+"line": 43
 }
 ],
 "nres_score": 98.79294,
@@ -28883,6 +33863,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 311,
+"line": 37
+},
+{
+"step": 384,
+"line": 37
+},
+{
+"step": 487,
+"line": 162
+},
+{
+"step": 655,
+"line": 154
+}
+],
 "nres_score": 95.254462,
 "nres_ratio": 99.0683,
 "episode_score": 82.890892,
@@ -28953,6 +33952,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 10,
+"line": 62
+},
+{
+"step": 521,
+"line": 62
 }
 ],
 "nres_score": 98.51632,
@@ -29039,6 +34049,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 127,
+"line": 37
+},
+{
+"step": 360,
+"line": 125
+}
+],
 "nres_score": 99.672759,
 "nres_ratio": 99.9358,
 "episode_score": 41.583813,
@@ -29122,6 +34143,21 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 94,
+"line": 141
+},
+{
+"step": 228,
+"line": 141
+},
+{
+"step": 558,
+"line": 88
 }
 ],
 "nres_score": 99.826108,
@@ -29220,6 +34256,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 137,
+"line": 162
+},
+{
+"step": 208,
+"line": 121
+},
+{
+"step": 907,
+"line": 61
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 51.017947,
@@ -29309,6 +34360,25 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 71,
+"line": 37
+},
+{
+"step": 209,
+"line": 180
+},
+{
+"step": 585,
+"line": 117
+},
+{
+"step": 1104,
+"line": 162
 }
 ],
 "nres_score": 96.74599,
@@ -29406,6 +34476,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 7,
+"line": 136
+},
+{
+"step": 15,
+"line": 37
+},
+{
+"step": 314,
+"line": 162
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -29490,6 +34575,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 152,
+"line": 131
+},
+{
+"step": 593,
+"line": 61
+},
+{
+"step": 648,
+"line": 162
+}
+],
 "nres_score": 99.925249,
 "nres_ratio": 99.9853,
 "episode_score": 83.82505,
@@ -29569,6 +34669,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 103,
+"line": 126
+},
+{
+"step": 333,
+"line": 37
 }
 ],
 "nres_score": 94.546112,
@@ -29654,6 +34765,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 188,
+"line": 88
+},
+{
+"step": 345,
+"line": 37
 }
 ],
 "nres_score": 100.0,
@@ -29760,6 +34882,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 10,
+"line": 33
+},
+{
+"step": 185,
+"line": 106
+},
+{
+"step": 267,
+"line": 136
+},
+{
+"step": 374,
+"line": 37
+},
+{
+"step": 536,
+"line": 160
+},
+{
+"step": 1358,
+"line": 110
+}
+],
 "nres_score": 96.600884,
 "nres_ratio": 99.3328,
 "episode_score": 83.160177,
@@ -29837,6 +34986,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 99,
+"line": 61
+},
+{
+"step": 255,
+"line": 162
 }
 ],
 "nres_score": 93.276884,
@@ -29919,6 +35079,17 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 11,
+"line": 33
+},
+{
+"step": 43,
+"line": 136
 }
 ],
 "nres_score": 100.0,
@@ -30008,6 +35179,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 88,
+"line": 61
+},
+{
+"step": 100,
+"line": 106
+},
+{
+"step": 353,
+"line": 125
+}
+],
 "nres_score": 99.95213,
 "nres_ratio": 99.9906,
 "episode_score": 83.830426,
@@ -30092,6 +35278,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 179,
+"line": 106
+},
+{
+"step": 426,
+"line": 37
+},
+{
+"step": 489,
+"line": 125
+}
+],
 "nres_score": 99.350407,
 "nres_ratio": 99.8726,
 "episode_score": 83.710081,
@@ -30172,6 +35373,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 29,
+"line": 68
+},
+{
+"step": 449,
+"line": 180
+}
+],
 "nres_score": 98.649166,
 "nres_ratio": 99.7349,
 "episode_score": 83.569833,
@@ -30250,6 +35462,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 205,
+"line": 125
+},
+{
+"step": 1172,
+"line": 37
 }
 ],
 "nres_score": 93.330015,
@@ -30333,6 +35556,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 79,
+"line": 131
+},
+{
+"step": 113,
+"line": 43
 }
 ],
 "nres_score": 99.082686,
@@ -30423,6 +35657,25 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 50,
+"line": 43
+},
+{
+"step": 191,
+"line": 110
+},
+{
+"step": 274,
+"line": 162
+},
+{
+"step": 578,
+"line": 88
 }
 ],
 "nres_score": 90.736785,
@@ -30537,6 +35790,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 108,
+"line": 43
+},
+{
+"step": 596,
+"line": 117
+},
+{
+"step": 922,
+"line": 93
+},
+{
+"step": 1037,
+"line": 121
+},
+{
+"step": 1574,
+"line": 160
+},
+{
+"step": 1775,
+"line": 154
+}
+],
 "nres_score": 96.869167,
 "nres_ratio": 99.3855,
 "episode_score": 83.213833,
@@ -30630,6 +35910,25 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 86,
+"line": 126
+},
+{
+"step": 155,
+"line": 33
+},
+{
+"step": 474,
+"line": 162
+},
+{
+"step": 1395,
+"line": 62
 }
 ],
 "nres_score": 97.003147,
@@ -30730,6 +36029,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 64,
+"line": 61
+},
+{
+"step": 300,
+"line": 106
+},
+{
+"step": 413,
+"line": 160
+},
+{
+"step": 924,
+"line": 61
+},
+{
+"step": 952,
+"line": 131
+}
+],
 "nres_score": 97.027781,
 "nres_ratio": 99.4166,
 "episode_score": 83.245556,
@@ -30815,6 +36137,21 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 3,
+"line": 117
+},
+{
+"step": 46,
+"line": 121
+},
+{
+"step": 358,
+"line": 43
 }
 ],
 "nres_score": 99.18911,
@@ -30920,6 +36257,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 84,
+"line": 131
+},
+{
+"step": 279,
+"line": 88
+},
+{
+"step": 320,
+"line": 136
+},
+{
+"step": 370,
+"line": 43
+},
+{
+"step": 481,
+"line": 136
+}
+],
 "nres_score": 96.472947,
 "nres_ratio": 99.3077,
 "episode_score": 83.134589,
@@ -31009,6 +36369,21 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 22,
+"line": 141
+},
+{
+"step": 355,
+"line": 61
+},
+{
+"step": 988,
+"line": 68
 }
 ],
 "nres_score": 97.911462,
@@ -31109,6 +36484,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 262,
+"line": 162
+},
+{
+"step": 264,
+"line": 154
+},
+{
+"step": 811,
+"line": 43
+}
+],
 "nres_score": 99.99671,
 "nres_ratio": 99.9994,
 "episode_score": 83.839342,
@@ -31196,6 +36586,25 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 28,
+"line": 43
+},
+{
+"step": 74,
+"line": 131
+},
+{
+"step": 325,
+"line": 93
+},
+{
+"step": 818,
+"line": 136
 }
 ],
 "nres_score": 88.845124,
@@ -31287,6 +36696,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 154,
+"line": 106
+},
+{
+"step": 660,
+"line": 160
+},
+{
+"step": 718,
+"line": 93
 }
 ],
 "nres_score": 94.121467,
@@ -31383,6 +36807,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 2,
+"line": 61
+},
+{
+"step": 391,
+"line": 110
+},
+{
+"step": 1954,
+"line": 162
+}
+],
 "nres_score": 99.791915,
 "nres_ratio": 99.9592,
 "episode_score": 83.798383,
@@ -31463,6 +36902,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 212,
+"line": 37
+},
+{
+"step": 302,
+"line": 131
+},
+{
+"step": 367,
+"line": 162
 }
 ],
 "nres_score": 99.296038,
@@ -31568,6 +37022,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 753,
+"line": 37
+},
+{
+"step": 1775,
+"line": 126
+},
+{
+"step": 1858,
+"line": 180
+},
+{
+"step": 1859,
+"line": 93
+},
+{
+"step": 1999,
+"line": 141
+}
+],
 "nres_score": 93.529329,
 "nres_ratio": 98.7292,
 "episode_score": 82.545866,
@@ -31662,6 +37139,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 33,
+"line": 160
+},
+{
+"step": 73,
+"line": 33
+},
+{
+"step": 882,
+"line": 68
+}
+],
 "nres_score": 96.307042,
 "nres_ratio": 99.2751,
 "episode_score": 83.101408,
@@ -31754,6 +37246,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 116,
+"line": 37
+},
+{
+"step": 205,
+"line": 136
+},
+{
+"step": 331,
+"line": 180
+},
+{
+"step": 631,
+"line": 162
+}
+],
 "nres_score": 98.26612,
 "nres_ratio": 99.6598,
 "episode_score": 83.493224,
@@ -31834,6 +37345,17 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 90,
+"line": 62
+},
+{
+"step": 265,
+"line": 93
 }
 ],
 "nres_score": 97.166139,
@@ -31934,6 +37456,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 160,
+"line": 162
+},
+{
+"step": 166,
+"line": 37
+},
+{
+"step": 344,
+"line": 125
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -32016,6 +37553,21 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 112,
+"line": 162
+},
+{
+"step": 212,
+"line": 61
+},
+{
+"step": 266,
+"line": 136
 }
 ],
 "nres_score": 97.931225,
@@ -32112,6 +37664,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 12,
+"line": 61
+},
+{
+"step": 38,
+"line": 136
+},
+{
+"step": 162,
+"line": 93
+}
+],
 "nres_score": 94.560414,
 "nres_ratio": 98.9319,
 "episode_score": 31.540819,
@@ -32199,6 +37766,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 4,
+"line": 62
+},
+{
+"step": 130,
+"line": 141
+},
+{
+"step": 272,
+"line": 162
 }
 ],
 "nres_score": 96.966667,
@@ -32292,6 +37874,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 90,
+"line": 160
+},
+{
+"step": 297,
+"line": 43
+},
+{
+"step": 297,
+"line": 162
+},
+{
+"step": 346,
+"line": 136
+}
+],
 "nres_score": 97.6481,
 "nres_ratio": 99.5384,
 "episode_score": 83.36962,
@@ -32381,6 +37982,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 3,
+"line": 125
+},
+{
+"step": 151,
+"line": 43
+},
+{
+"step": 259,
+"line": 162
+}
+],
 "nres_score": 97.808303,
 "nres_ratio": 99.5699,
 "episode_score": 83.401661,
@@ -32464,6 +38080,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 74,
+"line": 68
+},
+{
+"step": 312,
+"line": 37
+},
+{
+"step": 440,
+"line": 154
 }
 ],
 "nres_score": 97.560507,
@@ -32559,6 +38190,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 198,
+"line": 141
+},
+{
+"step": 210,
+"line": 93
+},
+{
+"step": 440,
+"line": 43
+}
+],
 "nres_score": 95.544485,
 "nres_ratio": 99.1253,
 "episode_score": 82.948897,
@@ -32649,6 +38295,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 66,
+"line": 88
+},
+{
+"step": 147,
+"line": 43
+},
+{
+"step": 389,
+"line": 126
+}
+],
 "nres_score": 98.202092,
 "nres_ratio": 99.6472,
 "episode_score": 41.384633,
@@ -32736,6 +38397,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 77,
+"line": 93
+},
+{
+"step": 346,
+"line": 43
+}
+],
 "nres_score": 99.371581,
 "nres_ratio": 99.8767,
 "episode_score": 83.714316,
@@ -32820,6 +38492,21 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 252,
+"line": 110
+},
+{
+"step": 354,
+"line": 117
+},
+{
+"step": 589,
+"line": 81
 }
 ],
 "nres_score": 87.256598,
@@ -32912,6 +38599,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 87,
+"line": 110
+},
+{
+"step": 520,
+"line": 88
+},
+{
+"step": 1053,
+"line": 81
+}
+],
 "nres_score": 97.123765,
 "nres_ratio": 99.4355,
 "episode_score": 83.264753,
@@ -32991,6 +38693,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 262,
+"line": 68
+},
+{
+"step": 686,
+"line": 43
 }
 ],
 "nres_score": 99.952795,
@@ -33074,6 +38787,21 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 304,
+"line": 162
+},
+{
+"step": 484,
+"line": 126
+},
+{
+"step": 1171,
+"line": 61
 }
 ],
 "nres_score": 97.633061,
@@ -33160,6 +38888,25 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 46,
+"line": 131
+},
+{
+"step": 107,
+"line": 88
+},
+{
+"step": 234,
+"line": 136
+},
+{
+"step": 402,
+"line": 33
 }
 ],
 "nres_score": 96.344528,
@@ -33269,6 +39016,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 60,
+"line": 160
+},
+{
+"step": 121,
+"line": 106
+},
+{
+"step": 128,
+"line": 61
+},
+{
+"step": 617,
+"line": 141
+}
+],
 "nres_score": 99.9352,
 "nres_ratio": 99.9873,
 "episode_score": 83.82704,
@@ -33345,6 +39111,17 @@
 "lines": [
 141
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 7,
+"line": 37
+},
+{
+"step": 52,
+"line": 141
 }
 ],
 "nres_score": 94.605361,
@@ -33433,6 +39210,21 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 86,
+"line": 154
+},
+{
+"step": 323,
+"line": 106
+},
+{
+"step": 471,
+"line": 33
 }
 ],
 "nres_score": 99.67721,
@@ -33525,6 +39317,25 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 129,
+"line": 136
+},
+{
+"step": 473,
+"line": 93
+},
+{
+"step": 813,
+"line": 37
+},
+{
+"step": 1372,
+"line": 88
 }
 ],
 "nres_score": 99.471755,
@@ -33639,6 +39450,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 111,
+"line": 125
+},
+{
+"step": 122,
+"line": 93
+},
+{
+"step": 185,
+"line": 106
+},
+{
+"step": 276,
+"line": 81
+},
+{
+"step": 324,
+"line": 121
+}
+],
 "nres_score": 95.183427,
 "nres_ratio": 99.0543,
 "episode_score": 82.876685,
@@ -33737,6 +39571,29 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 73,
+"line": 126
+},
+{
+"step": 426,
+"line": 43
+},
+{
+"step": 453,
+"line": 136
+},
+{
+"step": 626,
+"line": 162
+},
+{
+"step": 879,
+"line": 61
 }
 ],
 "nres_score": 96.87667,
@@ -33838,6 +39695,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 133,
+"line": 154
+},
+{
+"step": 394,
+"line": 81
+},
+{
+"step": 613,
+"line": 106
+},
+{
+"step": 918,
+"line": 162
+},
+{
+"step": 1136,
+"line": 37
+}
+],
 "nres_score": 99.636135,
 "nres_ratio": 99.9286,
 "episode_score": 83.767227,
@@ -33933,6 +39813,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 137,
+"line": 81
+},
+{
+"step": 392,
+"line": 126
+},
+{
+"step": 510,
+"line": 117
+}
+],
 "nres_score": 98.354099,
 "nres_ratio": 99.677,
 "episode_score": 50.214003,
@@ -34021,6 +39916,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 123,
+"line": 131
+},
+{
+"step": 476,
+"line": 37
+},
+{
+"step": 937,
+"line": 68
+}
+],
 "nres_score": 98.706318,
 "nres_ratio": 99.7462,
 "episode_score": 83.581264,
@@ -34101,6 +40011,17 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 88,
+"line": 136
+},
+{
+"step": 144,
+"line": 93
 }
 ],
 "nres_score": 94.950613,
@@ -34213,6 +40134,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 261,
+"line": 160
+},
+{
+"step": 343,
+"line": 162
+},
+{
+"step": 357,
+"line": 81
+},
+{
+"step": 384,
+"line": 131
+}
+],
 "nres_score": 97.616151,
 "nres_ratio": 99.5322,
 "episode_score": 83.36323,
@@ -34300,6 +40240,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 77,
+"line": 61
+},
+{
+"step": 296,
+"line": 162
+},
+{
+"step": 330,
+"line": 125
+}
+],
 "nres_score": 90.913049,
 "nres_ratio": 98.2146,
 "episode_score": 82.02261,
@@ -34379,6 +40334,13 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 28,
+"line": 136
 }
 ],
 "nres_score": 97.754066,
@@ -34483,6 +40445,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 38,
+"line": 88
+},
+{
+"step": 262,
+"line": 126
+},
+{
+"step": 283,
+"line": 61
+}
+],
 "nres_score": 99.708765,
 "nres_ratio": 99.9429,
 "episode_score": 83.781753,
@@ -34565,6 +40542,17 @@
 "lines": [
 110
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 142,
+"line": 162
+},
+{
+"step": 388,
+"line": 110
 }
 ],
 "nres_score": 100.0,
@@ -34662,6 +40650,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 91,
+"line": 61
+},
+{
+"step": 97,
+"line": 126
+},
+{
+"step": 322,
+"line": 88
+}
+],
 "nres_score": 97.666836,
 "nres_ratio": 99.5421,
 "episode_score": 83.373367,
@@ -34756,6 +40759,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 43,
+"line": 81
+},
+{
+"step": 135,
+"line": 154
+},
+{
+"step": 427,
+"line": 93
+},
+{
+"step": 748,
+"line": 106
+}
+],
 "nres_score": 94.147986,
 "nres_ratio": 98.8508,
 "episode_score": 82.669597,
@@ -34841,6 +40863,17 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 26,
+"line": 68
+},
+{
+"step": 245,
+"line": 154
 }
 ],
 "nres_score": 97.647114,
@@ -34935,6 +40968,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 148,
+"line": 106
+},
+{
+"step": 568,
+"line": 110
+},
+{
+"step": 749,
+"line": 37
+}
+],
 "nres_score": 96.039823,
 "nres_ratio": 99.2226,
 "episode_score": 83.047965,
@@ -35012,6 +41060,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 32,
+"line": 162
+},
+{
+"step": 962,
+"line": 62
 }
 ],
 "nres_score": 98.817415,
@@ -35110,6 +41169,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 3,
+"line": 33
+},
+{
+"step": 25,
+"line": 93
+},
+{
+"step": 160,
+"line": 154
+}
+],
 "nres_score": 99.893904,
 "nres_ratio": 99.9792,
 "episode_score": 83.818781,
@@ -35194,6 +41268,21 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 19,
+"line": 88
+},
+{
+"step": 117,
+"line": 110
+},
+{
+"step": 292,
+"line": 61
 }
 ],
 "nres_score": 91.713714,
@@ -35296,6 +41385,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 31,
+"line": 180
+},
+{
+"step": 237,
+"line": 37
+},
+{
+"step": 358,
+"line": 88
+},
+{
+"step": 525,
+"line": 180
+}
+],
 "nres_score": 99.721646,
 "nres_ratio": 99.9454,
 "episode_score": 83.784329,
@@ -35385,6 +41493,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 34,
+"line": 43
+},
+{
+"step": 88,
+"line": 160
+},
+{
+"step": 224,
+"line": 33
+}
+],
 "nres_score": 96.713915,
 "nres_ratio": 99.355,
 "episode_score": 83.182783,
@@ -35464,6 +41587,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 64,
+"line": 136
+},
+{
+"step": 539,
+"line": 81
 }
 ],
 "nres_score": 89.396148,
@@ -35575,6 +41709,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 93,
+"line": 126
+},
+{
+"step": 154,
+"line": 110
+},
+{
+"step": 169,
+"line": 68
+},
+{
+"step": 430,
+"line": 43
+}
+],
 "nres_score": 99.151964,
 "nres_ratio": 99.8336,
 "episode_score": 83.670393,
@@ -35661,6 +41814,21 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 109,
+"line": 81
+},
+{
+"step": 200,
+"line": 125
+},
+{
+"step": 763,
+"line": 88
 }
 ],
 "nres_score": 99.779603,
@@ -35766,6 +41934,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 88,
+"line": 81
+},
+{
+"step": 282,
+"line": 180
+},
+{
+"step": 414,
+"line": 126
+},
+{
+"step": 517,
+"line": 93
+},
+{
+"step": 1486,
+"line": 162
+},
+{
+"step": 1779,
+"line": 106
+}
+],
 "nres_score": 98.136292,
 "nres_ratio": 99.6343,
 "episode_score": 83.467258,
@@ -35853,6 +42048,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 175,
+"line": 43
+},
+{
+"step": 213,
+"line": 117
+},
+{
+"step": 920,
+"line": 131
+}
+],
 "nres_score": 92.95505,
 "nres_ratio": 98.6163,
 "episode_score": 82.43101,
@@ -35930,6 +42140,13 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 114,
+"line": 106
 }
 ],
 "nres_score": 87.807176,
@@ -36012,6 +42229,13 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 87,
+"line": 93
 }
 ],
 "nres_score": 81.192035,
@@ -36103,6 +42327,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 3,
+"line": 68
+},
+{
+"step": 74,
+"line": 37
+}
+],
 "nres_score": 96.684999,
 "nres_ratio": 99.3493,
 "episode_score": 83.177,
@@ -36184,6 +42419,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 164,
+"line": 121
+},
+{
+"step": 644,
+"line": 33
+},
+{
+"step": 867,
+"line": 37
 }
 ],
 "nres_score": 97.024201,
@@ -36287,6 +42537,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 22,
+"line": 180
+},
+{
+"step": 428,
+"line": 33
+},
+{
+"step": 590,
+"line": 162
+},
+{
+"step": 1232,
+"line": 180
+}
+],
 "nres_score": 91.462115,
 "nres_ratio": 98.3226,
 "episode_score": 82.132423,
@@ -36373,6 +42642,21 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 84,
+"line": 154
+},
+{
+"step": 264,
+"line": 37
+},
+{
+"step": 825,
+"line": 106
 }
 ],
 "nres_score": 92.074949,
@@ -36463,6 +42747,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 2,
+"line": 141
+},
+{
+"step": 56,
+"line": 43
+},
+{
+"step": 202,
+"line": 136
+}
+],
 "nres_score": 97.19065,
 "nres_ratio": 99.4486,
 "episode_score": 83.27813,
@@ -36550,6 +42849,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 362,
+"line": 88
+},
+{
+"step": 484,
+"line": 93
+},
+{
+"step": 650,
+"line": 37
 }
 ],
 "nres_score": 97.669498,
@@ -36644,6 +42958,25 @@
 "lines": [
 117
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 174,
+"line": 180
+},
+{
+"step": 351,
+"line": 88
+},
+{
+"step": 588,
+"line": 43
+},
+{
+"step": 1089,
+"line": 117
 }
 ],
 "nres_score": 95.61746,
@@ -36753,6 +43086,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 109,
+"line": 37
+},
+{
+"step": 215,
+"line": 106
+},
+{
+"step": 237,
+"line": 131
+},
+{
+"step": 637,
+"line": 154
+},
+{
+"step": 753,
+"line": 126
+}
+],
 "nres_score": 97.136871,
 "nres_ratio": 99.4381,
 "episode_score": 83.267374,
@@ -36844,6 +43200,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 5,
+"line": 43
+},
+{
+"step": 126,
+"line": 93
+},
+{
+"step": 344,
+"line": 141
+}
+],
 "nres_score": 99.432875,
 "nres_ratio": 99.8887,
 "episode_score": 83.726575,
@@ -36929,6 +43300,21 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 48,
+"line": 162
+},
+{
+"step": 219,
+"line": 81
+},
+{
+"step": 695,
+"line": 88
 }
 ],
 "nres_score": 92.003171,
@@ -37033,6 +43419,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 134,
+"line": 61
+},
+{
+"step": 182,
+"line": 106
+},
+{
+"step": 249,
+"line": 110
+},
+{
+"step": 755,
+"line": 93
+}
+],
 "nres_score": 90.425847,
 "nres_ratio": 98.1187,
 "episode_score": 81.925169,
@@ -37122,6 +43527,21 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 13,
+"line": 106
+},
+{
+"step": 383,
+"line": 110
+},
+{
+"step": 635,
+"line": 62
 }
 ],
 "nres_score": 98.86585,
@@ -37219,6 +43639,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 130,
+"line": 121
+},
+{
+"step": 331,
+"line": 117
+},
+{
+"step": 426,
+"line": 61
+},
+{
+"step": 824,
+"line": 93
+}
+],
 "nres_score": 81.489669,
 "nres_ratio": 96.3569,
 "episode_score": 80.137934,
@@ -37305,6 +43744,13 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 14,
+"line": 43
 }
 ],
 "nres_score": 92.106787,
@@ -37409,6 +43855,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 18,
+"line": 37
+},
+{
+"step": 26,
+"line": 125
+},
+{
+"step": 184,
+"line": 106
+}
+],
 "nres_score": 88.119745,
 "nres_ratio": 97.6646,
 "episode_score": 81.463949,
@@ -37497,6 +43958,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 4,
+"line": 37
+},
+{
+"step": 100,
+"line": 180
+},
+{
+"step": 192,
+"line": 68
+}
+],
 "nres_score": 90.597404,
 "nres_ratio": 98.1525,
 "episode_score": 81.959481,
@@ -37583,6 +44059,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 46,
+"line": 106
+},
+{
+"step": 118,
+"line": 81
 }
 ],
 "nres_score": 97.085251,
@@ -37675,6 +44162,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 27,
+"line": 160
+},
+{
+"step": 201,
+"line": 162
+},
+{
+"step": 236,
+"line": 43
+},
+{
+"step": 337,
+"line": 141
+}
+],
 "nres_score": 96.244027,
 "nres_ratio": 99.2627,
 "episode_score": 83.088805,
@@ -37765,6 +44271,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 3,
+"line": 117
+},
+{
+"step": 387,
+"line": 136
+},
+{
+"step": 792,
+"line": 93
+}
+],
 "nres_score": 97.636168,
 "nres_ratio": 99.5361,
 "episode_score": 83.367234,
@@ -37845,6 +44366,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 114,
+"line": 162
+},
+{
+"step": 617,
+"line": 81
 }
 ],
 "nres_score": 97.913127,
@@ -37938,6 +44470,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 58,
+"line": 33
+},
+{
+"step": 213,
+"line": 43
+},
+{
+"step": 378,
+"line": 121
+}
+],
 "nres_score": 99.516936,
 "nres_ratio": 99.9052,
 "episode_score": 32.43717,
@@ -38026,6 +44573,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 22,
+"line": 37
+},
+{
+"step": 138,
+"line": 121
+},
+{
+"step": 391,
+"line": 88
+}
+],
 "nres_score": 98.363363,
 "nres_ratio": 99.6789,
 "episode_score": 83.512673,
@@ -38103,6 +44665,13 @@
 ]
 }
 ],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 54,
+"line": 61
+}
+],
 "nres_score": 99.509197,
 "nres_ratio": 99.9037,
 "episode_score": 83.741839,
@@ -38175,6 +44744,8 @@
 "grace_steps": 249,
 "n_attacks": 0,
 "attacks": [],
+"n_attack_onsets": 0,
+"attack_onsets": [],
 "nres_score": 99.999395,
 "nres_ratio": 99.9999,
 "episode_score": 41.712442,
@@ -38268,6 +44839,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 8,
+"line": 136
+},
+{
+"step": 86,
+"line": 43
+},
+{
+"step": 526,
+"line": 106
+}
+],
 "nres_score": 84.610518,
 "nres_ratio": 96.9728,
 "episode_score": 38.666318,
@@ -38357,6 +44943,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 359,
+"line": 136
+},
+{
+"step": 424,
+"line": 61
+}
+],
 "nres_score": 98.760969,
 "nres_ratio": 99.7569,
 "episode_score": 83.592194,
@@ -38443,6 +45040,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 42,
+"line": 33
+},
+{
+"step": 520,
+"line": 106
 }
 ],
 "nres_score": 95.122997,
@@ -38538,6 +45146,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 132,
+"line": 180
+},
+{
+"step": 136,
+"line": 68
+},
+{
+"step": 440,
+"line": 61
+}
+],
 "nres_score": 99.763644,
 "nres_ratio": 99.9536,
 "episode_score": 83.792729,
@@ -38622,6 +45245,21 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 97,
+"line": 37
+},
+{
+"step": 518,
+"line": 162
+},
+{
+"step": 653,
+"line": 125
 }
 ],
 "nres_score": 95.668206,
@@ -38725,6 +45363,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 62,
+"line": 125
+},
+{
+"step": 64,
+"line": 62
+},
+{
+"step": 130,
+"line": 162
+},
+{
+"step": 294,
+"line": 43
+}
+],
 "nres_score": 92.607905,
 "nres_ratio": 98.548,
 "episode_score": 82.361581,
@@ -38805,6 +45462,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 124,
+"line": 141
+},
+{
+"step": 254,
+"line": 88
 }
 ],
 "nres_score": 99.963812,
@@ -38896,6 +45564,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 120,
+"line": 154
+},
+{
+"step": 437,
+"line": 106
+},
+{
+"step": 542,
+"line": 37
+}
+],
 "nres_score": 95.535603,
 "nres_ratio": 99.1235,
 "episode_score": 82.947121,
@@ -38977,6 +45660,17 @@
 "lines": [
 117
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 114,
+"line": 43
+},
+{
+"step": 191,
+"line": 117
 }
 ],
 "nres_score": 90.858967,
@@ -39079,6 +45773,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 60,
+"line": 180
+},
+{
+"step": 87,
+"line": 162
+},
+{
+"step": 1242,
+"line": 33
+},
+{
+"step": 1894,
+"line": 62
+}
+],
 "nres_score": 90.136327,
 "nres_ratio": 98.0617,
 "episode_score": 81.867265,
@@ -39168,6 +45881,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 214,
+"line": 162
+},
+{
+"step": 395,
+"line": 81
 }
 ],
 "nres_score": 94.838871,
@@ -39269,6 +45993,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 142,
+"line": 154
+},
+{
+"step": 156,
+"line": 37
+},
+{
+"step": 360,
+"line": 162
+}
+],
 "nres_score": 92.39039,
 "nres_ratio": 98.5052,
 "episode_score": 82.318078,
@@ -39358,6 +46097,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 11,
+"line": 88
+},
+{
+"step": 105,
+"line": 154
+},
+{
+"step": 297,
+"line": 37
 }
 ],
 "nres_score": 98.9834,
@@ -39467,6 +46221,33 @@
 "lines": [
 110
 ]
+}
+],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 82,
+"line": 121
+},
+{
+"step": 253,
+"line": 61
+},
+{
+"step": 448,
+"line": 33
+},
+{
+"step": 634,
+"line": 162
+},
+{
+"step": 648,
+"line": 43
+},
+{
+"step": 1012,
+"line": 110
 }
 ],
 "nres_score": 90.98462,
@@ -39581,6 +46362,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 176,
+"line": 62
+},
+{
+"step": 372,
+"line": 162
+},
+{
+"step": 389,
+"line": 154
+},
+{
+"step": 949,
+"line": 162
+},
+{
+"step": 1498,
+"line": 81
+}
+],
 "nres_score": 98.598339,
 "nres_ratio": 99.725,
 "episode_score": 83.559668,
@@ -39672,6 +46476,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 102,
+"line": 106
+},
+{
+"step": 170,
+"line": 125
+},
+{
+"step": 522,
+"line": 43
+}
+],
 "nres_score": 90.634934,
 "nres_ratio": 98.1598,
 "episode_score": 81.966987,
@@ -39759,6 +46578,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 3,
+"line": 61
+},
+{
+"step": 103,
+"line": 126
+},
+{
+"step": 349,
+"line": 93
 }
 ],
 "nres_score": 92.016102,
@@ -39857,6 +46691,25 @@
 "lines": [
 110
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 115,
+"line": 141
+},
+{
+"step": 332,
+"line": 106
+},
+{
+"step": 699,
+"line": 33
+},
+{
+"step": 1203,
+"line": 110
 }
 ],
 "nres_score": 98.006124,
@@ -39961,6 +46814,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 125,
+"line": 162
+},
+{
+"step": 141,
+"line": 126
+},
+{
+"step": 908,
+"line": 37
+}
+],
 "nres_score": 96.020747,
 "nres_ratio": 99.2189,
 "episode_score": 83.044149,
@@ -40046,6 +46914,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 304,
+"line": 81
+},
+{
+"step": 360,
+"line": 136
+},
+{
+"step": 900,
+"line": 154
 }
 ],
 "nres_score": 99.821797,
@@ -40143,6 +47026,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 55,
+"line": 117
+},
+{
+"step": 534,
+"line": 37
+},
+{
+"step": 794,
+"line": 131
+},
+{
+"step": 1100,
+"line": 125
+}
+],
 "nres_score": 97.851328,
 "nres_ratio": 99.5783,
 "episode_score": 83.410266,
@@ -40228,6 +47130,21 @@
 "lines": [
 141
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 41,
+"line": 33
+},
+{
+"step": 120,
+"line": 106
+},
+{
+"step": 180,
+"line": 141
 }
 ],
 "nres_score": 99.954965,
@@ -40317,6 +47234,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 33,
+"line": 62
+},
+{
+"step": 185,
+"line": 126
+},
+{
+"step": 337,
+"line": 93
+}
+],
 "nres_score": 96.991376,
 "nres_ratio": 99.4095,
 "episode_score": 83.238275,
@@ -40402,6 +47334,21 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 311,
+"line": 125
+},
+{
+"step": 641,
+"line": 62
+},
+{
+"step": 770,
+"line": 106
 }
 ],
 "nres_score": 94.023431,
@@ -40497,6 +47444,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 31,
+"line": 37
+},
+{
+"step": 342,
+"line": 162
+},
+{
+"step": 433,
+"line": 106
+},
+{
+"step": 1272,
+"line": 154
+}
+],
 "nres_score": 99.844543,
 "nres_ratio": 99.9695,
 "episode_score": 83.808909,
@@ -40578,6 +47544,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 259,
+"line": 131
+},
+{
+"step": 987,
+"line": 37
 }
 ],
 "nres_score": 97.738044,
@@ -40679,6 +47656,29 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 105,
+"line": 160
+},
+{
+"step": 121,
+"line": 106
+},
+{
+"step": 345,
+"line": 61
+},
+{
+"step": 661,
+"line": 93
+},
+{
+"step": 1047,
+"line": 136
 }
 ],
 "nres_score": 98.354371,
@@ -40785,6 +47785,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 4,
+"line": 136
+},
+{
+"step": 172,
+"line": 61
+},
+{
+"step": 316,
+"line": 93
+},
+{
+"step": 358,
+"line": 141
+}
+],
 "nres_score": 99.702913,
 "nres_ratio": 99.9417,
 "episode_score": 83.780583,
@@ -40866,6 +47885,17 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 170,
+"line": 141
+},
+{
+"step": 1209,
+"line": 93
 }
 ],
 "nres_score": 97.593302,
@@ -40971,6 +48001,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 180,
+"line": 43
+},
+{
+"step": 277,
+"line": 136
+},
+{
+"step": 477,
+"line": 117
+},
+{
+"step": 957,
+"line": 141
+},
+{
+"step": 1000,
+"line": 162
+}
+],
 "nres_score": 86.785022,
 "nres_ratio": 97.4016,
 "episode_score": 81.197004,
@@ -41060,6 +48113,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 19,
+"line": 37
+},
+{
+"step": 246,
+"line": 93
+}
+],
 "nres_score": 96.160518,
 "nres_ratio": 99.2463,
 "episode_score": 83.072104,
@@ -41139,6 +48203,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 116,
+"line": 180
+},
+{
+"step": 580,
+"line": 162
 }
 ],
 "nres_score": 97.360896,
@@ -41237,6 +48312,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 78,
+"line": 88
+},
+{
+"step": 635,
+"line": 141
+},
+{
+"step": 741,
+"line": 33
+},
+{
+"step": 880,
+"line": 37
+}
+],
 "nres_score": 98.068808,
 "nres_ratio": 99.621,
 "episode_score": 83.453762,
@@ -41325,6 +48419,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 120,
+"line": 81
+},
+{
+"step": 380,
+"line": 37
+},
+{
+"step": 425,
+"line": 162
 }
 ],
 "nres_score": 98.293773,
@@ -41434,6 +48543,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 11,
+"line": 37
+},
+{
+"step": 323,
+"line": 136
+},
+{
+"step": 337,
+"line": 117
+},
+{
+"step": 731,
+"line": 125
+},
+{
+"step": 973,
+"line": 88
+}
+],
 "nres_score": 93.695828,
 "nres_ratio": 98.762,
 "episode_score": 82.579166,
@@ -41529,6 +48661,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 29,
+"line": 37
+},
+{
+"step": 39,
+"line": 141
+},
+{
+"step": 690,
+"line": 117
+}
+],
 "nres_score": 96.347874,
 "nres_ratio": 99.2831,
 "episode_score": 83.109575,
@@ -41619,6 +48766,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 177,
+"line": 37
+},
+{
+"step": 396,
+"line": 106
 }
 ],
 "nres_score": 98.808696,
@@ -41720,6 +48878,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 88,
+"line": 126
+},
+{
+"step": 92,
+"line": 62
+},
+{
+"step": 133,
+"line": 106
+}
+],
 "nres_score": 98.990985,
 "nres_ratio": 99.802,
 "episode_score": 83.638197,
@@ -41807,6 +48980,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 22,
+"line": 125
+},
+{
+"step": 27,
+"line": 37
 }
 ],
 "nres_score": 88.163675,
@@ -41904,6 +49088,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 385,
+"line": 62
+},
+{
+"step": 421,
+"line": 37
+},
+{
+"step": 1156,
+"line": 106
+}
+],
 "nres_score": 98.301441,
 "nres_ratio": 99.6667,
 "episode_score": 83.500288,
@@ -41985,6 +49184,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 196,
+"line": 93
+},
+{
+"step": 696,
+"line": 43
+}
+],
 "nres_score": 91.244316,
 "nres_ratio": 98.2798,
 "episode_score": 82.088863,
@@ -42060,6 +49270,13 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 41,
+"line": 81
 }
 ],
 "nres_score": 99.115918,
@@ -42145,6 +49362,29 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 224,
+"line": 154
+},
+{
+"step": 316,
+"line": 37
+},
+{
+"step": 790,
+"line": 37
+},
+{
+"step": 1217,
+"line": 37
+},
+{
+"step": 1927,
+"line": 43
 }
 ],
 "nres_score": 96.24098,
@@ -42236,6 +49476,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 63,
+"line": 117
+},
+{
+"step": 157,
+"line": 37
+}
+],
 "nres_score": 99.649641,
 "nres_ratio": 99.9313,
 "episode_score": 83.769928,
@@ -42323,6 +49574,21 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 22,
+"line": 81
+},
+{
+"step": 100,
+"line": 88
+},
+{
+"step": 304,
+"line": 136
 }
 ],
 "nres_score": 92.055196,
@@ -42429,6 +49695,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 118,
+"line": 43
+},
+{
+"step": 321,
+"line": 136
+},
+{
+"step": 335,
+"line": 68
+}
+],
 "nres_score": 99.821911,
 "nres_ratio": 99.9651,
 "episode_score": 69.909608,
@@ -42532,6 +49813,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 249,
+"line": 37
+},
+{
+"step": 251,
+"line": 93
+},
+{
+"step": 255,
+"line": 180
+}
+],
 "nres_score": 92.244938,
 "nres_ratio": 98.4766,
 "episode_score": 82.288988,
@@ -42620,6 +49916,21 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 143,
+"line": 110
+},
+{
+"step": 210,
+"line": 117
+},
+{
+"step": 446,
+"line": 33
 }
 ],
 "nres_score": 98.675932,
@@ -42721,6 +50032,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 10,
+"line": 106
+},
+{
+"step": 33,
+"line": 61
+},
+{
+"step": 399,
+"line": 121
+},
+{
+"step": 476,
+"line": 43
+}
+],
 "nres_score": 99.795958,
 "nres_ratio": 99.96,
 "episode_score": 83.799192,
@@ -42807,6 +50137,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 122,
+"line": 154
+},
+{
+"step": 254,
+"line": 88
+},
+{
+"step": 329,
+"line": 37
+}
+],
 "nres_score": 97.123528,
 "nres_ratio": 99.4354,
 "episode_score": 83.264706,
@@ -42890,6 +50235,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 151,
+"line": 33
+},
+{
+"step": 351,
+"line": 88
 }
 ],
 "nres_score": 96.086622,
@@ -42986,6 +50342,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 9,
+"line": 61
+},
+{
+"step": 29,
+"line": 110
+},
+{
+"step": 65,
+"line": 93
 }
 ],
 "nres_score": 89.333355,
@@ -43089,6 +50460,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 73,
+"line": 62
+},
+{
+"step": 162,
+"line": 131
+},
+{
+"step": 365,
+"line": 106
+},
+{
+"step": 435,
+"line": 37
+}
+],
 "nres_score": 99.26742,
 "nres_ratio": 99.8563,
 "episode_score": 83.693484,
@@ -43189,6 +50579,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 22,
+"line": 162
+},
+{
+"step": 46,
+"line": 136
+},
+{
+"step": 93,
+"line": 61
+},
+{
+"step": 507,
+"line": 33
+},
+{
+"step": 1817,
+"line": 81
+}
+],
 "nres_score": 95.700434,
 "nres_ratio": 99.1559,
 "episode_score": 78.960414,
@@ -43283,6 +50696,25 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 238,
+"line": 62
+},
+{
+"step": 475,
+"line": 93
+},
+{
+"step": 538,
+"line": 37
+},
+{
+"step": 1082,
+"line": 126
 }
 ],
 "nres_score": 92.364373,
@@ -43382,6 +50814,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 117,
+"line": 160
+},
+{
+"step": 119,
+"line": 93
+},
+{
+"step": 255,
+"line": 81
+}
+],
 "nres_score": 95.163325,
 "nres_ratio": 99.0504,
 "episode_score": 82.872665,
@@ -43473,6 +50920,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 61,
+"line": 81
+},
+{
+"step": 134,
+"line": 110
+},
+{
+"step": 787,
+"line": 68
+}
+],
 "nres_score": 99.821215,
 "nres_ratio": 99.9649,
 "episode_score": 83.804243,
@@ -43552,6 +51014,17 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 46,
+"line": 154
+},
+{
+"step": 1092,
+"line": 68
 }
 ],
 "nres_score": 99.701004,
@@ -43635,6 +51108,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 234,
+"line": 106
+},
+{
+"step": 739,
+"line": 61
 }
 ],
 "nres_score": 96.02534,
@@ -43741,6 +51225,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 103,
+"line": 117
+},
+{
+"step": 111,
+"line": 154
+},
+{
+"step": 697,
+"line": 37
+}
+],
 "nres_score": 99.593636,
 "nres_ratio": 99.9203,
 "episode_score": 83.758727,
@@ -43836,6 +51335,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 15,
+"line": 37
+},
+{
+"step": 181,
+"line": 125
+},
+{
+"step": 405,
+"line": 106
+}
+],
 "nres_score": 99.152425,
 "nres_ratio": 99.8337,
 "episode_score": 83.670485,
@@ -43925,6 +51439,25 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 97,
+"line": 61
+},
+{
+"step": 169,
+"line": 106
+},
+{
+"step": 218,
+"line": 117
+},
+{
+"step": 565,
+"line": 125
 }
 ],
 "nres_score": 92.188526,
@@ -44018,6 +51551,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 43,
+"line": 93
+},
+{
+"step": 542,
+"line": 61
+},
+{
+"step": 643,
+"line": 121
+}
+],
 "nres_score": 99.999126,
 "nres_ratio": 99.9998,
 "episode_score": 83.839825,
@@ -44096,6 +51644,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 365,
+"line": 125
+},
+{
+"step": 744,
+"line": 106
 }
 ],
 "nres_score": 98.870778,
@@ -44182,6 +51741,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 155,
+"line": 106
+},
+{
+"step": 245,
+"line": 121
+},
+{
+"step": 588,
+"line": 37
 }
 ],
 "nres_score": 98.227735,
@@ -44285,6 +51859,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 51,
+"line": 93
+},
+{
+"step": 137,
+"line": 43
+},
+{
+"step": 292,
+"line": 154
+},
+{
+"step": 453,
+"line": 43
+}
+],
 "nres_score": 97.375035,
 "nres_ratio": 99.4848,
 "episode_score": 41.219221,
@@ -44375,6 +51968,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 29,
+"line": 162
+},
+{
+"step": 180,
+"line": 154
+},
+{
+"step": 539,
+"line": 61
+}
+],
 "nres_score": 97.669077,
 "nres_ratio": 99.5426,
 "episode_score": 83.373815,
@@ -44451,6 +52059,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 158,
+"line": 43
+},
+{
+"step": 211,
+"line": 106
 }
 ],
 "nres_score": 97.046549,
@@ -44555,6 +52174,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 64,
+"line": 106
+},
+{
+"step": 376,
+"line": 154
+},
+{
+"step": 568,
+"line": 81
+},
+{
+"step": 587,
+"line": 117
+}
+],
 "nres_score": 99.796647,
 "nres_ratio": 99.9601,
 "episode_score": 83.799329,
@@ -44639,6 +52277,21 @@
 "lines": [
 180
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 70,
+"line": 106
+},
+{
+"step": 177,
+"line": 43
+},
+{
+"step": 647,
+"line": 180
 }
 ],
 "nres_score": 97.342018,
@@ -44730,6 +52383,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 135,
+"line": 37
+},
+{
+"step": 344,
+"line": 136
+},
+{
+"step": 1369,
+"line": 81
+}
+],
 "nres_score": 99.130504,
 "nres_ratio": 99.8294,
 "episode_score": 83.666101,
@@ -44819,6 +52487,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 355,
+"line": 61
+},
+{
+"step": 560,
+"line": 93
+},
+{
+"step": 926,
+"line": 154
 }
 ],
 "nres_score": 94.0004,
@@ -44917,6 +52600,25 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 75,
+"line": 93
+},
+{
+"step": 287,
+"line": 154
+},
+{
+"step": 496,
+"line": 33
+},
+{
+"step": 1303,
+"line": 126
 }
 ],
 "nres_score": 94.889815,
@@ -45026,6 +52728,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 32,
+"line": 61
+},
+{
+"step": 35,
+"line": 106
+},
+{
+"step": 384,
+"line": 141
+},
+{
+"step": 1724,
+"line": 43
+}
+],
 "nres_score": 96.728587,
 "nres_ratio": 99.3579,
 "episode_score": 83.185717,
@@ -45109,6 +52830,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 258,
+"line": 162
+},
+{
+"step": 365,
+"line": 37
 }
 ],
 "nres_score": 91.469434,
@@ -45197,6 +52929,25 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 41,
+"line": 136
+},
+{
+"step": 143,
+"line": 162
+},
+{
+"step": 516,
+"line": 162
+},
+{
+"step": 1093,
+"line": 93
 }
 ],
 "nres_score": 99.239021,
@@ -45306,6 +53057,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 75,
+"line": 154
+},
+{
+"step": 88,
+"line": 106
+},
+{
+"step": 356,
+"line": 37
+},
+{
+"step": 380,
+"line": 125
+}
+],
 "nres_score": 99.90798,
 "nres_ratio": 99.9819,
 "episode_score": 83.821596,
@@ -45391,6 +53161,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 303,
+"line": 81
+},
+{
+"step": 663,
+"line": 93
+},
+{
+"step": 947,
+"line": 162
 }
 ],
 "nres_score": 99.901333,
@@ -45488,6 +53273,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 77,
+"line": 154
+},
+{
+"step": 142,
+"line": 88
+},
+{
+"step": 190,
+"line": 43
+},
+{
+"step": 929,
+"line": 141
+}
+],
 "nres_score": 97.541856,
 "nres_ratio": 99.5176,
 "episode_score": 83.348371,
@@ -45568,6 +53372,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 340,
+"line": 162
+},
+{
+"step": 1009,
+"line": 81
 }
 ],
 "nres_score": 98.301849,
@@ -45662,6 +53477,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 4,
+"line": 136
+},
+{
+"step": 105,
+"line": 62
+},
+{
+"step": 132,
+"line": 43
+},
+{
+"step": 234,
+"line": 88
+}
+],
 "nres_score": 98.816613,
 "nres_ratio": 99.7678,
 "episode_score": 83.603323,
@@ -45749,6 +53583,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 47,
+"line": 37
+},
+{
+"step": 340,
+"line": 125
+},
+{
+"step": 412,
+"line": 93
 }
 ],
 "nres_score": 84.911682,
@@ -45861,6 +53710,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 199,
+"line": 117
+},
+{
+"step": 237,
+"line": 154
+},
+{
+"step": 516,
+"line": 37
+},
+{
+"step": 899,
+"line": 121
+}
+],
 "nres_score": 98.494321,
 "nres_ratio": 99.7046,
 "episode_score": 60.750168,
@@ -45933,6 +53801,13 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 88,
+"line": 37
 }
 ],
 "nres_score": 98.732136,
@@ -46025,6 +53900,25 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 10,
+"line": 106
+},
+{
+"step": 447,
+"line": 131
+},
+{
+"step": 476,
+"line": 43
+},
+{
+"step": 923,
+"line": 162
 }
 ],
 "nres_score": 95.042469,
@@ -46128,6 +54022,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 52,
+"line": 68
+},
+{
+"step": 54,
+"line": 180
+},
+{
+"step": 95,
+"line": 81
+}
+],
 "nres_score": 98.87297,
 "nres_ratio": 99.7789,
 "episode_score": 83.614594,
@@ -46221,6 +54130,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 73,
+"line": 162
+},
+{
+"step": 300,
+"line": 37
+},
+{
+"step": 871,
+"line": 136
+}
+],
 "nres_score": 97.624112,
 "nres_ratio": 99.5337,
 "episode_score": 83.364822,
@@ -46312,6 +54236,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 22,
+"line": 125
+},
+{
+"step": 105,
+"line": 106
+},
+{
+"step": 137,
+"line": 43
+}
+],
 "nres_score": 99.925476,
 "nres_ratio": 99.9854,
 "episode_score": 78.665988,
@@ -46401,6 +54340,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 96,
+"line": 110
+},
+{
+"step": 109,
+"line": 37
+}
+],
 "nres_score": 97.653571,
 "nres_ratio": 99.5395,
 "episode_score": 83.370714,
@@ -46481,6 +54431,17 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 395,
+"line": 136
+},
+{
+"step": 402,
+"line": 61
 }
 ],
 "nres_score": 99.113407,
@@ -46579,6 +54540,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 114,
+"line": 180
+},
+{
+"step": 288,
+"line": 93
+},
+{
+"step": 487,
+"line": 110
+},
+{
+"step": 961,
+"line": 37
+}
+],
 "nres_score": 99.572452,
 "nres_ratio": 99.9161,
 "episode_score": 83.75449,
@@ -46657,6 +54637,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 170,
+"line": 88
+},
+{
+"step": 645,
+"line": 61
 }
 ],
 "nres_score": 98.261578,
@@ -46753,6 +54744,25 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 192,
+"line": 162
+},
+{
+"step": 1055,
+"line": 81
+},
+{
+"step": 1231,
+"line": 61
+},
+{
+"step": 1857,
+"line": 33
 }
 ],
 "nres_score": 87.032749,
@@ -46857,6 +54867,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 54,
+"line": 117
+},
+{
+"step": 94,
+"line": 126
+},
+{
+"step": 203,
+"line": 37
+},
+{
+"step": 703,
+"line": 121
+}
+],
 "nres_score": 99.93757,
 "nres_ratio": 99.9878,
 "episode_score": 83.827514,
@@ -46940,6 +54969,21 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 56,
+"line": 154
+},
+{
+"step": 122,
+"line": 37
+},
+{
+"step": 680,
+"line": 126
 }
 ],
 "nres_score": 98.76387,
@@ -47038,6 +55082,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 48,
+"line": 62
+},
+{
+"step": 132,
+"line": 131
+},
+{
+"step": 181,
+"line": 43
+},
+{
+"step": 622,
+"line": 162
+}
+],
 "nres_score": 99.715793,
 "nres_ratio": 99.9442,
 "episode_score": 83.783159,
@@ -47107,6 +55170,13 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 260,
+"line": 33
 }
 ],
 "nres_score": 99.779636,
@@ -47189,6 +55259,21 @@
 "lines": [
 117
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 24,
+"line": 62
+},
+{
+"step": 216,
+"line": 160
+},
+{
+"step": 368,
+"line": 117
 }
 ],
 "nres_score": 99.10411,
@@ -47278,6 +55363,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 169,
+"line": 110
+},
+{
+"step": 333,
+"line": 106
+},
+{
+"step": 524,
+"line": 33
+}
+],
 "nres_score": 99.996041,
 "nres_ratio": 99.9992,
 "episode_score": 83.839208,
@@ -47357,6 +55457,21 @@
 "lines": [
 160
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 101,
+"line": 37
+},
+{
+"step": 309,
+"line": 88
+},
+{
+"step": 837,
+"line": 160
 }
 ],
 "nres_score": 97.930565,
@@ -47459,6 +55574,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 159,
+"line": 126
+},
+{
+"step": 206,
+"line": 68
+},
+{
+"step": 578,
+"line": 93
+},
+{
+"step": 729,
+"line": 61
+}
+],
 "nres_score": 97.147403,
 "nres_ratio": 99.4401,
 "episode_score": 83.269481,
@@ -47544,6 +55678,21 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 105,
+"line": 136
+},
+{
+"step": 562,
+"line": 162
+},
+{
+"step": 925,
+"line": 43
 }
 ],
 "nres_score": 98.811884,
@@ -47637,6 +55786,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 30,
+"line": 117
+},
+{
+"step": 98,
+"line": 180
+},
+{
+"step": 897,
+"line": 37
 }
 ],
 "nres_score": 95.980525,
@@ -47743,6 +55907,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 60,
+"line": 162
+},
+{
+"step": 79,
+"line": 43
+},
+{
+"step": 150,
+"line": 154
+}
+],
 "nres_score": 94.877823,
 "nres_ratio": 98.9943,
 "episode_score": 31.699253,
@@ -47834,6 +56013,17 @@
 "lines": [
 160
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 203,
+"line": 33
+},
+{
+"step": 209,
+"line": 160
 }
 ],
 "nres_score": 99.947682,
@@ -47940,6 +56130,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 85,
+"line": 62
+},
+{
+"step": 191,
+"line": 61
+},
+{
+"step": 537,
+"line": 62
+},
+{
+"step": 561,
+"line": 93
+},
+{
+"step": 806,
+"line": 43
+}
+],
 "nres_score": 99.17281,
 "nres_ratio": 99.8377,
 "episode_score": 83.674562,
@@ -48033,6 +56246,21 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 87,
+"line": 37
+},
+{
+"step": 156,
+"line": 88
+},
+{
+"step": 307,
+"line": 136
 }
 ],
 "nres_score": 89.503599,
@@ -48131,6 +56359,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 475,
+"line": 162
+},
+{
+"step": 683,
+"line": 37
+},
+{
+"step": 907,
+"line": 162
+}
+],
 "nres_score": 98.560657,
 "nres_ratio": 99.7176,
 "episode_score": 83.552131,
@@ -48223,6 +56466,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 2,
+"line": 180
+},
+{
+"step": 210,
+"line": 81
+},
+{
+"step": 307,
+"line": 162
+}
+],
 "nres_score": 91.654688,
 "nres_ratio": 98.3605,
 "episode_score": 58.242807,
@@ -48310,6 +56568,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 231,
+"line": 125
+},
+{
+"step": 545,
+"line": 37
 }
 ],
 "nres_score": 99.770194,
@@ -48405,6 +56674,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 43,
+"line": 106
+},
+{
+"step": 155,
+"line": 33
+},
+{
+"step": 310,
+"line": 162
+},
+{
+"step": 469,
+"line": 160
+}
+],
 "nres_score": 99.603994,
 "nres_ratio": 99.9223,
 "episode_score": 83.760799,
@@ -48491,6 +56779,21 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 184,
+"line": 162
+},
+{
+"step": 242,
+"line": 81
+},
+{
+"step": 299,
+"line": 125
 }
 ],
 "nres_score": 99.881896,
@@ -48584,6 +56887,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 105,
+"line": 160
+},
+{
+"step": 119,
+"line": 106
+},
+{
+"step": 332,
+"line": 33
+}
+],
 "nres_score": 99.710738,
 "nres_ratio": 99.9433,
 "episode_score": 83.782148,
@@ -48671,6 +56989,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 4,
+"line": 162
+},
+{
+"step": 143,
+"line": 110
+},
+{
+"step": 337,
+"line": 81
+}
+],
 "nres_score": 98.891692,
 "nres_ratio": 99.7825,
 "episode_score": 83.618338,
@@ -48752,6 +57085,21 @@
 "lines": [
 121
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 354,
+"line": 33
+},
+{
+"step": 607,
+"line": 117
+},
+{
+"step": 1015,
+"line": 121
 }
 ],
 "nres_score": 94.694658,
@@ -48850,6 +57198,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 38,
+"line": 106
+},
+{
+"step": 182,
+"line": 43
+},
+{
+"step": 182,
+"line": 131
+},
+{
+"step": 1057,
+"line": 154
+}
+],
 "nres_score": 99.771795,
 "nres_ratio": 99.9552,
 "episode_score": 83.794359,
@@ -48918,6 +57285,13 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 153,
+"line": 88
 }
 ],
 "nres_score": 98.587128,
@@ -48997,6 +57371,17 @@
 "lines": [
 110
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 236,
+"line": 37
+},
+{
+"step": 290,
+"line": 110
 }
 ],
 "nres_score": 97.356266,
@@ -49094,6 +57479,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 69,
+"line": 125
+},
+{
+"step": 391,
+"line": 162
+},
+{
+"step": 1126,
+"line": 37
+}
+],
 "nres_score": 99.972645,
 "nres_ratio": 99.9946,
 "episode_score": 83.834529,
@@ -49176,6 +57576,21 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 29,
+"line": 81
+},
+{
+"step": 224,
+"line": 121
+},
+{
+"step": 705,
+"line": 88
 }
 ],
 "nres_score": 99.151334,
@@ -49263,6 +57678,21 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 170,
+"line": 81
+},
+{
+"step": 502,
+"line": 68
+},
+{
+"step": 582,
+"line": 125
 }
 ],
 "nres_score": 99.053973,
@@ -49355,6 +57785,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 25,
+"line": 162
+},
+{
+"step": 60,
+"line": 62
+},
+{
+"step": 278,
+"line": 141
+}
+],
 "nres_score": 99.296094,
 "nres_ratio": 99.8619,
 "episode_score": 83.699219,
@@ -49440,6 +57885,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 25,
+"line": 37
+},
+{
+"step": 136,
+"line": 126
+},
+{
+"step": 211,
+"line": 162
 }
 ],
 "nres_score": 98.932489,
@@ -49534,6 +57994,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 227,
+"line": 136
+},
+{
+"step": 327,
+"line": 81
+},
+{
+"step": 388,
+"line": 162
+},
+{
+"step": 881,
+"line": 131
+}
+],
 "nres_score": 91.738103,
 "nres_ratio": 98.3769,
 "episode_score": 82.187621,
@@ -49625,6 +58104,21 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 145,
+"line": 117
+},
+{
+"step": 223,
+"line": 43
+},
+{
+"step": 379,
+"line": 126
 }
 ],
 "nres_score": 98.934879,
@@ -49722,6 +58216,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 169,
+"line": 37
+},
+{
+"step": 205,
+"line": 68
+},
+{
+"step": 745,
+"line": 162
+}
+],
 "nres_score": 97.210976,
 "nres_ratio": 99.4526,
 "episode_score": 83.282195,
@@ -49810,6 +58319,21 @@
 "lines": [
 180
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 87,
+"line": 37
+},
+{
+"step": 167,
+"line": 68
+},
+{
+"step": 262,
+"line": 180
 }
 ],
 "nres_score": 100.0,
@@ -49911,6 +58435,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 70,
+"line": 106
+},
+{
+"step": 739,
+"line": 88
+},
+{
+"step": 813,
+"line": 136
+},
+{
+"step": 1510,
+"line": 61
+},
+{
+"step": 1728,
+"line": 81
+}
+],
 "nres_score": 99.416335,
 "nres_ratio": 99.8855,
 "episode_score": 83.723267,
@@ -49989,6 +58536,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 598,
+"line": 88
+},
+{
+"step": 1333,
+"line": 37
+},
+{
+"step": 1509,
+"line": 37
 }
 ],
 "nres_score": 99.839854,
@@ -50087,6 +58649,29 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 87,
+"line": 93
+},
+{
+"step": 169,
+"line": 43
+},
+{
+"step": 523,
+"line": 43
+},
+{
+"step": 656,
+"line": 33
+},
+{
+"step": 1216,
+"line": 43
 }
 ],
 "nres_score": 94.787526,
@@ -50194,6 +58779,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 20,
+"line": 117
+},
+{
+"step": 87,
+"line": 126
+},
+{
+"step": 202,
+"line": 61
+},
+{
+"step": 333,
+"line": 160
+},
+{
+"step": 984,
+"line": 162
+}
+],
 "nres_score": 99.879773,
 "nres_ratio": 99.9764,
 "episode_score": 83.815955,
@@ -50266,6 +58874,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 79,
+"line": 131
+},
+{
+"step": 195,
+"line": 106
 }
 ],
 "nres_score": 95.498951,
@@ -50364,6 +58983,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 85,
+"line": 106
+},
+{
+"step": 117,
+"line": 93
+},
+{
+"step": 458,
+"line": 141
+}
+],
 "nres_score": 97.713638,
 "nres_ratio": 99.5513,
 "episode_score": 83.382728,
@@ -50446,6 +59080,17 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 144,
+"line": 61
+},
+{
+"step": 182,
+"line": 68
 }
 ],
 "nres_score": 98.898781,
@@ -50541,6 +59186,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 224,
+"line": 37
+},
+{
+"step": 243,
+"line": 68
+},
+{
+"step": 639,
+"line": 154
+}
+],
 "nres_score": 99.226577,
 "nres_ratio": 99.8483,
 "episode_score": 68.841012,
@@ -50626,6 +59286,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 495,
+"line": 106
+},
+{
+"step": 1697,
+"line": 61
 }
 ],
 "nres_score": 99.784789,
@@ -50723,6 +59394,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 97,
+"line": 106
+},
+{
+"step": 381,
+"line": 110
+},
+{
+"step": 403,
+"line": 37
+}
+],
 "nres_score": 99.349061,
 "nres_ratio": 99.8723,
 "episode_score": 83.709812,
@@ -50818,6 +59504,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 87,
+"line": 162
+},
+{
+"step": 344,
+"line": 125
+},
+{
+"step": 350,
+"line": 43
+}
+],
 "nres_score": 99.949107,
 "nres_ratio": 99.99,
 "episode_score": 83.829821,
@@ -50902,6 +59603,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 42,
+"line": 106
+},
+{
+"step": 227,
+"line": 110
+},
+{
+"step": 1404,
+"line": 33
+}
+],
 "nres_score": 99.979869,
 "nres_ratio": 99.9961,
 "episode_score": 83.835974,
@@ -50980,6 +59696,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 223,
+"line": 162
+},
+{
+"step": 273,
+"line": 81
 }
 ],
 "nres_score": 98.853799,
@@ -51080,6 +59807,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 26,
+"line": 93
+},
+{
+"step": 36,
+"line": 141
+},
+{
+"step": 200,
+"line": 43
+}
+],
 "nres_score": 99.180613,
 "nres_ratio": 99.8392,
 "episode_score": 83.676123,
@@ -51153,6 +59895,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 177,
+"line": 37
+},
+{
+"step": 821,
+"line": 37
 }
 ],
 "nres_score": 93.752976,
@@ -51241,6 +59994,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 158,
+"line": 68
+},
+{
+"step": 353,
+"line": 81
 }
 ],
 "nres_score": 99.529589,
@@ -51332,6 +60096,25 @@
 "lines": [
 110
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 42,
+"line": 131
+},
+{
+"step": 93,
+"line": 162
+},
+{
+"step": 414,
+"line": 43
+},
+{
+"step": 539,
+"line": 110
 }
 ],
 "nres_score": 99.997765,
@@ -51430,6 +60213,25 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 93,
+"line": 43
+},
+{
+"step": 299,
+"line": 162
+},
+{
+"step": 341,
+"line": 136
+},
+{
+"step": 496,
+"line": 125
 }
 ],
 "nres_score": 96.708224,
@@ -51540,6 +60342,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 293,
+"line": 117
+},
+{
+"step": 302,
+"line": 37
+},
+{
+"step": 629,
+"line": 88
+},
+{
+"step": 885,
+"line": 110
+}
+],
 "nres_score": 98.182058,
 "nres_ratio": 99.6433,
 "episode_score": 83.476412,
@@ -51628,6 +60449,21 @@
 "lines": [
 68
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 141,
+"line": 106
+},
+{
+"step": 247,
+"line": 37
+},
+{
+"step": 913,
+"line": 68
 }
 ],
 "nres_score": 99.179614,
@@ -51721,6 +60557,21 @@
 "lines": [
 110
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 44,
+"line": 106
+},
+{
+"step": 68,
+"line": 61
+},
+{
+"step": 366,
+"line": 110
 }
 ],
 "nres_score": 99.074058,
@@ -51826,6 +60677,25 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 4,
+"line": 117
+},
+{
+"step": 15,
+"line": 136
+},
+{
+"step": 490,
+"line": 68
+},
+{
+"step": 1135,
+"line": 37
 }
 ],
 "nres_score": 86.293672,
@@ -51943,6 +60813,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 24,
+"line": 126
+},
+{
+"step": 180,
+"line": 117
+},
+{
+"step": 302,
+"line": 136
+},
+{
+"step": 402,
+"line": 37
+},
+{
+"step": 419,
+"line": 88
+}
+],
 "nres_score": 99.128742,
 "nres_ratio": 99.8291,
 "episode_score": 83.665748,
@@ -52033,6 +60926,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 311,
+"line": 93
+},
+{
+"step": 899,
+"line": 37
+},
+{
+"step": 1215,
+"line": 154
+}
+],
 "nres_score": 99.536511,
 "nres_ratio": 99.9091,
 "episode_score": 83.747302,
@@ -52112,6 +61020,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 4,
+"line": 81
+},
+{
+"step": 227,
+"line": 88
 }
 ],
 "nres_score": 98.70937,
@@ -52212,6 +61131,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 172,
+"line": 61
+},
+{
+"step": 187,
+"line": 93
+},
+{
+"step": 445,
+"line": 136
+},
+{
+"step": 956,
+"line": 81
+}
+],
 "nres_score": 90.20418,
 "nres_ratio": 98.0751,
 "episode_score": 81.880836,
@@ -52307,6 +61245,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 49,
+"line": 37
+},
+{
+"step": 175,
+"line": 162
+},
+{
+"step": 205,
+"line": 154
+}
+],
 "nres_score": 99.7555,
 "nres_ratio": 99.952,
 "episode_score": 83.7911,
@@ -52397,6 +61350,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 161,
+"line": 81
+},
+{
+"step": 378,
+"line": 37
+},
+{
+"step": 474,
+"line": 126
+},
+{
+"step": 641,
+"line": 162
+}
+],
 "nres_score": 99.139464,
 "nres_ratio": 99.8312,
 "episode_score": 83.667893,
@@ -52469,6 +61441,13 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 597,
+"line": 33
 }
 ],
 "nres_score": 99.587451,
@@ -52546,6 +61525,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 63,
+"line": 33
+},
+{
+"step": 219,
+"line": 106
 }
 ],
 "nres_score": 98.578524,
@@ -52634,6 +61624,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 160,
+"line": 125
+},
+{
+"step": 272,
+"line": 62
+},
+{
+"step": 752,
+"line": 93
 }
 ],
 "nres_score": 99.452386,
@@ -52726,6 +61731,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 67,
+"line": 88
+},
+{
+"step": 162,
+"line": 126
+},
+{
+"step": 229,
+"line": 33
+}
+],
 "nres_score": 99.386758,
 "nres_ratio": 99.8797,
 "episode_score": 83.717352,
@@ -52806,6 +61826,17 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 347,
+"line": 37
+},
+{
+"step": 516,
+"line": 126
 }
 ],
 "nres_score": 99.263127,
@@ -52907,6 +61938,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 113,
+"line": 154
+},
+{
+"step": 211,
+"line": 37
+},
+{
+"step": 521,
+"line": 117
+},
+{
+"step": 606,
+"line": 88
+},
+{
+"step": 1710,
+"line": 37
+}
+],
 "nres_score": 97.759101,
 "nres_ratio": 99.5602,
 "episode_score": 83.39182,
@@ -53004,6 +62058,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 57,
+"line": 68
+},
+{
+"step": 86,
+"line": 43
+},
+{
+"step": 213,
+"line": 141
+}
+],
 "nres_score": 99.496238,
 "nres_ratio": 99.9012,
 "episode_score": 83.739248,
@@ -53095,6 +62164,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 38,
+"line": 121
+},
+{
+"step": 304,
+"line": 93
+},
+{
+"step": 589,
+"line": 37
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 83.84,
@@ -53171,6 +62255,21 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 171,
+"line": 43
+},
+{
+"step": 539,
+"line": 117
+},
+{
+"step": 954,
+"line": 88
 }
 ],
 "nres_score": 99.770628,
@@ -53260,6 +62359,21 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 4,
+"line": 37
+},
+{
+"step": 113,
+"line": 121
+},
+{
+"step": 573,
+"line": 106
 }
 ],
 "nres_score": 98.069218,
@@ -53358,6 +62472,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 77,
+"line": 117
+},
+{
+"step": 121,
+"line": 43
+},
+{
+"step": 328,
+"line": 93
+},
+{
+"step": 360,
+"line": 121
+}
+],
 "nres_score": 96.000074,
 "nres_ratio": 99.2148,
 "episode_score": 31.828751,
@@ -53451,6 +62584,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 56,
+"line": 136
+},
+{
+"step": 115,
+"line": 162
+},
+{
+"step": 343,
+"line": 141
+},
+{
+"step": 457,
+"line": 81
+}
+],
 "nres_score": 99.256619,
 "nres_ratio": 99.8542,
 "episode_score": 83.691324,
@@ -53535,6 +62687,21 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 20,
+"line": 37
+},
+{
+"step": 39,
+"line": 93
+},
+{
+"step": 82,
+"line": 125
 }
 ],
 "nres_score": 99.834625,
@@ -53625,6 +62792,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 15,
+"line": 61
+},
+{
+"step": 127,
+"line": 106
+},
+{
+"step": 178,
+"line": 126
+}
+],
 "nres_score": 99.369913,
 "nres_ratio": 99.8764,
 "episode_score": 83.713983,
@@ -53710,6 +62892,21 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 55,
+"line": 37
+},
+{
+"step": 289,
+"line": 126
+},
+{
+"step": 663,
+"line": 93
 }
 ],
 "nres_score": 96.880432,
@@ -53805,6 +63002,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 50,
+"line": 162
+},
+{
+"step": 94,
+"line": 62
+},
+{
+"step": 718,
+"line": 61
+},
+{
+"step": 1354,
+"line": 180
+}
+],
 "nres_score": 99.456939,
 "nres_ratio": 99.8935,
 "episode_score": 83.731388,
@@ -53887,6 +63103,21 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 148,
+"line": 33
+},
+{
+"step": 163,
+"line": 106
+},
+{
+"step": 199,
+"line": 125
 }
 ],
 "nres_score": 95.40388,
@@ -53998,6 +63229,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 71,
+"line": 106
+},
+{
+"step": 140,
+"line": 160
+},
+{
+"step": 285,
+"line": 106
+},
+{
+"step": 301,
+"line": 43
+},
+{
+"step": 1991,
+"line": 68
+}
+],
 "nres_score": 97.660744,
 "nres_ratio": 99.5409,
 "episode_score": 83.372149,
@@ -54082,6 +63336,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 172,
+"line": 117
+},
+{
+"step": 306,
+"line": 33
+},
+{
+"step": 619,
+"line": 154
 }
 ],
 "nres_score": 98.571285,
@@ -54169,6 +63438,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 128,
+"line": 61
+},
+{
+"step": 151,
+"line": 88
+},
+{
+"step": 999,
+"line": 37
 }
 ],
 "nres_score": 97.279047,
@@ -54265,6 +63549,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 221,
+"line": 121
+},
+{
+"step": 300,
+"line": 68
+},
+{
+"step": 475,
+"line": 43
+},
+{
+"step": 1233,
+"line": 88
+}
+],
 "nres_score": 98.332832,
 "nres_ratio": 99.6729,
 "episode_score": 83.506566,
@@ -54348,6 +63651,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 95,
+"line": 106
+},
+{
+"step": 156,
+"line": 180
+},
+{
+"step": 289,
+"line": 43
+}
+],
 "nres_score": 99.351473,
 "nres_ratio": 99.8728,
 "episode_score": 83.710295,
@@ -54423,6 +63741,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 286,
+"line": 125
+},
+{
+"step": 361,
+"line": 106
 }
 ],
 "nres_score": 98.851213,
@@ -54503,6 +63832,17 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 43,
+"line": 121
+},
+{
+"step": 224,
+"line": 33
 }
 ],
 "nres_score": 96.284179,
@@ -54620,6 +63960,37 @@
 ]
 }
 ],
+"n_attack_onsets": 7,
+"attack_onsets": [
+{
+"step": 32,
+"line": 93
+},
+{
+"step": 179,
+"line": 43
+},
+{
+"step": 351,
+"line": 180
+},
+{
+"step": 435,
+"line": 93
+},
+{
+"step": 534,
+"line": 160
+},
+{
+"step": 1184,
+"line": 126
+},
+{
+"step": 1846,
+"line": 154
+}
+],
 "nres_score": 98.295168,
 "nres_ratio": 99.6655,
 "episode_score": 83.499034,
@@ -54700,6 +64071,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 11,
+"line": 162
+},
+{
+"step": 410,
+"line": 62
 }
 ],
 "nres_score": 97.744361,
@@ -54795,6 +64177,25 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 49,
+"line": 106
+},
+{
+"step": 145,
+"line": 160
+},
+{
+"step": 684,
+"line": 131
+},
+{
+"step": 1341,
+"line": 81
 }
 ],
 "nres_score": 99.238189,
@@ -54906,6 +64307,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 138,
+"line": 154
+},
+{
+"step": 247,
+"line": 93
+},
+{
+"step": 269,
+"line": 62
+},
+{
+"step": 971,
+"line": 62
+},
+{
+"step": 1587,
+"line": 110
+},
+{
+"step": 1599,
+"line": 81
+}
+],
 "nres_score": 98.084414,
 "nres_ratio": 99.6241,
 "episode_score": 83.456883,
@@ -54994,6 +64422,21 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 88,
+"line": 141
+},
+{
+"step": 150,
+"line": 37
+},
+{
+"step": 228,
+"line": 106
 }
 ],
 "nres_score": 99.802455,
@@ -55086,6 +64529,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 3,
+"line": 162
+},
+{
+"step": 104,
+"line": 37
+},
+{
+"step": 747,
+"line": 110
+}
+],
 "nres_score": 99.993507,
 "nres_ratio": 99.9987,
 "episode_score": 83.838701,
@@ -55161,6 +64619,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 166,
+"line": 43
+},
+{
+"step": 1347,
+"line": 37
 }
 ],
 "nres_score": 99.388664,
@@ -55241,6 +64710,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 279,
+"line": 154
+},
+{
+"step": 591,
+"line": 43
 }
 ],
 "nres_score": 98.506274,
@@ -55329,6 +64809,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 43,
+"line": 43
+},
+{
+"step": 372,
+"line": 88
+},
+{
+"step": 805,
+"line": 162
 }
 ],
 "nres_score": 94.863569,
@@ -55425,6 +64920,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 75,
+"line": 43
+},
+{
+"step": 93,
+"line": 106
+},
+{
+"step": 136,
+"line": 180
+},
+{
+"step": 641,
+"line": 68
+}
+],
 "nres_score": 99.6919,
 "nres_ratio": 99.9396,
 "episode_score": 83.77838,
@@ -55502,6 +65016,17 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 73,
+"line": 136
+},
+{
+"step": 341,
+"line": 93
 }
 ],
 "nres_score": 87.610705,
@@ -55591,6 +65116,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 233,
+"line": 37
+},
+{
+"step": 572,
+"line": 121
+},
+{
+"step": 1086,
+"line": 162
 }
 ],
 "nres_score": 96.332852,
@@ -55689,6 +65229,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 18,
+"line": 126
+},
+{
+"step": 90,
+"line": 37
+},
+{
+"step": 261,
+"line": 162
+},
+{
+"step": 1699,
+"line": 125
+}
+],
 "nres_score": 95.435963,
 "nres_ratio": 99.104,
 "episode_score": 82.927193,
@@ -55771,6 +65330,21 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 126,
+"line": 106
+},
+{
+"step": 386,
+"line": 81
+},
+{
+"step": 619,
+"line": 81
 }
 ],
 "nres_score": 99.336149,
@@ -55863,6 +65437,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 504,
+"line": 154
+},
+{
+"step": 755,
+"line": 37
+},
+{
+"step": 1349,
+"line": 162
+}
+],
 "nres_score": 99.902057,
 "nres_ratio": 99.9808,
 "episode_score": 83.820411,
@@ -55938,6 +65527,17 @@
 "lines": [
 117
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 174,
+"line": 43
+},
+{
+"step": 341,
+"line": 117
 }
 ],
 "nres_score": 99.175714,
@@ -56020,6 +65620,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 26,
+"line": 162
+},
+{
+"step": 224,
+"line": 81
 }
 ],
 "nres_score": 99.262761,
@@ -56107,6 +65718,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 123,
+"line": 131
+},
+{
+"step": 160,
+"line": 162
+},
+{
+"step": 1604,
+"line": 37
 }
 ],
 "nres_score": 95.060158,
@@ -56205,6 +65831,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 12,
+"line": 88
+},
+{
+"step": 260,
+"line": 136
+},
+{
+"step": 308,
+"line": 37
+},
+{
+"step": 527,
+"line": 141
+}
+],
 "nres_score": 97.032239,
 "nres_ratio": 99.4175,
 "episode_score": 83.246448,
@@ -56292,6 +65937,21 @@
 "lines": [
 110
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 202,
+"line": 43
+},
+{
+"step": 861,
+"line": 136
+},
+{
+"step": 1263,
+"line": 110
 }
 ],
 "nres_score": 99.288271,
@@ -56386,6 +66046,25 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 114,
+"line": 43
+},
+{
+"step": 505,
+"line": 126
+},
+{
+"step": 538,
+"line": 93
+},
+{
+"step": 1154,
+"line": 162
 }
 ],
 "nres_score": 98.979197,
@@ -56485,6 +66164,29 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 58,
+"line": 141
+},
+{
+"step": 178,
+"line": 160
+},
+{
+"step": 243,
+"line": 43
+},
+{
+"step": 280,
+"line": 162
+},
+{
+"step": 1041,
+"line": 125
 }
 ],
 "nres_score": 89.638503,
@@ -56589,6 +66291,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 53,
+"line": 162
+},
+{
+"step": 91,
+"line": 110
+},
+{
+"step": 258,
+"line": 61
+},
+{
+"step": 1114,
+"line": 88
+}
+],
 "nres_score": 98.679322,
 "nres_ratio": 99.7409,
 "episode_score": 83.575864,
@@ -56681,6 +66402,33 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 139,
+"line": 106
+},
+{
+"step": 537,
+"line": 154
+},
+{
+"step": 722,
+"line": 154
+},
+{
+"step": 827,
+"line": 154
+},
+{
+"step": 1389,
+"line": 160
+},
+{
+"step": 1662,
+"line": 136
 }
 ],
 "nres_score": 97.166641,
@@ -56783,6 +66531,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 154,
+"line": 37
+},
+{
+"step": 278,
+"line": 141
+},
+{
+"step": 514,
+"line": 81
+},
+{
+"step": 707,
+"line": 154
+},
+{
+"step": 799,
+"line": 81
+}
+],
 "nres_score": 97.82904,
 "nres_ratio": 99.574,
 "episode_score": 83.405808,
@@ -56871,6 +66642,21 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 83,
+"line": 37
+},
+{
+"step": 444,
+"line": 154
+},
+{
+"step": 702,
+"line": 126
 }
 ],
 "nres_score": 99.459318,
@@ -56982,6 +66768,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 153,
+"line": 106
+},
+{
+"step": 166,
+"line": 154
+},
+{
+"step": 311,
+"line": 62
+},
+{
+"step": 572,
+"line": 110
+},
+{
+"step": 802,
+"line": 81
+}
+],
 "nres_score": 95.752969,
 "nres_ratio": 99.1663,
 "episode_score": 82.990594,
@@ -57059,6 +66868,17 @@
 "lines": [
 117
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 42,
+"line": 43
+},
+{
+"step": 451,
+"line": 117
 }
 ],
 "nres_score": 95.775921,
@@ -57154,6 +66974,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 27,
+"line": 43
+},
+{
+"step": 70,
+"line": 125
+},
+{
+"step": 642,
+"line": 162
+},
+{
+"step": 844,
+"line": 33
+}
+],
 "nres_score": 98.466998,
 "nres_ratio": 99.6992,
 "episode_score": 83.5334,
@@ -57245,6 +67084,21 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 9,
+"line": 180
+},
+{
+"step": 10,
+"line": 117
+},
+{
+"step": 1550,
+"line": 33
 }
 ],
 "nres_score": 98.861148,
@@ -57350,6 +67204,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 204,
+"line": 154
+},
+{
+"step": 353,
+"line": 117
+},
+{
+"step": 374,
+"line": 141
+},
+{
+"step": 460,
+"line": 37
+}
+],
 "nres_score": 96.125666,
 "nres_ratio": 99.2395,
 "episode_score": 83.065133,
@@ -57439,6 +67312,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 25,
+"line": 81
+},
+{
+"step": 124,
+"line": 136
+},
+{
+"step": 870,
+"line": 88
+}
+],
 "nres_score": 97.49015,
 "nres_ratio": 99.5074,
 "episode_score": 83.33803,
@@ -57519,6 +67407,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 229,
+"line": 162
+},
+{
+"step": 419,
+"line": 43
 }
 ],
 "nres_score": 99.5585,
@@ -57607,6 +67506,25 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 72,
+"line": 154
+},
+{
+"step": 100,
+"line": 61
+},
+{
+"step": 265,
+"line": 106
+},
+{
+"step": 744,
+"line": 61
 }
 ],
 "nres_score": 98.806037,
@@ -57698,6 +67616,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 7,
+"line": 37
+},
+{
+"step": 18,
+"line": 136
+},
+{
+"step": 516,
+"line": 93
+}
+],
 "nres_score": 97.000239,
 "nres_ratio": 99.4112,
 "episode_score": 83.240048,
@@ -57779,6 +67712,17 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 45,
+"line": 43
+},
+{
+"step": 790,
+"line": 125
 }
 ],
 "nres_score": 92.798007,
@@ -57872,6 +67816,21 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 384,
+"line": 126
+},
+{
+"step": 399,
+"line": 81
+},
+{
+"step": 493,
+"line": 162
 }
 ],
 "nres_score": 99.182486,
@@ -57984,6 +67943,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 215,
+"line": 106
+},
+{
+"step": 216,
+"line": 154
+},
+{
+"step": 596,
+"line": 81
+},
+{
+"step": 759,
+"line": 141
+},
+{
+"step": 1256,
+"line": 125
+},
+{
+"step": 1671,
+"line": 61
+}
+],
 "nres_score": 92.385106,
 "nres_ratio": 98.5042,
 "episode_score": 76.968008,
@@ -58080,6 +68066,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 7,
+"line": 180
+},
+{
+"step": 38,
+"line": 37
+},
+{
+"step": 744,
+"line": 110
+}
+],
 "nres_score": 99.366402,
 "nres_ratio": 99.8757,
 "episode_score": 83.71328,
@@ -58161,6 +68162,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 97,
+"line": 162
+},
+{
+"step": 163,
+"line": 81
+},
+{
+"step": 266,
+"line": 154
 }
 ],
 "nres_score": 99.072521,
@@ -58246,6 +68262,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 411,
+"line": 68
+},
+{
+"step": 578,
+"line": 43
+},
+{
+"step": 1310,
+"line": 33
+}
+],
 "nres_score": 96.119885,
 "nres_ratio": 99.2383,
 "episode_score": 83.063977,
@@ -58325,6 +68356,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 96,
+"line": 162
+},
+{
+"step": 426,
+"line": 61
+}
+],
 "nres_score": 98.965022,
 "nres_ratio": 99.7969,
 "episode_score": 83.633004,
@@ -58400,6 +68442,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 101,
+"line": 106
+},
+{
+"step": 355,
+"line": 81
 }
 ],
 "nres_score": 99.392137,
@@ -58483,6 +68536,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 144,
+"line": 117
+},
+{
+"step": 497,
+"line": 33
+},
+{
+"step": 815,
+"line": 61
+}
+],
 "nres_score": 96.46458,
 "nres_ratio": 99.306,
 "episode_score": 83.132916,
@@ -58561,6 +68629,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 16,
+"line": 43
+},
+{
+"step": 670,
+"line": 162
+}
+],
 "nres_score": 89.397655,
 "nres_ratio": 97.9163,
 "episode_score": 81.719531,
@@ -58637,6 +68716,13 @@
 ]
 }
 ],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 84,
+"line": 136
+}
+],
 "nres_score": 100.0,
 "nres_ratio": 100.0,
 "episode_score": 22.911889,
@@ -58708,6 +68794,17 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 502,
+"line": 154
+},
+{
+"step": 812,
+"line": 33
 }
 ],
 "nres_score": 93.495299,
@@ -58792,6 +68889,21 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 154,
+"line": 125
+},
+{
+"step": 179,
+"line": 106
+},
+{
+"step": 277,
+"line": 62
 }
 ],
 "nres_score": 98.0391,
@@ -58881,6 +68993,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 29,
+"line": 136
+},
+{
+"step": 1429,
+"line": 126
+},
+{
+"step": 1463,
+"line": 43
+}
+],
 "nres_score": 97.180992,
 "nres_ratio": 99.4467,
 "episode_score": 83.276198,
@@ -58956,6 +69083,17 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 203,
+"line": 162
+},
+{
+"step": 389,
+"line": 154
 }
 ],
 "nres_score": 98.912431,
@@ -59053,6 +69191,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 47,
+"line": 106
+},
+{
+"step": 78,
+"line": 33
+},
+{
+"step": 334,
+"line": 154
+},
+{
+"step": 353,
+"line": 62
+},
+{
+"step": 417,
+"line": 162
+}
+],
 "nres_score": 98.571347,
 "nres_ratio": 99.7197,
 "episode_score": 83.554269,
@@ -59146,6 +69307,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 53,
+"line": 93
+},
+{
+"step": 447,
+"line": 43
+},
+{
+"step": 884,
+"line": 131
+},
+{
+"step": 1908,
+"line": 136
+}
+],
 "nres_score": 96.633688,
 "nres_ratio": 99.3393,
 "episode_score": 83.166738,
@@ -59215,6 +69395,13 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 314,
+"line": 33
 }
 ],
 "nres_score": 91.85163,
@@ -59289,6 +69476,13 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 527,
+"line": 43
 }
 ],
 "nres_score": 98.337218,
@@ -59371,6 +69565,21 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 275,
+"line": 81
+},
+{
+"step": 503,
+"line": 106
+},
+{
+"step": 1010,
+"line": 136
 }
 ],
 "nres_score": 95.361782,
@@ -59461,6 +69670,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 106,
+"line": 126
+},
+{
+"step": 295,
+"line": 62
+},
+{
+"step": 349,
+"line": 154
+}
+],
 "nres_score": 96.537723,
 "nres_ratio": 99.3204,
 "episode_score": 83.147545,
@@ -59546,6 +69770,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 138,
+"line": 37
+},
+{
+"step": 527,
+"line": 141
+},
+{
+"step": 1431,
+"line": 93
+}
+],
 "nres_score": 96.040965,
 "nres_ratio": 99.2228,
 "episode_score": 83.048193,
@@ -59624,6 +69863,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 65,
+"line": 93
+},
+{
+"step": 396,
+"line": 43
 }
 ],
 "nres_score": 91.17709,
@@ -59722,6 +69972,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 122,
+"line": 180
+},
+{
+"step": 124,
+"line": 43
+},
+{
+"step": 356,
+"line": 117
+},
+{
+"step": 444,
+"line": 110
+}
+],
 "nres_score": 94.111511,
 "nres_ratio": 98.8437,
 "episode_score": 82.662302,
@@ -59803,6 +70072,21 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 372,
+"line": 93
+},
+{
+"step": 1067,
+"line": 88
+},
+{
+"step": 1263,
+"line": 43
 }
 ],
 "nres_score": 94.532916,
@@ -59902,6 +70186,29 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 47,
+"line": 141
+},
+{
+"step": 58,
+"line": 88
+},
+{
+"step": 164,
+"line": 61
+},
+{
+"step": 921,
+"line": 88
+},
+{
+"step": 965,
+"line": 81
 }
 ],
 "nres_score": 98.88511,
@@ -60013,6 +70320,37 @@
 ]
 }
 ],
+"n_attack_onsets": 7,
+"attack_onsets": [
+{
+"step": 85,
+"line": 136
+},
+{
+"step": 159,
+"line": 37
+},
+{
+"step": 488,
+"line": 180
+},
+{
+"step": 834,
+"line": 154
+},
+{
+"step": 1498,
+"line": 160
+},
+{
+"step": 1694,
+"line": 154
+},
+{
+"step": 1935,
+"line": 121
+}
+],
 "nres_score": 90.094038,
 "nres_ratio": 98.0534,
 "episode_score": 81.858808,
@@ -60112,6 +70450,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 17,
+"line": 33
+},
+{
+"step": 252,
+"line": 162
+},
+{
+"step": 303,
+"line": 136
+},
+{
+"step": 454,
+"line": 154
+},
+{
+"step": 1255,
+"line": 125
+}
+],
 "nres_score": 99.62981,
 "nres_ratio": 99.9274,
 "episode_score": 83.765962,
@@ -60194,6 +70555,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 83,
+"line": 81
+},
+{
+"step": 244,
+"line": 126
+},
+{
+"step": 956,
+"line": 43
+}
+],
 "nres_score": 98.992134,
 "nres_ratio": 99.8023,
 "episode_score": 83.638427,
@@ -60272,6 +70648,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 44,
+"line": 117
+},
+{
+"step": 72,
+"line": 61
 }
 ],
 "nres_score": 98.500762,
@@ -60366,6 +70753,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 125,
+"line": 154
+},
+{
+"step": 247,
+"line": 61
+},
+{
+"step": 566,
+"line": 162
+},
+{
+"step": 626,
+"line": 43
+}
+],
 "nres_score": 97.437794,
 "nres_ratio": 99.4972,
 "episode_score": 83.327559,
@@ -60448,6 +70854,21 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 132,
+"line": 117
+},
+{
+"step": 250,
+"line": 88
+},
+{
+"step": 810,
+"line": 61
 }
 ],
 "nres_score": 96.129727,
@@ -60539,6 +70960,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 163,
+"line": 81
+},
+{
+"step": 282,
+"line": 162
+},
+{
+"step": 400,
+"line": 126
+},
+{
+"step": 763,
+"line": 162
+}
+],
 "nres_score": 98.41041,
 "nres_ratio": 99.6881,
 "episode_score": 83.522082,
@@ -60621,6 +71061,21 @@
 "lines": [
 117
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 357,
+"line": 37
+},
+{
+"step": 523,
+"line": 88
+},
+{
+"step": 641,
+"line": 117
 }
 ],
 "nres_score": 95.666279,
@@ -60736,6 +71191,41 @@
 ]
 }
 ],
+"n_attack_onsets": 8,
+"attack_onsets": [
+{
+"step": 45,
+"line": 136
+},
+{
+"step": 144,
+"line": 68
+},
+{
+"step": 307,
+"line": 126
+},
+{
+"step": 574,
+"line": 43
+},
+{
+"step": 795,
+"line": 136
+},
+{
+"step": 1005,
+"line": 141
+},
+{
+"step": 1320,
+"line": 154
+},
+{
+"step": 1863,
+"line": 160
+}
+],
 "nres_score": 80.569979,
 "nres_ratio": 96.1753,
 "episode_score": 79.953996,
@@ -60824,6 +71314,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 433,
+"line": 37
+},
+{
+"step": 456,
+"line": 106
+}
+],
 "nres_score": 91.581857,
 "nres_ratio": 98.3462,
 "episode_score": 82.156371,
@@ -60906,6 +71407,21 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 148,
+"line": 121
+},
+{
+"step": 275,
+"line": 81
+},
+{
+"step": 1410,
+"line": 136
 }
 ],
 "nres_score": 94.647489,
@@ -60999,6 +71515,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 82,
+"line": 136
+},
+{
+"step": 210,
+"line": 121
+},
+{
+"step": 371,
+"line": 43
+},
+{
+"step": 732,
+"line": 180
+}
+],
 "nres_score": 97.822125,
 "nres_ratio": 99.5726,
 "episode_score": 83.404425,
@@ -61084,6 +71619,21 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 904,
+"line": 125
+},
+{
+"step": 1004,
+"line": 88
+},
+{
+"step": 1291,
+"line": 37
 }
 ],
 "nres_score": 87.266558,
@@ -61174,6 +71724,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 14,
+"line": 88
+},
+{
+"step": 1108,
+"line": 136
+},
+{
+"step": 1173,
+"line": 81
+},
+{
+"step": 1660,
+"line": 126
+}
+],
 "nres_score": 95.875303,
 "nres_ratio": 99.1903,
 "episode_score": 83.015061,
@@ -61251,6 +71820,17 @@
 "lines": [
 131
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 211,
+"line": 43
+},
+{
+"step": 540,
+"line": 131
 }
 ],
 "nres_score": 95.711304,
@@ -61357,6 +71937,37 @@
 ]
 }
 ],
+"n_attack_onsets": 7,
+"attack_onsets": [
+{
+"step": 58,
+"line": 117
+},
+{
+"step": 212,
+"line": 81
+},
+{
+"step": 212,
+"line": 106
+},
+{
+"step": 384,
+"line": 106
+},
+{
+"step": 402,
+"line": 154
+},
+{
+"step": 668,
+"line": 88
+},
+{
+"step": 1599,
+"line": 106
+}
+],
 "nres_score": 97.37758,
 "nres_ratio": 99.4853,
 "episode_score": 83.315516,
@@ -61452,6 +72063,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 192,
+"line": 88
+},
+{
+"step": 257,
+"line": 88
+},
+{
+"step": 348,
+"line": 37
+},
+{
+"step": 412,
+"line": 121
+},
+{
+"step": 786,
+"line": 88
+}
+],
 "nres_score": 95.200015,
 "nres_ratio": 99.0576,
 "episode_score": 82.880003,
@@ -61531,6 +72165,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 658,
+"line": 125
+},
+{
+"step": 947,
+"line": 43
+}
+],
 "nres_score": 97.72232,
 "nres_ratio": 99.553,
 "episode_score": 83.384464,
@@ -61605,6 +72250,17 @@
 "lines": [
 93
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 92,
+"line": 33
+},
+{
+"step": 267,
+"line": 93
 }
 ],
 "nres_score": 99.00241,
@@ -61700,6 +72356,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 106,
+"line": 136
+},
+{
+"step": 158,
+"line": 61
+},
+{
+"step": 313,
+"line": 117
+},
+{
+"step": 880,
+"line": 43
+},
+{
+"step": 1878,
+"line": 88
+}
+],
 "nres_score": 95.602628,
 "nres_ratio": 99.1367,
 "episode_score": 82.960526,
@@ -61787,6 +72466,21 @@
 "lines": [
 125
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 140,
+"line": 93
+},
+{
+"step": 178,
+"line": 37
+},
+{
+"step": 588,
+"line": 125
 }
 ],
 "nres_score": 94.105867,
@@ -61880,6 +72574,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 55,
+"line": 154
+},
+{
+"step": 85,
+"line": 136
+},
+{
+"step": 903,
+"line": 43
+},
+{
+"step": 1460,
+"line": 81
+}
+],
 "nres_score": 90.24808,
 "nres_ratio": 98.0837,
 "episode_score": 81.889616,
@@ -61962,6 +72675,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 219,
+"line": 106
+},
+{
+"step": 285,
+"line": 136
+}
+],
 "nres_score": 91.751415,
 "nres_ratio": 98.3795,
 "episode_score": 27.560714,
@@ -62035,6 +72759,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 326,
+"line": 117
+},
+{
+"step": 445,
+"line": 37
 }
 ],
 "nres_score": 89.621193,
@@ -62118,6 +72853,21 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 65,
+"line": 125
+},
+{
+"step": 93,
+"line": 62
+},
+{
+"step": 427,
+"line": 106
 }
 ],
 "nres_score": 93.422191,
@@ -62204,6 +72954,21 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 9,
+"line": 162
+},
+{
+"step": 130,
+"line": 110
+},
+{
+"step": 658,
+"line": 62
 }
 ],
 "nres_score": 98.67772,
@@ -62295,6 +73060,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 34,
+"line": 106
+},
+{
+"step": 178,
+"line": 62
+},
+{
+"step": 323,
+"line": 62
+},
+{
+"step": 352,
+"line": 136
+},
+{
+"step": 651,
+"line": 141
+}
+],
 "nres_score": 95.538633,
 "nres_ratio": 99.1241,
 "episode_score": 82.947727,
@@ -62379,6 +73167,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 17,
+"line": 93
+},
+{
+"step": 87,
+"line": 141
+},
+{
+"step": 520,
+"line": 33
+}
+],
 "nres_score": 96.200592,
 "nres_ratio": 99.2542,
 "episode_score": 83.080118,
@@ -62454,6 +73257,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 224,
+"line": 33
+},
+{
+"step": 286,
+"line": 162
 }
 ],
 "nres_score": 96.608984,
@@ -62535,6 +73349,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 14,
+"line": 81
+},
+{
+"step": 370,
+"line": 93
+}
+],
 "nres_score": 98.285084,
 "nres_ratio": 99.6635,
 "episode_score": 83.497017,
@@ -62612,6 +73437,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 776,
+"line": 154
+},
+{
+"step": 1195,
+"line": 43
 }
 ],
 "nres_score": 92.259614,
@@ -62712,6 +73548,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 65,
+"line": 43
+},
+{
+"step": 182,
+"line": 106
+},
+{
+"step": 225,
+"line": 136
+},
+{
+"step": 267,
+"line": 125
+},
+{
+"step": 1898,
+"line": 162
+}
+],
 "nres_score": 97.682849,
 "nres_ratio": 99.5453,
 "episode_score": 83.37657,
@@ -62792,6 +73651,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 549,
+"line": 37
+},
+{
+"step": 1967,
+"line": 106
 }
 ],
 "nres_score": 98.78099,
@@ -62879,6 +73749,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 58,
+"line": 37
+},
+{
+"step": 189,
+"line": 88
+},
+{
+"step": 695,
+"line": 125
+}
+],
 "nres_score": 99.396079,
 "nres_ratio": 99.8815,
 "episode_score": 83.719216,
@@ -62950,6 +73835,13 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 127,
+"line": 43
 }
 ],
 "nres_score": 94.335328,
@@ -63053,6 +73945,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 742,
+"line": 126
+},
+{
+"step": 895,
+"line": 61
+},
+{
+"step": 999,
+"line": 117
+},
+{
+"step": 1091,
+"line": 154
+},
+{
+"step": 1218,
+"line": 117
+},
+{
+"step": 1656,
+"line": 121
+}
+],
 "nres_score": 89.550277,
 "nres_ratio": 97.9463,
 "episode_score": 81.750055,
@@ -63131,6 +74050,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 5,
+"line": 162
+},
+{
+"step": 667,
+"line": 43
 }
 ],
 "nres_score": 96.720748,
@@ -63223,6 +74153,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 108,
+"line": 81
+},
+{
+"step": 115,
+"line": 126
+},
+{
+"step": 671,
+"line": 37
+}
+],
 "nres_score": 92.933183,
 "nres_ratio": 98.612,
 "episode_score": 82.426637,
@@ -63313,6 +74258,25 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 29,
+"line": 37
+},
+{
+"step": 63,
+"line": 121
+},
+{
+"step": 224,
+"line": 117
+},
+{
+"step": 535,
+"line": 162
 }
 ],
 "nres_score": 94.267012,
@@ -63408,6 +74372,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 15,
+"line": 33
+},
+{
+"step": 389,
+"line": 93
+},
+{
+"step": 913,
+"line": 162
+},
+{
+"step": 1483,
+"line": 93
+}
+],
 "nres_score": 85.397186,
 "nres_ratio": 97.128,
 "episode_score": 80.919437,
@@ -63479,6 +74462,13 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 58,
+"line": 61
 }
 ],
 "nres_score": 96.227516,
@@ -63559,6 +74549,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 66,
+"line": 37
+},
+{
+"step": 314,
+"line": 162
 }
 ],
 "nres_score": 96.957036,
@@ -63655,6 +74656,29 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 23,
+"line": 43
+},
+{
+"step": 190,
+"line": 121
+},
+{
+"step": 631,
+"line": 88
+},
+{
+"step": 799,
+"line": 131
+},
+{
+"step": 834,
+"line": 88
 }
 ],
 "nres_score": 90.53763,
@@ -63763,6 +74787,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 188,
+"line": 154
+},
+{
+"step": 488,
+"line": 180
+},
+{
+"step": 879,
+"line": 162
+},
+{
+"step": 1144,
+"line": 126
+},
+{
+"step": 1159,
+"line": 81
+}
+],
 "nres_score": 94.946735,
 "nres_ratio": 99.0078,
 "episode_score": 82.829347,
@@ -63839,6 +74886,17 @@
 "lines": [
 162
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 62,
+"line": 61
+},
+{
+"step": 349,
+"line": 162
 }
 ],
 "nres_score": 99.726168,
@@ -63932,6 +74990,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 155,
+"line": 125
+},
+{
+"step": 171,
+"line": 106
+},
+{
+"step": 407,
+"line": 43
+}
+],
 "nres_score": 98.127106,
 "nres_ratio": 99.6325,
 "episode_score": 83.465421,
@@ -64018,6 +75091,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 350,
+"line": 33
+},
+{
+"step": 609,
+"line": 33
+},
+{
+"step": 1173,
+"line": 37
+},
+{
+"step": 1565,
+"line": 88
+}
+],
 "nres_score": 98.381842,
 "nres_ratio": 99.6825,
 "episode_score": 83.516368,
@@ -64096,6 +75188,21 @@
 "lines": [
 126
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 37,
+"line": 43
+},
+{
+"step": 131,
+"line": 117
+},
+{
+"step": 573,
+"line": 126
 }
 ],
 "nres_score": 93.303724,
@@ -64197,6 +75304,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 11,
+"line": 117
+},
+{
+"step": 117,
+"line": 43
+},
+{
+"step": 122,
+"line": 110
+},
+{
+"step": 172,
+"line": 162
+}
+],
 "nres_score": 97.640952,
 "nres_ratio": 99.537,
 "episode_score": 83.36819,
@@ -64289,6 +75415,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 100,
+"line": 162
+},
+{
+"step": 128,
+"line": 43
+},
+{
+"step": 1325,
+"line": 110
+}
+],
 "nres_score": 94.903482,
 "nres_ratio": 98.9993,
 "episode_score": 82.820696,
@@ -64368,6 +75509,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 45,
+"line": 117
+},
+{
+"step": 148,
+"line": 43
 }
 ],
 "nres_score": 91.501071,
@@ -64495,6 +75647,41 @@
 ]
 }
 ],
+"n_attack_onsets": 8,
+"attack_onsets": [
+{
+"step": 44,
+"line": 33
+},
+{
+"step": 113,
+"line": 110
+},
+{
+"step": 171,
+"line": 33
+},
+{
+"step": 332,
+"line": 81
+},
+{
+"step": 348,
+"line": 117
+},
+{
+"step": 432,
+"line": 106
+},
+{
+"step": 804,
+"line": 154
+},
+{
+"step": 1004,
+"line": 62
+}
+],
 "nres_score": 95.002743,
 "nres_ratio": 99.0188,
 "episode_score": 82.840549,
@@ -64587,6 +75774,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 115,
+"line": 162
+},
+{
+"step": 116,
+"line": 126
+},
+{
+"step": 148,
+"line": 62
+}
+],
 "nres_score": 96.458508,
 "nres_ratio": 99.3048,
 "episode_score": 83.131702,
@@ -64665,6 +75867,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 53,
+"line": 154
+},
+{
+"step": 966,
+"line": 37
 }
 ],
 "nres_score": 97.914689,
@@ -64761,6 +75974,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 150,
+"line": 61
+},
+{
+"step": 193,
+"line": 125
+},
+{
+"step": 1715,
+"line": 61
+}
+],
 "nres_score": 89.403042,
 "nres_ratio": 97.9173,
 "episode_score": 81.720608,
@@ -64842,6 +76070,21 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 38,
+"line": 106
+},
+{
+"step": 69,
+"line": 141
+},
+{
+"step": 841,
+"line": 33
 }
 ],
 "nres_score": 96.265484,
@@ -64943,6 +76186,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 11,
+"line": 160
+},
+{
+"step": 20,
+"line": 93
+},
+{
+"step": 57,
+"line": 37
+}
+],
 "nres_score": 97.085925,
 "nres_ratio": 99.4281,
 "episode_score": 83.257185,
@@ -65034,6 +76292,25 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 35,
+"line": 106
+},
+{
+"step": 210,
+"line": 117
+},
+{
+"step": 363,
+"line": 141
+},
+{
+"step": 466,
+"line": 33
 }
 ],
 "nres_score": 98.030586,
@@ -65135,6 +76412,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 94,
+"line": 33
+},
+{
+"step": 229,
+"line": 162
+},
+{
+"step": 304,
+"line": 136
+},
+{
+"step": 424,
+"line": 81
+},
+{
+"step": 1238,
+"line": 160
+}
+],
 "nres_score": 86.135784,
 "nres_ratio": 97.2736,
 "episode_score": 81.067157,
@@ -65225,6 +76525,21 @@
 "lines": [
 154
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 33,
+"line": 88
+},
+{
+"step": 38,
+"line": 61
+},
+{
+"step": 566,
+"line": 154
 }
 ],
 "nres_score": 93.471536,
@@ -65318,6 +76633,21 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 127,
+"line": 88
+},
+{
+"step": 141,
+"line": 37
+},
+{
+"step": 976,
+"line": 106
 }
 ],
 "nres_score": 98.524601,
@@ -65421,6 +76751,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 24,
+"line": 126
+},
+{
+"step": 182,
+"line": 81
+},
+{
+"step": 232,
+"line": 37
+},
+{
+"step": 521,
+"line": 154
+},
+{
+"step": 1046,
+"line": 126
+},
+{
+"step": 1406,
+"line": 81
+}
+],
 "nres_score": 87.182664,
 "nres_ratio": 97.4799,
 "episode_score": 81.276533,
@@ -65495,6 +76852,17 @@
 "lines": [
 61
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 140,
+"line": 126
+},
+{
+"step": 330,
+"line": 61
 }
 ],
 "nres_score": 97.470333,
@@ -65602,6 +76970,33 @@
 ]
 }
 ],
+"n_attack_onsets": 6,
+"attack_onsets": [
+{
+"step": 16,
+"line": 136
+},
+{
+"step": 106,
+"line": 180
+},
+{
+"step": 178,
+"line": 93
+},
+{
+"step": 218,
+"line": 81
+},
+{
+"step": 285,
+"line": 126
+},
+{
+"step": 667,
+"line": 93
+}
+],
 "nres_score": 91.444021,
 "nres_ratio": 98.3191,
 "episode_score": 40.760991,
@@ -65690,6 +77085,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 12,
+"line": 93
+},
+{
+"step": 616,
+"line": 37
+},
+{
+"step": 1310,
+"line": 131
+}
+],
 "nres_score": 94.336859,
 "nres_ratio": 98.888,
 "episode_score": 82.707372,
@@ -65768,6 +77178,21 @@
 "lines": [
 136
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 253,
+"line": 37
+},
+{
+"step": 448,
+"line": 37
+},
+{
+"step": 649,
+"line": 136
 }
 ],
 "nres_score": 92.483195,
@@ -65870,6 +77295,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 24,
+"line": 106
+},
+{
+"step": 304,
+"line": 61
+},
+{
+"step": 659,
+"line": 136
+},
+{
+"step": 781,
+"line": 81
+},
+{
+"step": 1350,
+"line": 43
+}
+],
 "nres_score": 94.461284,
 "nres_ratio": 98.9124,
 "episode_score": 82.732257,
@@ -65945,6 +77393,17 @@
 "lines": [
 62
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 49,
+"line": 81
+},
+{
+"step": 117,
+"line": 62
 }
 ],
 "nres_score": 93.616185,
@@ -66046,6 +77505,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 117,
+"line": 160
+},
+{
+"step": 188,
+"line": 37
+},
+{
+"step": 325,
+"line": 117
+},
+{
+"step": 1048,
+"line": 106
+},
+{
+"step": 1897,
+"line": 88
+}
+],
 "nres_score": 71.366606,
 "nres_ratio": 94.3541,
 "episode_score": 78.113321,
@@ -66135,6 +77617,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 32,
+"line": 162
+},
+{
+"step": 413,
+"line": 37
+},
+{
+"step": 425,
+"line": 125
+}
+],
 "nres_score": 96.468434,
 "nres_ratio": 99.3068,
 "episode_score": 83.133687,
@@ -66214,6 +77711,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 20,
+"line": 121
+},
+{
+"step": 177,
+"line": 61
+}
+],
 "nres_score": 94.791519,
 "nres_ratio": 98.9773,
 "episode_score": 82.798304,
@@ -66291,6 +77799,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 632,
+"line": 43
+},
+{
+"step": 1439,
+"line": 81
 }
 ],
 "nres_score": 97.329392,
@@ -66373,6 +77892,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 230,
+"line": 162
+},
+{
+"step": 619,
+"line": 37
+}
+],
 "nres_score": 97.271196,
 "nres_ratio": 99.4644,
 "episode_score": 83.294239,
@@ -66450,6 +77980,17 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 226,
+"line": 162
+},
+{
+"step": 1289,
+"line": 37
 }
 ],
 "nres_score": 96.929673,
@@ -66550,6 +78091,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 530,
+"line": 180
+},
+{
+"step": 547,
+"line": 61
+},
+{
+"step": 941,
+"line": 162
+},
+{
+"step": 1212,
+"line": 61
+}
+],
 "nres_score": 97.309984,
 "nres_ratio": 99.4721,
 "episode_score": 83.301997,
@@ -66639,6 +78199,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 278,
+"line": 37
+},
+{
+"step": 482,
+"line": 162
+},
+{
+"step": 1233,
+"line": 121
+}
+],
 "nres_score": 98.504275,
 "nres_ratio": 99.7065,
 "episode_score": 83.540855,
@@ -66717,6 +78292,21 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 163,
+"line": 93
+},
+{
+"step": 251,
+"line": 62
+},
+{
+"step": 754,
+"line": 33
 }
 ],
 "nres_score": 97.84613,
@@ -66801,6 +78391,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 99,
+"line": 126
+},
+{
+"step": 360,
+"line": 136
+}
+],
 "nres_score": 84.982789,
 "nres_ratio": 97.0463,
 "episode_score": 28.644113,
@@ -66874,6 +78475,17 @@
 "lines": [
 43
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 95,
+"line": 81
+},
+{
+"step": 1026,
+"line": 43
 }
 ],
 "nres_score": 90.196074,
@@ -66954,6 +78566,17 @@
 "lines": [
 106
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 27,
+"line": 61
+},
+{
+"step": 261,
+"line": 106
 }
 ],
 "nres_score": 97.860411,
@@ -67055,6 +78678,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 24,
+"line": 117
+},
+{
+"step": 27,
+"line": 121
+},
+{
+"step": 40,
+"line": 43
+}
+],
 "nres_score": 94.702481,
 "nres_ratio": 98.9598,
 "episode_score": 82.780496,
@@ -67130,6 +78768,17 @@
 "lines": [
 81
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 64,
+"line": 81
+},
+{
+"step": 237,
+"line": 81
 }
 ],
 "nres_score": 99.532494,
@@ -67209,6 +78858,17 @@
 ]
 }
 ],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 327,
+"line": 68
+},
+{
+"step": 549,
+"line": 61
+}
+],
 "nres_score": 97.828953,
 "nres_ratio": 99.574,
 "episode_score": 83.405791,
@@ -67285,6 +78945,17 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 30,
+"line": 81
+},
+{
+"step": 547,
+"line": 88
 }
 ],
 "nres_score": 88.85511,
@@ -67390,6 +79061,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 152,
+"line": 160
+},
+{
+"step": 343,
+"line": 93
+},
+{
+"step": 377,
+"line": 154
+},
+{
+"step": 412,
+"line": 62
+},
+{
+"step": 1859,
+"line": 93
+}
+],
 "nres_score": 91.556507,
 "nres_ratio": 98.3412,
 "episode_score": 82.151301,
@@ -67478,6 +79172,25 @@
 "lines": [
 37
 ]
+}
+],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 212,
+"line": 88
+},
+{
+"step": 428,
+"line": 37
+},
+{
+"step": 580,
+"line": 117
+},
+{
+"step": 1043,
+"line": 37
 }
 ],
 "nres_score": 95.127508,
@@ -67572,6 +79285,21 @@
 ]
 }
 ],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 78,
+"line": 117
+},
+{
+"step": 92,
+"line": 81
+},
+{
+"step": 407,
+"line": 126
+}
+],
 "nres_score": 92.082394,
 "nres_ratio": 98.4447,
 "episode_score": 82.256479,
@@ -67647,6 +79375,17 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 2,
+"attack_onsets": [
+{
+"step": 280,
+"line": 81
+},
+{
+"step": 371,
+"line": 33
 }
 ],
 "nres_score": 96.97127,
@@ -67748,6 +79487,25 @@
 ]
 }
 ],
+"n_attack_onsets": 4,
+"attack_onsets": [
+{
+"step": 153,
+"line": 126
+},
+{
+"step": 223,
+"line": 106
+},
+{
+"step": 232,
+"line": 37
+},
+{
+"step": 1226,
+"line": 162
+}
+],
 "nres_score": 91.852617,
 "nres_ratio": 98.3995,
 "episode_score": 82.210523,
@@ -67829,6 +79587,21 @@
 "lines": [
 88
 ]
+}
+],
+"n_attack_onsets": 3,
+"attack_onsets": [
+{
+"step": 378,
+"line": 37
+},
+{
+"step": 400,
+"line": 93
+},
+{
+"step": 821,
+"line": 88
 }
 ],
 "nres_score": 93.289656,
@@ -67924,6 +79697,29 @@
 ]
 }
 ],
+"n_attack_onsets": 5,
+"attack_onsets": [
+{
+"step": 11,
+"line": 162
+},
+{
+"step": 201,
+"line": 106
+},
+{
+"step": 291,
+"line": 81
+},
+{
+"step": 702,
+"line": 81
+},
+{
+"step": 1726,
+"line": 61
+}
+],
 "nres_score": 94.990055,
 "nres_ratio": 99.0163,
 "episode_score": 82.838011,
@@ -68001,6 +79797,13 @@
 "lines": [
 33
 ]
+}
+],
+"n_attack_onsets": 1,
+"attack_onsets": [
+{
+"step": 49,
+"line": 33
 }
 ],
 "nres_score": 92.412968,
